@@ -40,12 +40,17 @@ public class ImageFilterActivity extends BaseActivity {
 
         mCurrentBitmap = mBitmap1;
 
-        new EZFilter.Builder().setBitmap(mCurrentBitmap).addFilter(new MirrorRender()).into(mRenderView);
+        new EZFilter.BitmapBuilder()
+                .setBitmap(mCurrentBitmap)
+                .addFilter(new MirrorRender())
+                .into(mRenderView);
 
         new Thread() {
             public void run() {
-                final Bitmap bitmap = new EZFilter.Builder().setBitmap(mCurrentBitmap)
-                        .addFilter(new BWRender(ImageFilterActivity.this)).capture();
+                final Bitmap bitmap = new EZFilter.BitmapBuilder()
+                        .setBitmap(mCurrentBitmap)
+                        .addFilter(new BWRender(ImageFilterActivity.this))
+                        .capture();
                 runOnUiThread(new Runnable() {
                     @Override
                     public void run() {
@@ -70,12 +75,17 @@ public class ImageFilterActivity extends BaseActivity {
             mCurrentBitmap = mBitmap1;
         }
 
-        new EZFilter.Builder().setBitmap(mCurrentBitmap).addFilter(new MirrorRender()).into(mRenderView);
+        new EZFilter.BitmapBuilder()
+                .setBitmap(mCurrentBitmap)
+                .addFilter(new MirrorRender())
+                .into(mRenderView);
 
         new Thread() {
             public void run() {
-                final Bitmap bitmap = new EZFilter.Builder().setBitmap(mCurrentBitmap)
-                        .addFilter(new BWRender(ImageFilterActivity.this)).capture();
+                final Bitmap bitmap = new EZFilter.BitmapBuilder()
+                        .setBitmap(mCurrentBitmap)
+                        .addFilter(new BWRender(ImageFilterActivity.this))
+                        .capture();
                 runOnUiThread(new Runnable() {
                     @Override
                     public void run() {

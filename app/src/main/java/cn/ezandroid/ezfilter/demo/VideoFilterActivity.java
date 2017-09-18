@@ -41,7 +41,11 @@ public class VideoFilterActivity extends BaseActivity {
 
         mCurrentUri = uri1;
 
-        mRenderPipeline = new EZFilter.Builder().setVideo(mCurrentUri).setVideoLoop(true).setRotation(1).into(mRenderView);
+        mRenderPipeline = new EZFilter.VideoBuilder()
+                .setVideo(mCurrentUri)
+                .setVideoLoop(true)
+                .setRotation(1)
+                .into(mRenderView);
 
         $(R.id.change_video).setOnClickListener(new View.OnClickListener() {
             @Override
@@ -58,7 +62,11 @@ public class VideoFilterActivity extends BaseActivity {
             mCurrentUri = uri1;
         }
 
-        mRenderPipeline = new EZFilter.Builder().setVideo(mCurrentUri).setVideoLoop(true).setRotation(1).into(mRenderView);
+        mRenderPipeline = new EZFilter.VideoBuilder()
+                .setVideo(mCurrentUri)
+                .setVideoLoop(true)
+                .setRotation(1)
+                .into(mRenderView);
     }
 
     @Override

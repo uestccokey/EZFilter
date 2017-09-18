@@ -33,9 +33,12 @@ public class CameraFilterActivity extends BaseActivity {
         mCamera = Camera.open(mCurrentCameraId);
         setCameraParameters();
 
-        new EZFilter.Builder().setCamera(mCamera).addFilter(new BWRender(this)).into(mRenderView);
+        new EZFilter.CameraBuilder()
+                .setCamera(mCamera)
+                .addFilter(new BWRender(this))
+                .into(mRenderView);
 
-        $(R.id.render_view).setOnClickListener(new View.OnClickListener() {
+        $(R.id.switch_camera).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 switchCamera();
@@ -75,7 +78,10 @@ public class CameraFilterActivity extends BaseActivity {
         mCamera = Camera.open(id);
         setCameraParameters();
 
-        new EZFilter.Builder().setCamera(mCamera).addFilter(new BWRender(this)).into(mRenderView);
+        new EZFilter.CameraBuilder()
+                .setCamera(mCamera)
+                .addFilter(new BWRender(this))
+                .into(mRenderView);
     }
 
     private void releaseCamera() {
