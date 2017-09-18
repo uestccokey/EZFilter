@@ -2,13 +2,12 @@ package cn.ezandroid.ezfilter.extra;
 
 import android.content.Context;
 import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
 import android.opengl.GLES20;
-import android.util.Log;
 
 import cn.ezandroid.ezfilter.core.FBORender;
 import cn.ezandroid.ezfilter.core.FilterRender;
 import cn.ezandroid.ezfilter.util.BitmapUtil;
+import cn.ezandroid.ezfilter.util.PathPrefix;
 import cn.ezandroid.ezfilter.util.TextureBindUtil;
 
 /**
@@ -86,14 +85,8 @@ public class MultiBitmapInputRender extends FilterRender {
                 }
             }
         }
-        if (mBitmaps != null) {
-            for (Bitmap bitmap : mBitmaps) {
-                if (bitmap != null && !bitmap.isRecycled()) {
-                    bitmap.recycle();
-                }
-                bitmap = null;
-            }
-        }
+        mTextures = null;
+        mBitmaps = null;
     }
 
     @Override
@@ -104,32 +97,42 @@ public class MultiBitmapInputRender extends FilterRender {
 
     @Override
     public void onTextureAvailable(int texture, FBORender source) {
-        long time = System.currentTimeMillis();
         mTextureIn = texture;
 
         if (mTextureNum > 1) {
-            // TODO 创建多个图片太耗时，需要优化
-            try {
-                for (int i = 0; i < mBitmaps.length; i++) {
-                    if (mBitmaps[i] == null || mBitmaps[i].isRecycled()) {
-                        if (mResources != null) {
-                            final BitmapFactory.Options options = new BitmapFactory.Options();
-                            options.inScaled = false;
-                            options.inDither = false;
-                            options.inInputShareable = true;
-                            options.inPurgeable = true;
-                            mBitmaps[i] = BitmapFactory.decodeResource(mContext.getResources(),
-                                    mResources[i], options);
-                        } else if (mPaths != null) {
-                            mBitmaps[i] = BitmapUtil.loadImage(mContext, mPaths[i]);
+            for (int i = 0; i < mBitmaps.length; i++) {
+                if (mBitmaps[i] == null || mBitmaps[i].isRecycled()) {
+                    if (mResources != null) {
+                        int resource = mResources[i];
+                        if (mBitmapCache != null) {
+                            Bitmap cachedBitmap = mBitmapCache.get(PathPrefix.PREFIX_DRAWABLE + resource);
+                            if (cachedBitmap == null || cachedBitmap.isRecycled()) {
+                                mBitmaps[i] = BitmapUtil.loadImage(mContext, resource);
+                                mBitmapCache.put(PathPrefix.PREFIX_DRAWABLE + resource, mBitmaps[i]);
+                            } else {
+                                mBitmaps[i] = cachedBitmap;
+                            }
+                        } else {
+                            mBitmaps[i] = BitmapUtil.loadImage(mContext, resource);
+                        }
+                    } else if (mPaths != null) {
+                        String path = mPaths[i];
+                        if (mBitmapCache != null) {
+                            Bitmap cachedBitmap = mBitmapCache.get(path);
+                            if (cachedBitmap == null || cachedBitmap.isRecycled()) {
+                                mBitmaps[i] = BitmapUtil.loadImage(mContext, path);
+                                mBitmapCache.put(path, mBitmaps[i]);
+                            } else {
+                                mBitmaps[i] = cachedBitmap;
+                            }
+                        } else {
+                            mBitmaps[i] = BitmapUtil.loadImage(mContext, path);
                         }
                     }
                 }
-            } catch (OutOfMemoryError e) {
-                e.printStackTrace();
             }
 
-            // 只bind一次，避免每次都去bindBitmap耗时
+            // 只bind一次，直到destroy，避免每次都去bindBitmap耗时
             for (int i = 0; i < mBitmaps.length; i++) {
                 if (mBitmaps[i] != null && !mBitmaps[i].isRecycled()) {
                     if (mTextures[i] == 0) {
@@ -142,7 +145,6 @@ public class MultiBitmapInputRender extends FilterRender {
         setWidth(source.getWidth());
         setHeight(source.getHeight());
         onDrawFrame();
-        Log.e("Render", getClass() + "渲染耗时:" + (System.currentTimeMillis() - time));
     }
 
     @Override

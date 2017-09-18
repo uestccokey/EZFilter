@@ -8,6 +8,8 @@ import android.net.Uri;
 import java.util.ArrayList;
 import java.util.List;
 
+import cn.ezandroid.ezfilter.cache.IBitmapCache;
+import cn.ezandroid.ezfilter.cache.LruBitmapCache;
 import cn.ezandroid.ezfilter.core.FilterRender;
 import cn.ezandroid.ezfilter.core.RenderPipeline;
 import cn.ezandroid.ezfilter.io.input.BitmapInput;
@@ -23,6 +25,20 @@ import cn.ezandroid.ezfilter.view.IRenderView;
  * @date 2017-09-15
  */
 public class EZFilter {
+
+    /**
+     * 默认的图片缓存 4分支1最大内存
+     */
+    private static IBitmapCache sBitmapCache = new LruBitmapCache((int) (Runtime.getRuntime().maxMemory() / 4));
+
+    /**
+     * 设置图片缓存
+     *
+     * @param bitmapCache
+     */
+    public static void setBitmapCache(IBitmapCache bitmapCache) {
+        sBitmapCache = bitmapCache;
+    }
 
     /**
      * 图片处理构造器
@@ -153,6 +169,7 @@ public class EZFilter {
 
         Builder addFilter(FilterRender filterRender) {
             if (filterRender != null && !mFilterRenders.contains(filterRender)) {
+                filterRender.setBitmapCache(sBitmapCache);
                 mFilterRenders.add(filterRender);
             }
             return this;

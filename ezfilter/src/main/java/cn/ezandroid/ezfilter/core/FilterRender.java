@@ -1,5 +1,7 @@
 package cn.ezandroid.ezfilter.core;
 
+import cn.ezandroid.ezfilter.cache.IBitmapCache;
+
 /**
  * 滤镜渲染器
  * <p>
@@ -11,6 +13,12 @@ package cn.ezandroid.ezfilter.core;
  * @date 2017-09-15
  */
 public class FilterRender extends FBORender implements OnTextureAvailableListener {
+
+    protected IBitmapCache mBitmapCache;
+
+    public void setBitmapCache(IBitmapCache bitmapCache) {
+        mBitmapCache = bitmapCache;
+    }
 
     @Override
     public void onTextureAvailable(int texture, FBORender source) {

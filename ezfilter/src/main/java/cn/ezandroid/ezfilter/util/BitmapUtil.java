@@ -19,6 +19,27 @@ public class BitmapUtil {
      * 加载图片
      *
      * @param context
+     * @param id
+     * @return
+     */
+    public static Bitmap loadImage(Context context, int id) {
+        try {
+            final BitmapFactory.Options options = new BitmapFactory.Options();
+            options.inScaled = false;
+            options.inDither = false;
+            options.inInputShareable = true;
+            options.inPurgeable = true;
+            return BitmapFactory.decodeResource(context.getResources(), id, options);
+        } catch (OutOfMemoryError e) {
+            e.printStackTrace();
+        }
+        return null;
+    }
+
+    /**
+     * 加载图片
+     *
+     * @param context
      * @param path
      * @return
      */

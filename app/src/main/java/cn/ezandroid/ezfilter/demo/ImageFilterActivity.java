@@ -8,8 +8,7 @@ import android.view.View;
 import android.widget.ImageView;
 
 import cn.ezandroid.ezfilter.EZFilter;
-import cn.ezandroid.ezfilter.demo.render.BWRender;
-import cn.ezandroid.ezfilter.demo.render.MirrorRender;
+import cn.ezandroid.ezfilter.demo.render.LookupRender;
 import cn.ezandroid.ezfilter.view.TextureRenderView;
 
 /**
@@ -42,14 +41,13 @@ public class ImageFilterActivity extends BaseActivity {
 
         new EZFilter.BitmapBuilder()
                 .setBitmap(mCurrentBitmap)
-                .addFilter(new MirrorRender())
                 .into(mRenderView);
 
         new Thread() {
             public void run() {
                 final Bitmap bitmap = new EZFilter.BitmapBuilder()
                         .setBitmap(mCurrentBitmap)
-                        .addFilter(new BWRender(ImageFilterActivity.this))
+                        .addFilter(new LookupRender(ImageFilterActivity.this, R.drawable.rixi))
                         .capture();
                 runOnUiThread(new Runnable() {
                     @Override
@@ -77,14 +75,13 @@ public class ImageFilterActivity extends BaseActivity {
 
         new EZFilter.BitmapBuilder()
                 .setBitmap(mCurrentBitmap)
-                .addFilter(new MirrorRender())
                 .into(mRenderView);
 
         new Thread() {
             public void run() {
                 final Bitmap bitmap = new EZFilter.BitmapBuilder()
                         .setBitmap(mCurrentBitmap)
-                        .addFilter(new BWRender(ImageFilterActivity.this))
+                        .addFilter(new LookupRender(ImageFilterActivity.this, R.drawable.rixi))
                         .capture();
                 runOnUiThread(new Runnable() {
                     @Override

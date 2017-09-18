@@ -13,4 +13,6 @@ public class PathPrefix {
 
     /** sd卡路径前缀 */
     public static final String PREFIX_FILE = "file:///";
+
+    public static final String PREFIX_DRAWABLE = "drawable://";
 }
