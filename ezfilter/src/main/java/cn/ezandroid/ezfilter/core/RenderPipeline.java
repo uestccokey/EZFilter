@@ -206,7 +206,6 @@ public class RenderPipeline implements GLTextureView.Renderer {
      * 取值-3~0，0~3，表示旋转-270~0，0~270度
      *
      * @param numOfTimes 旋转次数
-     * @return 是否应该调用requestLayout刷新视图
      */
     public void setRotate90Degrees(int numOfTimes) {
         mCurrentRotation = numOfTimes;

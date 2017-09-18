@@ -5,6 +5,7 @@ import android.hardware.Camera;
 import android.media.MediaMetadataRetriever;
 import android.net.Uri;
 
+import java.security.InvalidParameterException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -13,6 +14,7 @@ import cn.ezandroid.ezfilter.core.RenderPipeline;
 import cn.ezandroid.ezfilter.io.input.BitmapInput;
 import cn.ezandroid.ezfilter.io.input.CameraInput;
 import cn.ezandroid.ezfilter.io.input.VideoInput;
+import cn.ezandroid.ezfilter.offscreen.OffscreenHelper;
 import cn.ezandroid.ezfilter.view.IRenderView;
 
 /**
@@ -78,8 +80,15 @@ public class EZFilter {
         }
 
         public Bitmap capture() {
-            // TODO
-            return null;
+            if (mBitmap != null) {
+                OffscreenHelper helper = new OffscreenHelper(mBitmap);
+                for (FilterRender filterRender : mFilterRenders) {
+                    helper.addFilterRender(filterRender);
+                }
+                return helper.capture();
+            } else {
+                throw new InvalidParameterException("暂时只支持图片截图");
+            }
         }
 
         public RenderPipeline into(IRenderView view) {

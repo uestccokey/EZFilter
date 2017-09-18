@@ -40,5 +40,7 @@ dependencies {
     implementation "com.android.support:design:$rootProject.ext.supportLibraryVersion"
     implementation 'com.android.support:multidex:1.0.2'
 
+//    implementation 'cn.ezandroid:EZFilter:1.0.0'
+
     implementation project(':ezfilter')
 }

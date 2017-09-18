@@ -28,14 +28,14 @@ android {
 
         debug {
             debuggable true
-            signingConfig signingConfigs.debug
+//            signingConfig signingConfigs.debug
             buildConfigField BOOLEAN, LOG_ENABLE, TRUE
             buildConfigField BOOLEAN, DEBUG_ENABLE, TRUE
         }
 
         release {
             debuggable false
-            signingConfig signingConfigs.release
+//            signingConfig signingConfigs.release
             zipAlignEnabled true
             minifyEnabled true
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'

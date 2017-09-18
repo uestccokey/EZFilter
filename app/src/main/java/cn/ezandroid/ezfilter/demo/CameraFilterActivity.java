@@ -5,7 +5,6 @@ import android.hardware.Camera;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.view.View;
-import android.widget.Button;
 
 import cn.ezandroid.ezfilter.EZFilter;
 import cn.ezandroid.ezfilter.demo.render.BWRender;
@@ -20,9 +19,9 @@ import cn.ezandroid.ezfilter.view.TextureRenderView;
 public class CameraFilterActivity extends BaseActivity {
 
     private TextureRenderView mRenderView;
-    private Button mSwitchCameraButton;
 
     private Camera mCamera;
+
     private int mCurrentCameraId = Camera.CameraInfo.CAMERA_FACING_FRONT;
 
     @Override
@@ -30,14 +29,13 @@ public class CameraFilterActivity extends BaseActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_camera_filter);
         mRenderView = $(R.id.render_view);
-        mSwitchCameraButton = $(R.id.switch_camera);
 
         mCamera = Camera.open(mCurrentCameraId);
         setCameraParameters();
 
         new EZFilter.Builder().setCamera(mCamera).addFilter(new BWRender(this)).into(mRenderView);
 
-        mSwitchCameraButton.setOnClickListener(new View.OnClickListener() {
+        $(R.id.render_view).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 switchCamera();

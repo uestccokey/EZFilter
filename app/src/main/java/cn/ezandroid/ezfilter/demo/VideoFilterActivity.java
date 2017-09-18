@@ -4,7 +4,6 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.view.View;
-import android.widget.Button;
 import android.widget.ImageView;
 
 import cn.ezandroid.ezfilter.EZFilter;
@@ -21,7 +20,6 @@ import cn.ezandroid.ezfilter.view.SurfaceRenderView;
 public class VideoFilterActivity extends BaseActivity {
 
     private SurfaceRenderView mRenderView;
-    private Button mChangeVideoButton;
     private ImageView mPreviewImage;
 
     private Uri uri1;
@@ -36,7 +34,6 @@ public class VideoFilterActivity extends BaseActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_video_filter);
         mRenderView = $(R.id.render_view);
-        mChangeVideoButton = $(R.id.change_video);
         mPreviewImage = $(R.id.preview_image);
 
         uri1 = Uri.parse("android.resource://" + getPackageName() + "/" + R.raw.test);
@@ -44,25 +41,9 @@ public class VideoFilterActivity extends BaseActivity {
 
         mCurrentUri = uri1;
 
-//        final BitmapOutput bitmapOutput = new BitmapOutput();
-//        bitmapOutput.setBitmapOutputCallback(new BitmapOutput.BitmapOutputCallback() {
-//            @Override
-//            public void bitmapOutput(final Bitmap bitmap) {
-//                if (bitmap == null) {
-//                    return;
-//                }
-//                runOnUiThread(new Runnable() {
-//                    @Override
-//                    public void run() {
-//                        mPreviewImage.setImageBitmap(bitmap);
-//                    }
-//                });
-//            }
-//        });
-
         mRenderPipeline = new EZFilter.Builder().setVideo(mCurrentUri).setVideoLoop(true).setRotation(1).into(mRenderView);
 
-        mChangeVideoButton.setOnClickListener(new View.OnClickListener() {
+        $(R.id.change_video).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 changeVideo();
