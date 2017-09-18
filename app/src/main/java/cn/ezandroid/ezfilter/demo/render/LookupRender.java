@@ -15,7 +15,7 @@ public class LookupRender extends MultiBitmapInputRender {
 
     private final String UNIFORM_MIX = "u_mix";
     private int mMixHandle;
-    private float mMix;
+    private float mMix = 1f;
 
     public LookupRender(Context context, int id) {
         super(context, new int[]{id});

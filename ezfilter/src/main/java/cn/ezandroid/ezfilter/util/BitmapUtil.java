@@ -19,31 +19,10 @@ public class BitmapUtil {
      * 加载图片
      *
      * @param context
-     * @param id
-     * @return
-     */
-    public static Bitmap loadImage(Context context, int id) {
-        try {
-            final BitmapFactory.Options options = new BitmapFactory.Options();
-            options.inScaled = false;
-            options.inDither = false;
-            options.inInputShareable = true;
-            options.inPurgeable = true;
-            return BitmapFactory.decodeResource(context.getResources(), id, options);
-        } catch (OutOfMemoryError e) {
-            e.printStackTrace();
-        }
-        return null;
-    }
-
-    /**
-     * 加载图片
-     *
-     * @param context
      * @param path
      * @return
      */
-    public static Bitmap loadImage(Context context, String path) {
+    public static Bitmap loadBitmap(Context context, String path) {
         InputStream in = null;
         try {
             BitmapFactory.Options options = new BitmapFactory.Options();
@@ -58,6 +37,9 @@ public class BitmapUtil {
                 }
             } else if (path.startsWith(PathPrefix.PREFIX_FILE)) {
                 return BitmapFactory.decodeFile(path.replace(PathPrefix.PREFIX_FILE, ""), options);
+            } else if (path.startsWith(PathPrefix.PREFIX_DRAWABLE)) {
+                return BitmapFactory.decodeResource(context.getResources(),
+                        Integer.parseInt(path.replace(PathPrefix.PREFIX_DRAWABLE, "")), options);
             } else {
                 return BitmapFactory.decodeFile(path, options);
             }
@@ -84,7 +66,7 @@ public class BitmapUtil {
      * @param height  最大高度
      * @return
      */
-    public static Bitmap loadImage(Context context, String path, int width, int height) {
+    public static Bitmap loadBitmap(Context context, String path, int width, int height) {
         InputStream in = null;
         try {
             BitmapFactory.Options options = new BitmapFactory.Options();
@@ -96,6 +78,9 @@ public class BitmapUtil {
                 }
             } else if (path.startsWith(PathPrefix.PREFIX_FILE)) {
                 BitmapFactory.decodeFile(path.replace(PathPrefix.PREFIX_FILE, ""), options);
+            } else if (path.startsWith(PathPrefix.PREFIX_DRAWABLE)) {
+                return BitmapFactory.decodeResource(context.getResources(),
+                        Integer.parseInt(path.replace(PathPrefix.PREFIX_DRAWABLE, "")), options);
             } else {
                 BitmapFactory.decodeFile(path, options);
             }

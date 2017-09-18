@@ -16,6 +16,11 @@ public class FilterRender extends FBORender implements OnTextureAvailableListene
 
     protected IBitmapCache mBitmapCache;
 
+    /**
+     * 设置图片缓存
+     *
+     * @param bitmapCache
+     */
     public void setBitmapCache(IBitmapCache bitmapCache) {
         mBitmapCache = bitmapCache;
     }

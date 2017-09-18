@@ -3,6 +3,7 @@ package cn.ezandroid.ezfilter.extra;
 import android.content.Context;
 import android.graphics.Bitmap;
 import android.opengl.GLES20;
+import android.util.Log;
 
 import cn.ezandroid.ezfilter.core.FBORender;
 import cn.ezandroid.ezfilter.core.FilterRender;
@@ -85,8 +86,16 @@ public class MultiBitmapInputRender extends FilterRender {
                 }
             }
         }
-        mTextures = null;
-        mBitmaps = null;
+
+        // 由于有图片缓存，这里不直接释放
+//        if (mBitmaps != null) {
+//            for (Bitmap bitmap : mBitmaps) {
+//                if (bitmap != null && !bitmap.isRecycled()) {
+//                    bitmap.recycle();
+//                }
+//                bitmap = null;
+//            }
+//        }
     }
 
     @Override
@@ -100,46 +109,37 @@ public class MultiBitmapInputRender extends FilterRender {
         mTextureIn = texture;
 
         if (mTextureNum > 1) {
-            for (int i = 0; i < mBitmaps.length; i++) {
-                if (mBitmaps[i] == null || mBitmaps[i].isRecycled()) {
+            long time = System.currentTimeMillis();
+            // 只bind一次，直到destroy，避免每次都去loadBitmap和bindBitmap耗时
+            for (int i = 0; i < mTextures.length; i++) {
+                if (mTextures[i] == 0) {
+                    String key = "";
                     if (mResources != null) {
                         int resource = mResources[i];
-                        if (mBitmapCache != null) {
-                            Bitmap cachedBitmap = mBitmapCache.get(PathPrefix.PREFIX_DRAWABLE + resource);
-                            if (cachedBitmap == null || cachedBitmap.isRecycled()) {
-                                mBitmaps[i] = BitmapUtil.loadImage(mContext, resource);
-                                mBitmapCache.put(PathPrefix.PREFIX_DRAWABLE + resource, mBitmaps[i]);
-                            } else {
-                                mBitmaps[i] = cachedBitmap;
-                            }
-                        } else {
-                            mBitmaps[i] = BitmapUtil.loadImage(mContext, resource);
-                        }
+                        key = PathPrefix.PREFIX_DRAWABLE + resource;
                     } else if (mPaths != null) {
                         String path = mPaths[i];
+                        key = path;
+                    }
+
+                    // 查找图片缓存，绑定纹理
+                    if (mBitmaps[i] == null || mBitmaps[i].isRecycled()) {
                         if (mBitmapCache != null) {
-                            Bitmap cachedBitmap = mBitmapCache.get(path);
+                            Bitmap cachedBitmap = mBitmapCache.get(key);
                             if (cachedBitmap == null || cachedBitmap.isRecycled()) {
-                                mBitmaps[i] = BitmapUtil.loadImage(mContext, path);
-                                mBitmapCache.put(path, mBitmaps[i]);
+                                mBitmaps[i] = BitmapUtil.loadBitmap(mContext, key);
+                                mBitmapCache.put(key, mBitmaps[i]);
                             } else {
                                 mBitmaps[i] = cachedBitmap;
                             }
                         } else {
-                            mBitmaps[i] = BitmapUtil.loadImage(mContext, path);
+                            mBitmaps[i] = BitmapUtil.loadBitmap(mContext, key);
                         }
                     }
+                    mTextures[i] = TextureBindUtil.bindBitmap(mBitmaps[i]);
                 }
             }
-
-            // 只bind一次，直到destroy，避免每次都去bindBitmap耗时
-            for (int i = 0; i < mBitmaps.length; i++) {
-                if (mBitmaps[i] != null && !mBitmaps[i].isRecycled()) {
-                    if (mTextures[i] == 0) {
-                        mTextures[i] = TextureBindUtil.bindBitmap(mBitmaps[i]);
-                    }
-                }
-            }
+            Log.e("MultiBitmapInputRender", "加载纹理耗时:" + (System.currentTimeMillis() - time));
         }
 
         setWidth(source.getWidth());

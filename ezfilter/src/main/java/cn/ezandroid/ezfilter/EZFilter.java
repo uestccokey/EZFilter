@@ -41,6 +41,15 @@ public class EZFilter {
     }
 
     /**
+     * 获取图片缓存
+     *
+     * @return
+     */
+    public static IBitmapCache getBitmapCache() {
+        return sBitmapCache;
+    }
+
+    /**
      * 图片处理构造器
      * <p>
      * 支持链式操作
