@@ -1,0 +1,24 @@
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:gravity="center"
+    android:orientation="vertical">
+
+    <Button
+        android:id="@+id/camera_filter"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="摄像头加滤镜" />
+
+    <Button
+        android:id="@+id/image_filter"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="图片加滤镜" />
+
+    <Button
+        android:id="@+id/video_filter"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="视频加滤镜" />
+</LinearLayout>

@@ -1,0 +1,46 @@
+// Top-level build file where you can add configuration options common to all sub-projects/modules.
+
+buildscript {
+    
+    repositories {
+        google()
+        jcenter()
+    }
+    dependencies {
+        classpath 'com.android.tools.build:gradle:3.0.0-beta6'
+        
+
+        // NOTE: Do not place your application dependencies here; they belong
+        // in the individual module build.gradle files
+    }
+}
+
+allprojects {
+    repositories {
+        google()
+        jcenter()
+    }
+}
+
+task clean(type: Delete) {
+    delete rootProject.buildDir
+}
+
+ext {
+    // App version
+    versionCode = 100
+    versionName = '1.0.0' // 这里的versionName完整格式为 x.x.x
+
+    // Sdk and tools
+    minSdkVersion = 18
+    targetSdkVersion = 26
+    compileSdkVersion = 26
+    buildToolsVersion = "26.0.1"
+
+    // App dependencies
+    supportLibraryVersion = '26.1.0'
+
+    // Sdk version
+    sdkVersionCode = 100
+    sdkVersionName = '1.0.0'
+}
