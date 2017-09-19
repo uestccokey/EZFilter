@@ -33,22 +33,23 @@ public class SurfaceRenderView extends GLSurfaceView implements IRenderView {
                 | android.opengl.GLSurfaceView.DEBUG_LOG_GL_CALLS);
         setEGLContextClientVersion(2);
         mHelper = new RenderViewHelper();
+
+        mPipeline = new RenderPipeline();
+        setRenderer(mPipeline);
+        setRenderMode(RENDERMODE_WHEN_DIRTY);
     }
 
     /**
-     * 设置渲染管道
+     * 初始化渲染管道
      *
      * @param startPointRender 渲染起点
      */
     @Override
-    public void setRenderPipeline(FBORender startPointRender) {
-        if (mPipeline == null) {
-            mPipeline = new RenderPipeline();
-            setRenderer(mPipeline);
-            setRenderMode(RENDERMODE_WHEN_DIRTY);
-        }
+    public void initRenderPipeline(FBORender startPointRender) {
         mPipeline.pauseRender();
-        mPipeline.setStartPointRender(startPointRender);
+        if (startPointRender != null) {
+            mPipeline.setStartPointRender(startPointRender);
+        }
     }
 
     /**

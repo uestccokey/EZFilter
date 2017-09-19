@@ -31,14 +31,6 @@ public class MainActivity extends BaseActivity {
             requestCameraPermission();
         }
 
-        $(R.id.camera_filter).setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                Intent intent = new Intent(MainActivity.this, CameraFilterActivity.class);
-                startActivity(intent);
-            }
-        });
-
         $(R.id.image_filter).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -51,6 +43,22 @@ public class MainActivity extends BaseActivity {
             @Override
             public void onClick(View view) {
                 Intent intent = new Intent(MainActivity.this, VideoFilterActivity.class);
+                startActivity(intent);
+            }
+        });
+
+        $(R.id.camera_filter).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Intent intent = new Intent(MainActivity.this, CameraFilterActivity.class);
+                startActivity(intent);
+            }
+        });
+
+        $(R.id.camera2_filter).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Intent intent = new Intent(MainActivity.this, Camera2FilterActivity.class);
                 startActivity(intent);
             }
         });

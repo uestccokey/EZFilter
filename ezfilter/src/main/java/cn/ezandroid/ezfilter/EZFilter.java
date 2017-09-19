@@ -1,9 +1,13 @@
 package cn.ezandroid.ezfilter;
 
+import android.annotation.TargetApi;
 import android.graphics.Bitmap;
 import android.hardware.Camera;
+import android.hardware.camera2.CameraDevice;
 import android.media.MediaMetadataRetriever;
 import android.net.Uri;
+import android.os.Build;
+import android.util.Size;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -13,6 +17,7 @@ import cn.ezandroid.ezfilter.cache.LruBitmapCache;
 import cn.ezandroid.ezfilter.core.FilterRender;
 import cn.ezandroid.ezfilter.core.RenderPipeline;
 import cn.ezandroid.ezfilter.io.input.BitmapInput;
+import cn.ezandroid.ezfilter.io.input.Camera2Input;
 import cn.ezandroid.ezfilter.io.input.CameraInput;
 import cn.ezandroid.ezfilter.io.input.VideoInput;
 import cn.ezandroid.ezfilter.offscreen.OffscreenHelper;
@@ -86,7 +91,7 @@ public class EZFilter {
         @Override
         protected float setRenderPipeline(IRenderView view) {
             BitmapInput bitmapInput = new BitmapInput(mBitmap);
-            view.setRenderPipeline(bitmapInput);
+            view.initRenderPipeline(bitmapInput);
             return mBitmap.getWidth() * 1.0f / mBitmap.getHeight();
         }
 
@@ -124,7 +129,7 @@ public class EZFilter {
             VideoInput videoInput = new VideoInput(view, mVideo);
             videoInput.setLoop(mVideoLoop);
             videoInput.start();
-            view.setRenderPipeline(videoInput);
+            view.initRenderPipeline(videoInput);
             MediaMetadataRetriever metadata = new MediaMetadataRetriever();
             metadata.setDataSource(view.getContext(), mVideo);
             String width = metadata.extractMetadata(MediaMetadataRetriever.METADATA_KEY_VIDEO_WIDTH);
@@ -158,7 +163,7 @@ public class EZFilter {
         @Override
         protected float setRenderPipeline(IRenderView view) {
             CameraInput cameraInput = new CameraInput(view, mCamera);
-            view.setRenderPipeline(cameraInput);
+            view.initRenderPipeline(cameraInput);
             Camera.Size previewSize = mCamera.getParameters().getPreviewSize();
             return previewSize.height * 1.0f / previewSize.width;
         }
@@ -171,6 +176,36 @@ public class EZFilter {
         @Override
         public CameraBuilder addFilter(FilterRender filterRender) {
             return (CameraBuilder) super.addFilter(filterRender);
+        }
+    }
+
+    @TargetApi(Build.VERSION_CODES.LOLLIPOP)
+    public static class Camera2Builder extends Builder {
+
+        private CameraDevice mCameraDevice;
+        private Size mPreviewSize;
+
+        public Camera2Builder setCamera2(CameraDevice camera2, Size size) {
+            mCameraDevice = camera2;
+            mPreviewSize = size;
+            return this;
+        }
+
+        @Override
+        float setRenderPipeline(IRenderView view) {
+            Camera2Input camera2Input = new Camera2Input(view, mCameraDevice, mPreviewSize);
+            view.initRenderPipeline(camera2Input);
+            return mPreviewSize.getWidth() * 1.0f / mPreviewSize.getHeight();
+        }
+
+        @Override
+        public Camera2Builder setRotation(int rotation) {
+            return (Camera2Builder) super.setRotation(rotation);
+        }
+
+        @Override
+        public Camera2Builder addFilter(FilterRender filterRender) {
+            return (Camera2Builder) super.addFilter(filterRender);
         }
     }
 

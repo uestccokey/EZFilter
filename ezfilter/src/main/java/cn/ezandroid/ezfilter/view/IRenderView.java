@@ -14,11 +14,11 @@ import cn.ezandroid.ezfilter.core.RenderPipeline;
 public interface IRenderView {
 
     /**
-     * 设置渲染管道
+     * 初始化渲染管道
      *
      * @param startPointRender 渲染起点
      */
-    void setRenderPipeline(FBORender startPointRender);
+    void initRenderPipeline(FBORender startPointRender);
 
     /**
      * 获取渲染管道
