@@ -9,7 +9,7 @@ import android.widget.ImageView;
 
 import cn.ezandroid.ezfilter.EZFilter;
 import cn.ezandroid.ezfilter.core.RenderPipeline;
-import cn.ezandroid.ezfilter.demo.render.BWRender;
+import cn.ezandroid.ezfilter.view.RenderViewHelper;
 import cn.ezandroid.ezfilter.view.TextureRenderView;
 
 /**
@@ -39,7 +39,8 @@ public class CameraFilterActivity extends BaseActivity {
 
         final RenderPipeline renderPipeline = new EZFilter.CameraBuilder()
                 .setCamera(mCamera)
-                .addFilter(new BWRender(this))
+                .setScaleType(RenderViewHelper.ScaleType.CENTER_CROP)
+//                .addFilter(new BWRender(this))
                 .into(mRenderView);
 
         $(R.id.switch_camera).setOnClickListener(new View.OnClickListener() {
@@ -95,7 +96,8 @@ public class CameraFilterActivity extends BaseActivity {
 
         new EZFilter.CameraBuilder()
                 .setCamera(mCamera)
-                .addFilter(new BWRender(this))
+                .setScaleType(RenderViewHelper.ScaleType.CENTER_CROP)
+//                .addFilter(new BWRender(this))
                 .into(mRenderView);
     }
 

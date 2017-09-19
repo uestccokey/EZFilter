@@ -64,6 +64,16 @@ public class TextureRenderView extends GLTextureView implements IRenderView {
     }
 
     /**
+     * 设置缩放规则
+     *
+     * @param scaleType 缩放规则
+     */
+    @Override
+    public void setScaleType(RenderViewHelper.ScaleType scaleType) {
+        mHelper.setScaleType(scaleType);
+    }
+
+    /**
      * 设置宽高比及最大宽度最大高度
      * maxWidth和maxHeight有一个设置为0时表示MatchParent
      *

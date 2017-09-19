@@ -19,6 +19,22 @@ public class RenderViewHelper {
     private int mPreviewWidth;
     private int mPreviewHeight;
 
+    private ScaleType mScaleType = ScaleType.CENTER_INSIDE;
+
+    public enum ScaleType {
+        CENTER_CROP,
+        CENTER_INSIDE
+    }
+
+    /**
+     * 设置缩放规则
+     *
+     * @param scaleType 缩放规则
+     */
+    public void setScaleType(ScaleType scaleType) {
+        mScaleType = scaleType;
+    }
+
     /**
      * 设置宽高比及最大宽度最大高度
      * maxWidth和maxHeight有一个设置为0时表示MatchParent
@@ -106,40 +122,84 @@ public class RenderViewHelper {
     protected boolean calculatePreviewSize(int measureWidth, int measureHeight) {
         int previewWidth = 0;
         int previewHeight = 0;
-        if (mAngle / 90 % 2 == 1) {
-            if (mMaxWidth != 0 && mMaxHeight != 0) {
-                previewWidth = mMaxWidth;
-                previewHeight = mMaxHeight;
-                if (previewHeight > previewWidth * mAspectRatio) {
-                    previewHeight = (int) (previewWidth * mAspectRatio + .5);
+        if (mScaleType == ScaleType.CENTER_INSIDE) {
+            if (mAngle / 90 % 2 == 1) {
+                if (mMaxWidth != 0 && mMaxHeight != 0) {
+                    previewWidth = mMaxWidth;
+                    previewHeight = mMaxHeight;
+                    if (previewHeight > previewWidth * mAspectRatio) {
+                        previewHeight = (int) (previewWidth * mAspectRatio + .5);
+                    } else {
+                        previewWidth = (int) (previewHeight / mAspectRatio + .5);
+                    }
                 } else {
-                    previewWidth = (int) (previewHeight / mAspectRatio + .5);
+                    previewWidth = measureWidth;
+                    previewHeight = measureHeight;
+                    if (previewHeight > previewWidth * mAspectRatio) {
+                        previewHeight = (int) (previewWidth * mAspectRatio + .5);
+                    } else {
+                        previewWidth = (int) (previewHeight / mAspectRatio + .5);
+                    }
                 }
             } else {
-                previewWidth = measureWidth;
-                previewHeight = measureHeight;
-                if (previewHeight > previewWidth * mAspectRatio) {
-                    previewHeight = (int) (previewWidth * mAspectRatio + .5);
+                if (mMaxWidth != 0 && mMaxHeight != 0) {
+                    previewWidth = mMaxWidth;
+                    previewHeight = mMaxHeight;
+                    if (previewWidth > previewHeight * mAspectRatio) {
+                        previewWidth = (int) (previewHeight * mAspectRatio + .5);
+                    } else {
+                        previewHeight = (int) (previewWidth / mAspectRatio + .5);
+                    }
                 } else {
-                    previewWidth = (int) (previewHeight / mAspectRatio + .5);
+                    previewWidth = measureWidth;
+                    previewHeight = measureHeight;
+                    if (previewWidth > previewHeight * mAspectRatio) {
+                        previewWidth = (int) (previewHeight * mAspectRatio + .5);
+                    } else {
+                        previewHeight = (int) (previewWidth / mAspectRatio + .5);
+                    }
                 }
             }
         } else {
-            if (mMaxWidth != 0 && mMaxHeight != 0) {
-                previewWidth = mMaxWidth;
-                previewHeight = mMaxHeight;
-                if (previewWidth > previewHeight * mAspectRatio) {
-                    previewWidth = (int) (previewHeight * mAspectRatio + .5);
-                } else {
-                    previewHeight = (int) (previewWidth / mAspectRatio + .5);
+            if (mAngle / 90 % 2 == 1) {
+                if (mMaxWidth != 0 && mMaxHeight != 0) {
+                    if (mAspectRatio > mMaxHeight * 1.0f / mMaxWidth) {
+                        previewHeight = (int) (mMaxWidth * mAspectRatio + .5);
+                        previewWidth = mMaxWidth;
+                    } else {
+                        previewWidth = (int) (mMaxHeight / mAspectRatio + .5);
+                        previewHeight = mMaxHeight;
+                    }
+                } else if (measureWidth != 0 && measureHeight != 0) {
+                    if (mAspectRatio > measureHeight * 1.0f / measureWidth) {
+                        previewHeight = (int) (measureWidth * mAspectRatio + .5);
+                        previewWidth = measureWidth;
+                    } else {
+                        previewWidth = (int) (measureHeight / mAspectRatio + .5);
+                        previewHeight = measureHeight;
+                    }
                 }
             } else {
-                previewWidth = measureWidth;
-                previewHeight = measureHeight;
-                if (previewWidth > previewHeight * mAspectRatio) {
-                    previewWidth = (int) (previewHeight * mAspectRatio + .5);
-                } else {
-                    previewHeight = (int) (previewWidth / mAspectRatio + .5);
+                if (mMaxWidth != 0 && mMaxHeight != 0) {
+                    if (mAspectRatio > mMaxWidth * 1.0f / mMaxHeight) {
+                        // 填充高度
+                        previewHeight = mMaxHeight;
+                        previewWidth = (int) (mMaxHeight * mAspectRatio + .5);
+                    } else {
+                        // 填充宽度
+                        previewWidth = mMaxWidth;
+                        previewHeight = (int) (mMaxWidth / mAspectRatio + .5);
+                    }
+                } else if (measureWidth != 0 && measureHeight != 0) {
+                    if (mAspectRatio > measureWidth * 1.0f / measureHeight) {
+                        // 填充高度
+                        previewHeight = measureHeight;
+                        previewWidth = (int) (measureHeight * mAspectRatio + .5);
+                    } else {
+                        // 填充宽度
+                        previewWidth = measureWidth;
+                        previewHeight = (int) (measureWidth / mAspectRatio + .5);
+                    }
                 }
             }
         }

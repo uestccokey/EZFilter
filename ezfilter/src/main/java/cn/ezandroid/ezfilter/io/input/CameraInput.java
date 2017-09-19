@@ -27,11 +27,14 @@ public class CameraInput extends FBORender implements SurfaceTexture.OnFrameAvai
     private float[] mMatrix = new float[16];
 
     private IRenderView mRenderView;
+    private Camera.Size mPreviewSize;
 
     public CameraInput(IRenderView renderView, Camera camera) {
         super();
         this.mRenderView = renderView;
         this.mCamera = camera;
+        Camera.Parameters params = mCamera.getParameters();
+        this.mPreviewSize = params.getPreviewSize();
     }
 
     @Override
@@ -102,15 +105,17 @@ public class CameraInput extends FBORender implements SurfaceTexture.OnFrameAvai
             mSurfaceTexture = null;
         }
         mSurfaceTexture = new SurfaceTexture(mTextureIn);
+        mSurfaceTexture.setDefaultBufferSize(mPreviewSize.width, mPreviewSize.height);
         mSurfaceTexture.setOnFrameAvailableListener(this);
 
         try {
             mCamera.setPreviewTexture(mSurfaceTexture);
             mCamera.startPreview();
-            setCameraSizeToRenderSize();
         } catch (Exception e) {
             e.printStackTrace();
         }
+
+        setRenderSize(mPreviewSize.height, mPreviewSize.width);
     }
 
     @Override
@@ -135,12 +140,6 @@ public class CameraInput extends FBORender implements SurfaceTexture.OnFrameAvai
 
         mSurfaceTexture.getTransformMatrix(mMatrix);
         GLES20.glUniformMatrix4fv(mMatrixHandle, 1, false, mMatrix, 0);
-    }
-
-    private void setCameraSizeToRenderSize() {
-        Camera.Parameters params = mCamera.getParameters();
-        Camera.Size previewSize = params.getPreviewSize();
-        setRenderSize(previewSize.height, previewSize.width);
     }
 
     @Override

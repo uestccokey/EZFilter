@@ -47,6 +47,6 @@ ext {
     supportLibraryVersion = '26.1.0'
 
     // Sdk version
-    sdkVersionCode = 130
-    sdkVersionName = '1.3.0'
+    sdkVersionCode = 131
+    sdkVersionName = '1.3.1'
 }

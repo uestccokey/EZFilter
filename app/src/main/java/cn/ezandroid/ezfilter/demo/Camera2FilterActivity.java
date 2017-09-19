@@ -13,9 +13,10 @@ import android.hardware.camera2.params.StreamConfigurationMap;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
+import android.os.Looper;
 import android.util.Size;
-import android.util.SparseIntArray;
 import android.view.Surface;
+import android.view.View;
 import android.widget.Toast;
 
 import java.util.ArrayList;
@@ -24,11 +25,9 @@ import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
 
-import javax.microedition.khronos.opengles.GL10;
-
 import cn.ezandroid.ezfilter.EZFilter;
 import cn.ezandroid.ezfilter.core.RenderPipeline;
-import cn.ezandroid.ezfilter.demo.render.BWRender;
+import cn.ezandroid.ezfilter.view.RenderViewHelper;
 import cn.ezandroid.ezfilter.view.SurfaceRenderView;
 
 /**
@@ -40,29 +39,22 @@ import cn.ezandroid.ezfilter.view.SurfaceRenderView;
 @TargetApi(Build.VERSION_CODES.LOLLIPOP)
 public class Camera2FilterActivity extends BaseActivity {
 
-    private static final SparseIntArray ORIENTATIONS = new SparseIntArray();
+    private static final int MIN_PREVIEW_WIDTH = 1280;
+    private static final int MIN_PREVIEW_HEIGHT = 720;
 
-    ///为了使照片竖直显示
-    static {
-        ORIENTATIONS.append(Surface.ROTATION_0, 90);
-        ORIENTATIONS.append(Surface.ROTATION_90, 0);
-        ORIENTATIONS.append(Surface.ROTATION_180, 270);
-        ORIENTATIONS.append(Surface.ROTATION_270, 180);
-    }
+    private static final int MAX_PREVIEW_WIDTH = 1920;
+    private static final int MAX_PREVIEW_HEIGHT = 1080;
 
     private SurfaceRenderView mRenderView;
 
     private CameraManager mCameraManager;
 
-    private Handler mMainHandler;
-    private String mCameraID; // 摄像头Id 0 为后  1 为前
+    private Handler mMainHandler = new Handler(Looper.getMainLooper());
+    private int mCurrentCameraId = CameraCharacteristics.LENS_FACING_BACK; // 前置摄像头
 
     private CameraDevice mCameraDevice;
 
     private Size mPreviewSize;
-
-    private static final int MAX_PREVIEW_WIDTH = 1920;
-    private static final int MAX_PREVIEW_HEIGHT = 1080;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -70,22 +62,32 @@ public class Camera2FilterActivity extends BaseActivity {
         setContentView(R.layout.activity_camera2_filter);
         mRenderView = findViewById(R.id.render_view);
 
-        mRenderView.getRenderPipeline().addOnSurfaceListener(new RenderPipeline.SimpleOnSurfaceListener() {
+        mCameraManager = (CameraManager) getSystemService(Context.CAMERA_SERVICE);
+        openCamera(mCurrentCameraId);
+
+        $(R.id.switch_camera).setOnClickListener(new View.OnClickListener() {
             @Override
-            public void onSurfaceChanged(GL10 gl, int width, int height) {
-                openCamera(width, height);
+            public void onClick(View view) {
+                switchCamera();
+//                renderPipeline.capture(new BitmapOutput.BitmapOutputCallback() {
+//                    @Override
+//                    public void bitmapOutput(final Bitmap bitmap) {
+//                        runOnUiThread(new Runnable() {
+//                            @Override
+//                            public void run() {
+//                                mPreviewImage.setImageBitmap(bitmap);
+//                            }
+//                        });
+//                    }
+//                }, true);
             }
         });
     }
 
     @SuppressLint("MissingPermission")
-    private void openCamera(int width, int height) {
-        mMainHandler = new Handler(getMainLooper());
-        mCameraID = "" + CameraCharacteristics.LENS_FACING_BACK;
-        mCameraManager = (CameraManager) getSystemService(Context.CAMERA_SERVICE);
-
+    private void openCamera(int id) {
         try {
-            CameraCharacteristics characteristics = mCameraManager.getCameraCharacteristics(mCameraID);
+            CameraCharacteristics characteristics = mCameraManager.getCameraCharacteristics("" + id);
             StreamConfigurationMap map = characteristics.get(CameraCharacteristics.SCALER_STREAM_CONFIGURATION_MAP);
             Size[] sizes = map.getOutputSizes(android.graphics.ImageFormat.JPEG);
             Size largest = Collections.max(Arrays.asList(sizes), new CompareSizesByArea());
@@ -113,13 +115,13 @@ public class Camera2FilterActivity extends BaseActivity {
 
             Point displaySize = new Point();
             getWindowManager().getDefaultDisplay().getSize(displaySize);
-            int rotatedPreviewWidth = width;
-            int rotatedPreviewHeight = height;
+            int rotatedPreviewWidth = MIN_PREVIEW_WIDTH;
+            int rotatedPreviewHeight = MIN_PREVIEW_HEIGHT;
             int maxPreviewWidth = displaySize.x;
             int maxPreviewHeight = displaySize.y;
             if (swappedDimensions) {
-                rotatedPreviewWidth = height;
-                rotatedPreviewHeight = width;
+                rotatedPreviewWidth = MIN_PREVIEW_HEIGHT;
+                rotatedPreviewHeight = MIN_PREVIEW_WIDTH;
                 maxPreviewWidth = displaySize.y;
                 maxPreviewHeight = displaySize.x;
             }
@@ -139,7 +141,17 @@ public class Camera2FilterActivity extends BaseActivity {
         }
 
         try {
-            mCameraManager.openCamera(mCameraID, mStateCallback, mMainHandler);
+            mCameraManager.openCamera("" + id, mStateCallback, mMainHandler);
+        } catch (CameraAccessException e) {
+            e.printStackTrace();
+        }
+    }
+
+    private void switchCamera() {
+        try {
+            mCurrentCameraId = (mCurrentCameraId + 1) % mCameraManager.getCameraIdList().length;
+            releaseCamera();
+            openCamera(mCurrentCameraId);
         } catch (CameraAccessException e) {
             e.printStackTrace();
         }
@@ -196,7 +208,8 @@ public class Camera2FilterActivity extends BaseActivity {
 
             final RenderPipeline renderPipeline = new EZFilter.Camera2Builder()
                     .setCamera2(mCameraDevice, mPreviewSize)
-                    .addFilter(new BWRender(Camera2FilterActivity.this))
+                    .setScaleType(RenderViewHelper.ScaleType.CENTER_CROP)
+//                    .addFilter(new BWRender(Camera2FilterActivity.this))
                     .into(mRenderView);
         }
 

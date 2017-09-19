@@ -28,6 +28,13 @@ public interface IRenderView {
     RenderPipeline getRenderPipeline();
 
     /**
+     * 设置缩放规则
+     *
+     * @param scaleType 缩放规则
+     */
+    void setScaleType(RenderViewHelper.ScaleType scaleType);
+
+    /**
      * 设置宽高比及最大宽度最大高度
      * maxWidth和maxHeight有一个设置为0时表示MatchParent
      *

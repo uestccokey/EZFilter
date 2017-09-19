@@ -119,6 +119,8 @@ public class Camera2Input extends FBORender implements SurfaceTexture.OnFrameAva
             mSurfaceTexture = null;
         }
         mSurfaceTexture = new SurfaceTexture(mTextureIn);
+        // 修复预览画面不清晰的问题
+        mSurfaceTexture.setDefaultBufferSize(mPreviewSize.getWidth(), mPreviewSize.getHeight());
         mSurfaceTexture.setOnFrameAvailableListener(this);
 
         try {
@@ -130,10 +132,11 @@ public class Camera2Input extends FBORender implements SurfaceTexture.OnFrameAva
             mPreviewRequestBuilder = mCamera.createCaptureRequest(CameraDevice.TEMPLATE_PREVIEW);
             mPreviewRequestBuilder.addTarget(surface);
             mCamera.createCaptureSession(Arrays.asList(surface), mSessionPreviewStateCallback, mPreviewHandler);
-            setCameraSizeToRenderSize();
         } catch (Exception e) {
             e.printStackTrace();
         }
+
+        setRenderSize(mPreviewSize.getHeight(), mPreviewSize.getWidth());
     }
 
     private CameraCaptureSession.StateCallback mSessionPreviewStateCallback = new
@@ -180,10 +183,6 @@ public class Camera2Input extends FBORender implements SurfaceTexture.OnFrameAva
 
         mSurfaceTexture.getTransformMatrix(mMatrix);
         GLES20.glUniformMatrix4fv(mMatrixHandle, 1, false, mMatrix, 0);
-    }
-
-    private void setCameraSizeToRenderSize() {
-        setRenderSize(mPreviewSize.getHeight(), mPreviewSize.getWidth());
     }
 
     @Override

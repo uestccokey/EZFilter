@@ -5,8 +5,15 @@
 
     <cn.ezandroid.ezfilter.view.SurfaceRenderView
         android:id="@+id/render_view"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent" />
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_centerInParent="true" />
+
+    <Button
+        android:id="@+id/switch_camera"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="切换摄像头" />
 
     <ImageView
         android:id="@+id/preview_image"

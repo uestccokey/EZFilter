@@ -22,6 +22,7 @@ import cn.ezandroid.ezfilter.io.input.CameraInput;
 import cn.ezandroid.ezfilter.io.input.VideoInput;
 import cn.ezandroid.ezfilter.offscreen.OffscreenHelper;
 import cn.ezandroid.ezfilter.view.IRenderView;
+import cn.ezandroid.ezfilter.view.RenderViewHelper;
 
 /**
  * 滤镜处理
@@ -96,6 +97,11 @@ public class EZFilter {
         }
 
         @Override
+        public BitmapBuilder setScaleType(RenderViewHelper.ScaleType scaleType) {
+            return (BitmapBuilder) super.setScaleType(scaleType);
+        }
+
+        @Override
         public BitmapBuilder setRotation(int rotation) {
             return (BitmapBuilder) super.setRotation(rotation);
         }
@@ -138,6 +144,11 @@ public class EZFilter {
         }
 
         @Override
+        public VideoBuilder setScaleType(RenderViewHelper.ScaleType scaleType) {
+            return (VideoBuilder) super.setScaleType(scaleType);
+        }
+
+        @Override
         public VideoBuilder setRotation(int rotation) {
             return (VideoBuilder) super.setRotation(rotation);
         }
@@ -166,6 +177,11 @@ public class EZFilter {
             view.initRenderPipeline(cameraInput);
             Camera.Size previewSize = mCamera.getParameters().getPreviewSize();
             return previewSize.height * 1.0f / previewSize.width;
+        }
+
+        @Override
+        public CameraBuilder setScaleType(RenderViewHelper.ScaleType scaleType) {
+            return (CameraBuilder) super.setScaleType(scaleType);
         }
 
         @Override
@@ -199,6 +215,11 @@ public class EZFilter {
         }
 
         @Override
+        public Camera2Builder setScaleType(RenderViewHelper.ScaleType scaleType) {
+            return (Camera2Builder) super.setScaleType(scaleType);
+        }
+
+        @Override
         public Camera2Builder setRotation(int rotation) {
             return (Camera2Builder) super.setRotation(rotation);
         }
@@ -218,7 +239,14 @@ public class EZFilter {
 
         List<FilterRender> mFilterRenders = new ArrayList<>();
 
+        RenderViewHelper.ScaleType mScaleType = RenderViewHelper.ScaleType.CENTER_INSIDE;
+
         private Builder() {
+        }
+
+        Builder setScaleType(RenderViewHelper.ScaleType scaleType) {
+            mScaleType = scaleType;
+            return this;
         }
 
         Builder setRotation(int rotation) {
@@ -259,6 +287,7 @@ public class EZFilter {
                 pipeline.startRender();
             }
 
+            view.setScaleType(mScaleType);
             boolean change = view.setAspectRatio(ratio, 0, 0);
             change = view.setRotate90Degrees(mRotation) || change;
             view.requestRender();
