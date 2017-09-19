@@ -74,6 +74,15 @@ public class EZFilter {
             return helper.capture();
         }
 
+        public Bitmap capture(int width, int height) {
+            // 离屏渲染
+            OffscreenHelper helper = new OffscreenHelper(mBitmap);
+            for (FilterRender filterRender : mFilterRenders) {
+                helper.addFilterRender(filterRender);
+            }
+            return helper.capture(width, height);
+        }
+
         @Override
         protected float setRenderPipeline(IRenderView view) {
             BitmapInput bitmapInput = new BitmapInput(mBitmap);
@@ -81,10 +90,12 @@ public class EZFilter {
             return mBitmap.getWidth() * 1.0f / mBitmap.getHeight();
         }
 
+        @Override
         public BitmapBuilder setRotation(int rotation) {
             return (BitmapBuilder) super.setRotation(rotation);
         }
 
+        @Override
         public BitmapBuilder addFilter(FilterRender filterRender) {
             return (BitmapBuilder) super.addFilter(filterRender);
         }
@@ -121,10 +132,12 @@ public class EZFilter {
             return Integer.parseInt(width) * 1.0f / Integer.parseInt(height);
         }
 
+        @Override
         public VideoBuilder setRotation(int rotation) {
             return (VideoBuilder) super.setRotation(rotation);
         }
 
+        @Override
         public VideoBuilder addFilter(FilterRender filterRender) {
             return (VideoBuilder) super.addFilter(filterRender);
         }
@@ -150,10 +163,12 @@ public class EZFilter {
             return previewSize.height * 1.0f / previewSize.width;
         }
 
+        @Override
         public CameraBuilder setRotation(int rotation) {
             return (CameraBuilder) super.setRotation(rotation);
         }
 
+        @Override
         public CameraBuilder addFilter(FilterRender filterRender) {
             return (CameraBuilder) super.addFilter(filterRender);
         }

@@ -51,6 +51,17 @@ public class VideoFilterActivity extends BaseActivity {
             @Override
             public void onClick(View view) {
                 changeVideo();
+//                mRenderPipeline.capture(new BitmapOutput.BitmapOutputCallback() {
+//                    @Override
+//                    public void bitmapOutput(final Bitmap bitmap) {
+//                        runOnUiThread(new Runnable() {
+//                            @Override
+//                            public void run() {
+//                                mPreviewImage.setImageBitmap(bitmap);
+//                            }
+//                        });
+//                    }
+//                }, true);
             }
         });
     }

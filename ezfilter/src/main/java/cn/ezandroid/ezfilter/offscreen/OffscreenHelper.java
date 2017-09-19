@@ -68,7 +68,6 @@ public class OffscreenHelper {
 
         mPipeline = new RenderPipeline();
         mPipeline.onSurfaceCreated(mGL, mEGLConfig);
-        mPipeline.onSurfaceChanged(mGL, mWidth, mHeight);
         mPipeline.setStartPointRender(bitmapInput);
     }
 
@@ -76,25 +75,26 @@ public class OffscreenHelper {
         mPipeline.addFilterRender(filterRender);
     }
 
-    public Bitmap capture() {
+    public Bitmap capture(int width, int height) {
 //        long time = System.currentTimeMillis();
+        mPipeline.onSurfaceChanged(mGL, width, height);
         mPipeline.startRender();
         mPipeline.onDrawFrame(mGL);
 //        Log.e("OffscreenHelper", "capture draw useTime:" + (System.currentTimeMillis() - time));
 
 //        time = System.currentTimeMillis();
-        int[] iat = new int[mWidth * mHeight];
-        IntBuffer ib = IntBuffer.allocate(mWidth * mHeight);
-        mGL.glReadPixels(0, 0, mWidth, mHeight, GL_RGBA, GL_UNSIGNED_BYTE, ib);
+        int[] iat = new int[width * height];
+        IntBuffer ib = IntBuffer.allocate(width * height);
+        mGL.glReadPixels(0, 0, width, height, GL_RGBA, GL_UNSIGNED_BYTE, ib);
 //        Log.e("OffscreenHelper", "capture readPixels useTime:" + (System.currentTimeMillis() - time));
 
 //        time = System.currentTimeMillis();
         int[] ia = ib.array();
         // Convert upside down mirror -reversed image to right - side up normal image.
-        for (int i = 0; i < mHeight; i++) {
-            System.arraycopy(ia, i * mWidth, iat, (mHeight - i - 1) * mWidth, mWidth);
+        for (int i = 0; i < height; i++) {
+            System.arraycopy(ia, i * width, iat, (height - i - 1) * width, width);
         }
-        Bitmap bitmap = Bitmap.createBitmap(mWidth, mHeight, Bitmap.Config.ARGB_8888);
+        Bitmap bitmap = Bitmap.createBitmap(width, height, Bitmap.Config.ARGB_8888);
         bitmap.copyPixelsFromBuffer(IntBuffer.wrap(iat));
 //        Log.e("OffscreenHelper", "capture createBitmap useTime:" + (System.currentTimeMillis() - time));
 
@@ -107,5 +107,9 @@ public class OffscreenHelper {
         mEGL.eglDestroyContext(mEGLDisplay, mEGLContext);
         mEGL.eglTerminate(mEGLDisplay);
         return bitmap;
+    }
+
+    public Bitmap capture() {
+        return capture(mWidth, mHeight);
     }
 }

@@ -14,4 +14,10 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="切换摄像头" />
+
+    <ImageView
+        android:id="@+id/preview_image"
+        android:layout_width="100dp"
+        android:layout_height="100dp"
+        android:layout_alignParentRight="true" />
 </RelativeLayout>

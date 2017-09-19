@@ -5,8 +5,10 @@ import android.hardware.Camera;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.view.View;
+import android.widget.ImageView;
 
 import cn.ezandroid.ezfilter.EZFilter;
+import cn.ezandroid.ezfilter.core.RenderPipeline;
 import cn.ezandroid.ezfilter.demo.render.BWRender;
 import cn.ezandroid.ezfilter.view.TextureRenderView;
 
@@ -19,6 +21,7 @@ import cn.ezandroid.ezfilter.view.TextureRenderView;
 public class CameraFilterActivity extends BaseActivity {
 
     private TextureRenderView mRenderView;
+    private ImageView mPreviewImage;
 
     private Camera mCamera;
 
@@ -29,11 +32,12 @@ public class CameraFilterActivity extends BaseActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_camera_filter);
         mRenderView = $(R.id.render_view);
+        mPreviewImage = $(R.id.preview_image);
 
         mCamera = Camera.open(mCurrentCameraId);
         setCameraParameters();
 
-        new EZFilter.CameraBuilder()
+        final RenderPipeline renderPipeline = new EZFilter.CameraBuilder()
                 .setCamera(mCamera)
                 .addFilter(new BWRender(this))
                 .into(mRenderView);
@@ -42,6 +46,17 @@ public class CameraFilterActivity extends BaseActivity {
             @Override
             public void onClick(View view) {
                 switchCamera();
+//                renderPipeline.capture(new BitmapOutput.BitmapOutputCallback() {
+//                    @Override
+//                    public void bitmapOutput(final Bitmap bitmap) {
+//                        runOnUiThread(new Runnable() {
+//                            @Override
+//                            public void run() {
+//                                mPreviewImage.setImageBitmap(bitmap);
+//                            }
+//                        });
+//                    }
+//                }, true);
             }
         });
     }

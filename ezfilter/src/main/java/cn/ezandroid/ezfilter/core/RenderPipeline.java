@@ -1,11 +1,14 @@
 package cn.ezandroid.ezfilter.core;
 
+import android.graphics.Bitmap;
+
 import java.util.ArrayList;
 import java.util.List;
 
 import javax.microedition.khronos.egl.EGLConfig;
 import javax.microedition.khronos.opengles.GL10;
 
+import cn.ezandroid.ezfilter.io.output.BitmapOutput;
 import cn.ezandroid.ezfilter.io.output.BufferOutput;
 import cn.ezandroid.ezfilter.view.GLTextureView;
 
@@ -269,10 +272,12 @@ public class RenderPipeline implements GLTextureView.Renderer {
             mStartPointRender.clearTargets();
             addRenderToDestroy(mStartPointRender);
             mStartPointRender = rootRenderer;
-            mStartPointRender.setRenderSize(mWidth, mHeight);
+            mStartPointRender.setWidth(mWidth);
+            mStartPointRender.setHeight(mHeight);
         } else {
             mStartPointRender = rootRenderer;
-            mStartPointRender.setRenderSize(mWidth, mHeight);
+            mStartPointRender.setWidth(mWidth);
+            mStartPointRender.setHeight(mHeight);
             mStartPointRender.addTarget(mEndPointRender);
         }
         updateRenderSize();
@@ -285,7 +290,8 @@ public class RenderPipeline implements GLTextureView.Renderer {
             setRendering(false); // 暂时停止渲染，构建渲染链完成后再进行渲染
 
             bufferOutput.clearTargets();
-            bufferOutput.setRenderSize(mWidth, mHeight);
+            bufferOutput.setWidth(mWidth);
+            bufferOutput.setHeight(mHeight);
             bufferOutput.setRotate90Degrees(mCurrentRotation);
 
             filterRender.addTarget(bufferOutput);
@@ -429,5 +435,47 @@ public class RenderPipeline implements GLTextureView.Renderer {
      */
     public synchronized EndPointRender getEndPointRender() {
         return mEndPointRender;
+    }
+
+    /**
+     * 异步截图
+     *
+     * @param callback   异步获取截图回调
+     * @param withFilter 是否滤镜后的图
+     */
+    public void capture(final BitmapOutput.BitmapOutputCallback callback, boolean withFilter) {
+        capture(callback, mWidth, mHeight, withFilter);
+    }
+
+    /**
+     * 异步截图
+     *
+     * @param callback   异步获取截图回调
+     * @param width      截图宽度
+     * @param height     截图高度
+     * @param withFilter 是否滤镜后的图
+     */
+    public void capture(final BitmapOutput.BitmapOutputCallback callback, int width, int height, boolean withFilter) {
+        FBORender render = null;
+        if (withFilter && !mFilterRenders.isEmpty()) {
+            render = mFilterRenders.get(mFilterRenders.size() - 1);
+        } else {
+            render = mStartPointRender;
+        }
+
+        final FBORender fRender = render;
+        final BitmapOutput bitmapOutput = new BitmapOutput();
+        bitmapOutput.setRenderSize(width, height);
+        bitmapOutput.setBitmapOutputCallback(new BitmapOutput.BitmapOutputCallback() {
+            @Override
+            public void bitmapOutput(final Bitmap bitmap) {
+                if (callback != null) {
+                    callback.bitmapOutput(bitmap);
+                }
+
+                removeOutput(fRender, bitmapOutput);
+            }
+        });
+        addOutput(render, bitmapOutput);
     }
 }

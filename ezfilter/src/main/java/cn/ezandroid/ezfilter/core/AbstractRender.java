@@ -164,7 +164,7 @@ public abstract class AbstractRender {
      */
     public boolean resetRotate() {
         if (mCurrentRotation % 2 == 1) {
-            swapWidthAndHeight();
+//            swapWidthAndHeight();
             mCurrentRotation = 0;
             return true;
         }
@@ -183,9 +183,9 @@ public abstract class AbstractRender {
         }
         mCurrentRotation += numOfTimes;
         mCurrentRotation = mCurrentRotation % 4;
-        if (numOfTimes % 2 == 1) {
-            swapWidthAndHeight();
-        }
+//        if (numOfTimes % 2 == 1) {
+//            swapWidthAndHeight();
+//        }
     }
 
     /**
