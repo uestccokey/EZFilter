@@ -24,6 +24,8 @@ import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
 
+import javax.microedition.khronos.opengles.GL10;
+
 import cn.ezandroid.ezfilter.EZFilter;
 import cn.ezandroid.ezfilter.core.RenderPipeline;
 import cn.ezandroid.ezfilter.demo.render.BWRender;
@@ -68,9 +70,9 @@ public class Camera2FilterActivity extends BaseActivity {
         setContentView(R.layout.activity_camera2_filter);
         mRenderView = findViewById(R.id.render_view);
 
-        mRenderView.getRenderPipeline().addOnSurfaceChangedListener(new RenderPipeline.OnSurfaceChangedListener() {
+        mRenderView.getRenderPipeline().addOnSurfaceListener(new RenderPipeline.SimpleOnSurfaceListener() {
             @Override
-            public void onSurfaceChanged(int width, int height) {
+            public void onSurfaceChanged(GL10 gl, int width, int height) {
                 openCamera(width, height);
             }
         });

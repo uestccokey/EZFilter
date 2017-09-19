@@ -37,12 +37,14 @@ public class RenderPipeline implements GLTextureView.Renderer {
 
     private int mCurrentRotation;
 
-    private List<OnSurfaceChangedListener> mOnSurfaceChangedListeners;
-//    private List<OnSurfaceDestroyListener> mOnSurfaceDestroyListeners;
+    private List<OnSurfaceListener> mOnSurfaceListeners;
 
     @Override
     public void onSurfaceCreated(GL10 gl10, EGLConfig eglConfig) {
 //        Log.e("RenderPipeline", this + " onSurfaceCreated:" + mWidth + "x" + mHeight);
+        for (OnSurfaceListener listener : mOnSurfaceListeners) {
+            listener.onSurfaceCreated(gl10, eglConfig);
+        }
     }
 
     @Override
@@ -52,10 +54,9 @@ public class RenderPipeline implements GLTextureView.Renderer {
         this.mHeight = height;
         updateRenderSize();
 
-        for (OnSurfaceChangedListener listener : mOnSurfaceChangedListeners) {
-            listener.onSurfaceChanged(width, height);
+        for (OnSurfaceListener listener : mOnSurfaceListeners) {
+            listener.onSurfaceChanged(gl10, width, height);
         }
-        mOnSurfaceChangedListeners.clear();
     }
 
     @Override
@@ -90,26 +91,39 @@ public class RenderPipeline implements GLTextureView.Renderer {
         for (BufferOutput bufferOutput : mOutputs) {
             bufferOutput.destroy();
         }
-//        for (OnSurfaceDestroyListener listener : mOnSurfaceDestroyListeners) {
-//            listener.onSurfaceDestroyed();
-//        }
-//        mOnSurfaceDestroyListeners.clear();
+
+        for (OnSurfaceListener listener : mOnSurfaceListeners) {
+            listener.onSurfaceDestroyed();
+        }
     }
 
-    public interface OnSurfaceChangedListener {
+    public interface OnSurfaceListener {
 
-        void onSurfaceChanged(int width, int height);
+        void onSurfaceCreated(GL10 gl, EGLConfig config);
+
+        void onSurfaceChanged(GL10 gl, int width, int height);
+
+        void onSurfaceDestroyed();
     }
-//
-//    public interface OnSurfaceDestroyListener {
-//
-//        void onSurfaceDestroyed();
-//    }
+
+    public static class SimpleOnSurfaceListener implements OnSurfaceListener {
+
+        @Override
+        public void onSurfaceCreated(GL10 gl, EGLConfig config) {
+        }
+
+        @Override
+        public void onSurfaceChanged(GL10 gl, int width, int height) {
+        }
+
+        @Override
+        public void onSurfaceDestroyed() {
+        }
+    }
 
     public RenderPipeline() {
         mRendersToDestroy = new ArrayList<>();
-        mOnSurfaceChangedListeners = new ArrayList<>();
-//        mOnSurfaceDestroyListeners = new ArrayList<>();
+        mOnSurfaceListeners = new ArrayList<>();
     }
 
     public void clean() {
@@ -165,28 +179,33 @@ public class RenderPipeline implements GLTextureView.Renderer {
     }
 
     /**
-     * 添加onSurfaceChanged监听
+     * 添加OnSurfaceListener监听
      *
      * @param listener
      */
-    public void addOnSurfaceChangedListener(OnSurfaceChangedListener listener) {
-        if (mOnSurfaceChangedListeners.contains(listener)) {
-            mOnSurfaceChangedListeners.remove(listener);
+    public void addOnSurfaceListener(OnSurfaceListener listener) {
+        if (!mOnSurfaceListeners.contains(listener)) {
+            mOnSurfaceListeners.add(listener);
         }
-        mOnSurfaceChangedListeners.add(listener);
     }
-//
-//    /**
-//     * 添加onSurfaceDestroy监听
-//     *
-//     * @param listener
-//     */
-//    public void addOnSurfaceDestroyListeners(OnSurfaceDestroyListener listener) {
-//        if (mOnSurfaceDestroyListeners.contains(listener)) {
-//            mOnSurfaceDestroyListeners.remove(listener);
-//        }
-//        mOnSurfaceDestroyListeners.add(listener);
-//    }
+
+    /**
+     * 删除OnSurfaceListener监听
+     *
+     * @param listener
+     */
+    public void removeOnSurfaceListener(OnSurfaceListener listener) {
+        if (mOnSurfaceListeners.contains(listener)) {
+            mOnSurfaceListeners.remove(listener);
+        }
+    }
+
+    /**
+     * 清空OnSurfaceListener监听列表
+     */
+    public void clearOnSurfaceListener() {
+        mOnSurfaceListeners.clear();
+    }
 
     public int getHeight() {
         return mHeight;
