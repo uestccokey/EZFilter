@@ -1,7 +1,6 @@
 package cn.ezandroid.ezfilter.core;
 
 import android.opengl.GLES20;
-import android.util.Log;
 
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
@@ -396,7 +395,7 @@ public abstract class AbstractRender {
      * 必须在GL线程执行，释放纹理等OpenGL资源
      */
     public void destroy() {
-        Log.e("AbstractRender", this + " destroy " + Thread.currentThread().getName());
+//        Log.e("AbstractRender", this + " destroy " + Thread.currentThread().getName());
         mInitialized = false;
         if (mProgramHandle != 0) {
             GLES20.glDeleteProgram(mProgramHandle);

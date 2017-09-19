@@ -42,13 +42,6 @@ public class ImageFilterActivity extends BaseActivity {
         new EZFilter.BitmapBuilder()
                 .setBitmap(mCurrentBitmap)
                 .addFilter(new LookupRender(ImageFilterActivity.this, R.drawable.langman))
-                .addFilter(new LookupRender(ImageFilterActivity.this, R.drawable.lianghong))
-//                .addFilter(new LookupRender(ImageFilterActivity.this, R.drawable.lom))
-//                .addFilter(new LookupRender(ImageFilterActivity.this, R.drawable.rixi))
-//                .addFilter(new LookupRender(ImageFilterActivity.this, R.drawable.rouguang))
-//                .addFilter(new LookupRender(ImageFilterActivity.this, R.drawable.shaokao))
-//                .addFilter(new LookupRender(ImageFilterActivity.this, R.drawable.shishang))
-//                .addFilter(new LookupRender(ImageFilterActivity.this, R.drawable.tianmei))
                 .into(mRenderView);
 
         new Thread() {
@@ -56,7 +49,6 @@ public class ImageFilterActivity extends BaseActivity {
                 final Bitmap bitmap = new EZFilter.BitmapBuilder()
                         .setBitmap(mCurrentBitmap)
                         .addFilter(new LookupRender(ImageFilterActivity.this, R.drawable.shishang))
-                        .addFilter(new LookupRender(ImageFilterActivity.this, R.drawable.tianmei))
                         .capture();
                 runOnUiThread(new Runnable() {
                     @Override
@@ -85,13 +77,6 @@ public class ImageFilterActivity extends BaseActivity {
         new EZFilter.BitmapBuilder()
                 .setBitmap(mCurrentBitmap)
                 .addFilter(new LookupRender(ImageFilterActivity.this, R.drawable.langman))
-                .addFilter(new LookupRender(ImageFilterActivity.this, R.drawable.lianghong))
-//                .addFilter(new LookupRender(ImageFilterActivity.this, R.drawable.lom))
-//                .addFilter(new LookupRender(ImageFilterActivity.this, R.drawable.rixi))
-//                .addFilter(new LookupRender(ImageFilterActivity.this, R.drawable.rouguang))
-//                .addFilter(new LookupRender(ImageFilterActivity.this, R.drawable.shaokao))
-//                .addFilter(new LookupRender(ImageFilterActivity.this, R.drawable.shishang))
-//                .addFilter(new LookupRender(ImageFilterActivity.this, R.drawable.tianmei))
                 .into(mRenderView);
 
         new Thread() {
@@ -99,7 +84,6 @@ public class ImageFilterActivity extends BaseActivity {
                 final Bitmap bitmap = new EZFilter.BitmapBuilder()
                         .setBitmap(mCurrentBitmap)
                         .addFilter(new LookupRender(ImageFilterActivity.this, R.drawable.shishang))
-                        .addFilter(new LookupRender(ImageFilterActivity.this, R.drawable.tianmei))
                         .capture();
                 runOnUiThread(new Runnable() {
                     @Override

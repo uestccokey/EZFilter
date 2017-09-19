@@ -1,7 +1,6 @@
 package cn.ezandroid.ezfilter.offscreen;
 
 import android.graphics.Bitmap;
-import android.util.Log;
 
 import java.nio.IntBuffer;
 
@@ -78,13 +77,18 @@ public class OffscreenHelper {
     }
 
     public Bitmap capture() {
-        long time = System.currentTimeMillis();
+//        long time = System.currentTimeMillis();
         mPipeline.startRender();
         mPipeline.onDrawFrame(mGL);
+//        Log.e("OffscreenHelper", "capture draw useTime:" + (System.currentTimeMillis() - time));
 
+//        time = System.currentTimeMillis();
         int[] iat = new int[mWidth * mHeight];
         IntBuffer ib = IntBuffer.allocate(mWidth * mHeight);
         mGL.glReadPixels(0, 0, mWidth, mHeight, GL_RGBA, GL_UNSIGNED_BYTE, ib);
+//        Log.e("OffscreenHelper", "capture readPixels useTime:" + (System.currentTimeMillis() - time));
+
+//        time = System.currentTimeMillis();
         int[] ia = ib.array();
         // Convert upside down mirror -reversed image to right - side up normal image.
         for (int i = 0; i < mHeight; i++) {
@@ -92,7 +96,7 @@ public class OffscreenHelper {
         }
         Bitmap bitmap = Bitmap.createBitmap(mWidth, mHeight, Bitmap.Config.ARGB_8888);
         bitmap.copyPixelsFromBuffer(IntBuffer.wrap(iat));
-        Log.e("OffscreenHelper", "capture:" + (System.currentTimeMillis() - time));
+//        Log.e("OffscreenHelper", "capture createBitmap useTime:" + (System.currentTimeMillis() - time));
 
         mPipeline.onSurfaceDestroyed();
 

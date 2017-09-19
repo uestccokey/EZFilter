@@ -1,7 +1,5 @@
 package cn.ezandroid.ezfilter.core;
 
-import android.util.Log;
-
 import java.util.ArrayList;
 import java.util.List;
 
@@ -46,7 +44,7 @@ public class RenderPipeline implements GLTextureView.Renderer {
 
     @Override
     public void onSurfaceChanged(GL10 gl10, int width, int height) {
-        Log.e("RenderPipeline", this + " onSurfaceChanged:" + width + "x" + height);
+//        Log.e("RenderPipeline", this + " onSurfaceChanged:" + width + "x" + height);
         this.mWidth = width;
         this.mHeight = height;
         updateRenderSize();

@@ -3,7 +3,6 @@ package cn.ezandroid.ezfilter.extra;
 import android.content.Context;
 import android.graphics.Bitmap;
 import android.opengl.GLES20;
-import android.util.Log;
 
 import cn.ezandroid.ezfilter.core.FBORender;
 import cn.ezandroid.ezfilter.core.FilterRender;
@@ -109,10 +108,10 @@ public class MultiBitmapInputRender extends FilterRender {
         mTextureIn = texture;
 
         if (mTextureNum > 1) {
-            long time = System.currentTimeMillis();
             // 只bind一次，直到destroy，避免每次都去loadBitmap和bindBitmap耗时
             for (int i = 0; i < mTextures.length; i++) {
                 if (mTextures[i] == 0) {
+//                    long time = System.currentTimeMillis();
                     String key = "";
                     if (mResources != null) {
                         int resource = mResources[i];
@@ -136,10 +135,12 @@ public class MultiBitmapInputRender extends FilterRender {
                             mBitmaps[i] = BitmapUtil.loadBitmap(mContext, key);
                         }
                     }
+//                    Log.e("MultiBitmapInputRender", key + " loadBitmap useTime:" + (System.currentTimeMillis() - time));
+//                    time = System.currentTimeMillis();
                     mTextures[i] = TextureBindUtil.bindBitmap(mBitmaps[i]);
+//                    Log.e("MultiBitmapInputRender", key + " bindBitmap useTime:" + (System.currentTimeMillis() - time));
                 }
             }
-            Log.e("MultiBitmapInputRender", "加载纹理耗时:" + (System.currentTimeMillis() - time));
         }
 
         setWidth(source.getWidth());

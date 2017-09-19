@@ -1,7 +1,5 @@
 apply plugin: 'com.android.library'
 
-apply from: '../config/buildType.gradle'
-
 apply plugin: 'com.novoda.bintray-release'
 
 android {
