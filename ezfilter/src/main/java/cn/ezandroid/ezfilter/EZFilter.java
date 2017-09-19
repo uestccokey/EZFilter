@@ -195,7 +195,7 @@ public class EZFilter {
         float setRenderPipeline(IRenderView view) {
             Camera2Input camera2Input = new Camera2Input(view, mCameraDevice, mPreviewSize);
             view.initRenderPipeline(camera2Input);
-            return mPreviewSize.getWidth() * 1.0f / mPreviewSize.getHeight();
+            return mPreviewSize.getHeight() * 1.0f / mPreviewSize.getWidth();
         }
 
         @Override

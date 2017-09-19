@@ -37,7 +37,7 @@ public class RenderPipeline implements GLTextureView.Renderer {
 
     private int mCurrentRotation;
 
-//    private List<OnSurfaceChangedListener> mOnSurfaceChangedListeners;
+    private List<OnSurfaceChangedListener> mOnSurfaceChangedListeners;
 //    private List<OnSurfaceDestroyListener> mOnSurfaceDestroyListeners;
 
     @Override
@@ -52,10 +52,10 @@ public class RenderPipeline implements GLTextureView.Renderer {
         this.mHeight = height;
         updateRenderSize();
 
-//        for (OnSurfaceChangedListener listener : mOnSurfaceChangedListeners) {
-//            listener.onSurfaceChanged(width, height);
-//        }
-//        mOnSurfaceChangedListeners.clear();
+        for (OnSurfaceChangedListener listener : mOnSurfaceChangedListeners) {
+            listener.onSurfaceChanged(width, height);
+        }
+        mOnSurfaceChangedListeners.clear();
     }
 
     @Override
@@ -96,10 +96,10 @@ public class RenderPipeline implements GLTextureView.Renderer {
 //        mOnSurfaceDestroyListeners.clear();
     }
 
-//    public interface OnSurfaceChangedListener {
-//
-//        void onSurfaceChanged(int width, int height);
-//    }
+    public interface OnSurfaceChangedListener {
+
+        void onSurfaceChanged(int width, int height);
+    }
 //
 //    public interface OnSurfaceDestroyListener {
 //
@@ -108,7 +108,7 @@ public class RenderPipeline implements GLTextureView.Renderer {
 
     public RenderPipeline() {
         mRendersToDestroy = new ArrayList<>();
-//        mOnSurfaceChangedListeners = new ArrayList<>();
+        mOnSurfaceChangedListeners = new ArrayList<>();
 //        mOnSurfaceDestroyListeners = new ArrayList<>();
     }
 
@@ -164,17 +164,17 @@ public class RenderPipeline implements GLTextureView.Renderer {
         }
     }
 
-//    /**
-//     * 添加onSurfaceChanged监听
-//     *
-//     * @param listener
-//     */
-//    public void addOnSurfaceChangedListener(OnSurfaceChangedListener listener) {
-//        if (mOnSurfaceChangedListeners.contains(listener)) {
-//            mOnSurfaceChangedListeners.remove(listener);
-//        }
-//        mOnSurfaceChangedListeners.add(listener);
-//    }
+    /**
+     * 添加onSurfaceChanged监听
+     *
+     * @param listener
+     */
+    public void addOnSurfaceChangedListener(OnSurfaceChangedListener listener) {
+        if (mOnSurfaceChangedListeners.contains(listener)) {
+            mOnSurfaceChangedListeners.remove(listener);
+        }
+        mOnSurfaceChangedListeners.add(listener);
+    }
 //
 //    /**
 //     * 添加onSurfaceDestroy监听
