@@ -38,6 +38,7 @@ android {
 //            signingConfig signingConfigs.release
             zipAlignEnabled true
             minifyEnabled true
+            shrinkResources true
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
             buildConfigField BOOLEAN, LOG_ENABLE, FALSE
             buildConfigField BOOLEAN, DEBUG_ENABLE, FALSE

@@ -8,6 +8,7 @@ import android.widget.ImageView;
 
 import cn.ezandroid.ezfilter.EZFilter;
 import cn.ezandroid.ezfilter.core.RenderPipeline;
+import cn.ezandroid.ezfilter.demo.render.BWRender;
 import cn.ezandroid.ezfilter.io.input.VideoInput;
 import cn.ezandroid.ezfilter.view.SurfaceRenderView;
 
@@ -44,24 +45,13 @@ public class VideoFilterActivity extends BaseActivity {
         mRenderPipeline = new EZFilter.VideoBuilder()
                 .setVideo(mCurrentUri)
                 .setVideoLoop(true)
-                .setRotation(1)
+                .addFilter(new BWRender(this))
                 .into(mRenderView);
 
         $(R.id.change_video).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 changeVideo();
-//                mRenderPipeline.capture(new BitmapOutput.BitmapOutputCallback() {
-//                    @Override
-//                    public void bitmapOutput(final Bitmap bitmap) {
-//                        runOnUiThread(new Runnable() {
-//                            @Override
-//                            public void run() {
-//                                mPreviewImage.setImageBitmap(bitmap);
-//                            }
-//                        });
-//                    }
-//                }, true);
             }
         });
     }
@@ -76,7 +66,7 @@ public class VideoFilterActivity extends BaseActivity {
         mRenderPipeline = new EZFilter.VideoBuilder()
                 .setVideo(mCurrentUri)
                 .setVideoLoop(true)
-                .setRotation(1)
+                .addFilter(new BWRender(this))
                 .into(mRenderView);
     }
 

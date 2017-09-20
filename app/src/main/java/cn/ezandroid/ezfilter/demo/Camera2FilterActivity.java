@@ -26,7 +26,7 @@ import java.util.Comparator;
 import java.util.List;
 
 import cn.ezandroid.ezfilter.EZFilter;
-import cn.ezandroid.ezfilter.core.RenderPipeline;
+import cn.ezandroid.ezfilter.demo.render.BWRender;
 import cn.ezandroid.ezfilter.view.RenderViewHelper;
 import cn.ezandroid.ezfilter.view.SurfaceRenderView;
 
@@ -69,17 +69,6 @@ public class Camera2FilterActivity extends BaseActivity {
             @Override
             public void onClick(View view) {
                 switchCamera();
-//                renderPipeline.capture(new BitmapOutput.BitmapOutputCallback() {
-//                    @Override
-//                    public void bitmapOutput(final Bitmap bitmap) {
-//                        runOnUiThread(new Runnable() {
-//                            @Override
-//                            public void run() {
-//                                mPreviewImage.setImageBitmap(bitmap);
-//                            }
-//                        });
-//                    }
-//                }, true);
             }
         });
     }
@@ -206,10 +195,10 @@ public class Camera2FilterActivity extends BaseActivity {
         public void onOpened(CameraDevice camera) { // 打开摄像头
             mCameraDevice = camera;
 
-            final RenderPipeline renderPipeline = new EZFilter.Camera2Builder()
+            new EZFilter.Camera2Builder()
                     .setCamera2(mCameraDevice, mPreviewSize)
                     .setScaleType(RenderViewHelper.ScaleType.CENTER_CROP)
-//                    .addFilter(new BWRender(Camera2FilterActivity.this))
+                    .addFilter(new BWRender(Camera2FilterActivity.this))
                     .into(mRenderView);
         }
 

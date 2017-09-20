@@ -32,9 +32,9 @@ dependencies {
 
 ``` java
 new EZFilter.BitmapBuilder()
-                .setBitmap(bitmap)
-                .addFilter(filter)
-                .into(view);
+        .setBitmap(bitmap)
+        .addFilter(filter)
+        .into(view);
 ```
 图片加滤镜离屏渲染
 
