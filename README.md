@@ -21,7 +21,7 @@
 ``` gradle
 dependencies {
     compile 'cn.ezandroid:EZFilter:1.3.1' // Gradle 3.0以下
-    // 或
+    // 或者
     implementation 'cn.ezandroid:EZFilter:1.3.1' // Gradle3.0及以上
 }
 ```
@@ -74,13 +74,28 @@ mPipeline = new EZFilter.Camera2Builder()
                 .into(view);
 ```
 
-视频或拍照加滤镜后截图
+视图加滤镜（View）
 
 ``` java
-mPipeline(new BitmapOutput.BitmapOutputCallback() {
+mPipeline = new EZFilter.ViewBuilder()
+                .setView(glview)
+                .addFilter(filter)
+                .into(view);
+```
+
+视频、拍照和视图加滤镜后截图
+
+``` java
+mPipeline.capture(new BitmapOutput.BitmapOutputCallback() {
         @Override
         public void bitmapOutput(Bitmap bitmap){
         }
     },true); // 第二个boolean参数表示是否截原图还是截添加了滤镜之后的图
+    // 或者
+mPipeline.capture(new BitmapOutput.BitmapOutputCallback() {
+        @Override
+        public void bitmapOutput(Bitmap bitmap){
+        }
+    }, width, height, true); // 中间的两个参数表示截图的宽高
 ```
 
