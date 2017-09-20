@@ -45,10 +45,10 @@ public class GLLinearLayout extends LinearLayout implements IGLView {
             super.draw(surfaceCanvas);
             mSurface.unlockCanvasAndPost(surfaceCanvas);
 
-            invalidate();
             if (mRender != null) {
                 mRender.requestRender();
             }
+            invalidate();
         } else {
             super.draw(canvas);
         }

@@ -37,10 +37,32 @@ public class ViewFilterActivity extends BaseActivity {
         mWebView.setWebChromeClient(new WebChromeClient());
         mWebView.loadUrl("http://www.golem.de");
 
-        mLinearLayout.setRender(mRenderView);
-        new EZFilter.ViewBuilder()
-                .setView(mLinearLayout)
-                .addFilter(new BWRender(this))
-                .into(mRenderView);
+        // 为了确保mLinearLayout已经初始化完成，宽高不为0
+        mLinearLayout.post(new Runnable() {
+            @Override
+            public void run() {
+                new EZFilter.ViewBuilder()
+                        .setView(mLinearLayout)
+                        .addFilter(new BWRender(ViewFilterActivity.this))
+                        .into(mRenderView);
+            }
+        });
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        mWebView.onResume();
+    }
+
+    @Override
+    protected void onPause() {
+        super.onPause();
+        mWebView.onPause();
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
     }
 }

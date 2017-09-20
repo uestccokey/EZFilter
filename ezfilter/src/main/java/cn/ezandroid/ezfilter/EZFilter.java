@@ -282,6 +282,11 @@ public class EZFilter {
         public ViewBuilder addFilter(FilterRender filterRender) {
             return (ViewBuilder) super.addFilter(filterRender);
         }
+
+        public RenderPipeline into(IRenderView view) {
+            mGLView.setRender(view);
+            return super.into(view);
+        }
     }
 
     /**

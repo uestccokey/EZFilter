@@ -105,6 +105,8 @@ public class ViewInput extends FBORender {
 
         Surface surface = new Surface(mSurfaceTexture);
         mGLView.setSurface(surface);
+
+        setRenderSize(mGLView.getWidth(), mGLView.getHeight());
     }
 
     @Override
