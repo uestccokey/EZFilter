@@ -19,7 +19,7 @@ import java.util.Arrays;
 import javax.microedition.khronos.opengles.GL10;
 
 import cn.ezandroid.ezfilter.core.FBORender;
-import cn.ezandroid.ezfilter.view.IRender;
+import cn.ezandroid.ezfilter.environment.IGLEnvironment;
 
 /**
  * Camera2Input
@@ -38,13 +38,13 @@ public class Camera2Input extends FBORender implements SurfaceTexture.OnFrameAva
     private int mMatrixHandle;
     private float[] mMatrix = new float[16];
 
-    private IRender mRender;
+    private IGLEnvironment mRender;
 
     private Size mPreviewSize;
     private Handler mPreviewHandler;
     private CaptureRequest.Builder mPreviewRequestBuilder;
 
-    public Camera2Input(IRender render, CameraDevice camera, Size previewSize) {
+    public Camera2Input(IGLEnvironment render, CameraDevice camera, Size previewSize) {
         super();
         this.mRender = render;
         this.mCamera = camera;

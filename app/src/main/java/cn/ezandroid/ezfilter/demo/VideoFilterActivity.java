@@ -9,8 +9,8 @@ import android.widget.ImageView;
 import cn.ezandroid.ezfilter.EZFilter;
 import cn.ezandroid.ezfilter.core.RenderPipeline;
 import cn.ezandroid.ezfilter.demo.render.BWRender;
+import cn.ezandroid.ezfilter.environment.SurfaceRenderView;
 import cn.ezandroid.ezfilter.io.input.VideoInput;
-import cn.ezandroid.ezfilter.view.SurfaceRenderView;
 
 /**
  * VideoFilterActivity

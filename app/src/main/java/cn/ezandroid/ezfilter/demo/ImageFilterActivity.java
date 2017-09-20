@@ -9,7 +9,7 @@ import android.widget.ImageView;
 
 import cn.ezandroid.ezfilter.EZFilter;
 import cn.ezandroid.ezfilter.demo.render.LookupRender;
-import cn.ezandroid.ezfilter.view.TextureRenderView;
+import cn.ezandroid.ezfilter.environment.TextureRenderView;
 
 /**
  * ImageFilterActivity

@@ -1,4 +1,4 @@
-package cn.ezandroid.ezfilter.view;
+package cn.ezandroid.ezfilter.environment;
 
 /**
  * 包含布局辅助类

@@ -9,8 +9,8 @@ import android.widget.ImageView;
 
 import cn.ezandroid.ezfilter.EZFilter;
 import cn.ezandroid.ezfilter.demo.render.BWRender;
-import cn.ezandroid.ezfilter.view.RenderViewHelper;
-import cn.ezandroid.ezfilter.view.TextureRenderView;
+import cn.ezandroid.ezfilter.environment.RenderViewHelper;
+import cn.ezandroid.ezfilter.environment.TextureRenderView;
 
 /**
  * CameraFilterActivity

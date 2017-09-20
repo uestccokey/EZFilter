@@ -25,12 +25,6 @@ public class MainActivity extends BaseActivity {
             requestStoragePermission();
         }
 
-        if (ActivityCompat.checkSelfPermission(this, Manifest.permission.CAMERA)
-                != PackageManager.PERMISSION_GRANTED) {
-            // 权限未被授予
-            requestCameraPermission();
-        }
-
         $(R.id.image_filter).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -50,16 +44,28 @@ public class MainActivity extends BaseActivity {
         $(R.id.camera_filter).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Intent intent = new Intent(MainActivity.this, CameraFilterActivity.class);
-                startActivity(intent);
+                if (ActivityCompat.checkSelfPermission(MainActivity.this, Manifest.permission.CAMERA)
+                        != PackageManager.PERMISSION_GRANTED) {
+                    // 权限未被授予
+                    requestCameraPermission();
+                } else {
+                    Intent intent = new Intent(MainActivity.this, CameraFilterActivity.class);
+                    startActivity(intent);
+                }
             }
         });
 
         $(R.id.camera2_filter).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Intent intent = new Intent(MainActivity.this, Camera2FilterActivity.class);
-                startActivity(intent);
+                if (ActivityCompat.checkSelfPermission(MainActivity.this, Manifest.permission.CAMERA)
+                        != PackageManager.PERMISSION_GRANTED) {
+                    // 权限未被授予
+                    requestCameraPermission();
+                } else {
+                    Intent intent = new Intent(MainActivity.this, Camera2FilterActivity.class);
+                    startActivity(intent);
+                }
             }
         });
 

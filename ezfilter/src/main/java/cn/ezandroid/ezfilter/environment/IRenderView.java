@@ -1,4 +1,4 @@
-package cn.ezandroid.ezfilter.view;
+package cn.ezandroid.ezfilter.environment;
 
 import android.content.Context;
 
@@ -11,7 +11,7 @@ import cn.ezandroid.ezfilter.core.RenderPipeline;
  * @author like
  * @date 2017-03-27
  */
-public interface IRenderView extends IRender {
+public interface IRenderView extends IGLEnvironment {
 
     /**
      * 初始化渲染管道
@@ -54,9 +54,8 @@ public interface IRenderView extends IRender {
      */
     boolean setRotate90Degrees(int numOfTimes);
 
-
     /**
-     * 刷新视图
+     * 请求渲染器重新布局
      */
     void requestLayout();
 
@@ -74,5 +73,10 @@ public interface IRenderView extends IRender {
      */
     int getPreviewHeight();
 
+    /**
+     * 获取上下文
+     *
+     * @return
+     */
     Context getContext();
 }

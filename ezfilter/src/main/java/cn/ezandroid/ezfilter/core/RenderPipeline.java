@@ -8,9 +8,9 @@ import java.util.List;
 import javax.microedition.khronos.egl.EGLConfig;
 import javax.microedition.khronos.opengles.GL10;
 
+import cn.ezandroid.ezfilter.environment.Renderer;
 import cn.ezandroid.ezfilter.io.output.BitmapOutput;
 import cn.ezandroid.ezfilter.io.output.BufferOutput;
-import cn.ezandroid.ezfilter.view.Renderer;
 
 /**
  * 渲染管道

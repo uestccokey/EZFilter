@@ -9,7 +9,8 @@ import android.widget.ImageView;
 
 import cn.ezandroid.ezfilter.EZFilter;
 import cn.ezandroid.ezfilter.demo.render.BWRender;
-import cn.ezandroid.ezfilter.view.TextureRenderView;
+import cn.ezandroid.ezfilter.environment.TextureRenderView;
+import cn.ezandroid.ezfilter.view.GLLinearLayout;
 
 /**
  * ViewFilterActivity
@@ -35,7 +36,7 @@ public class ViewFilterActivity extends BaseActivity {
 
         mWebView.setWebViewClient(new WebViewClient());
         mWebView.setWebChromeClient(new WebChromeClient());
-        mWebView.loadUrl("http://www.golem.de");
+        mWebView.loadUrl("https://github.com/uestccokey/EZFilter");
 
         // 为了确保mLinearLayout已经初始化完成，宽高不为0
         mLinearLayout.post(new Runnable() {

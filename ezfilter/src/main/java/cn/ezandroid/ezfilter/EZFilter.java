@@ -17,6 +17,8 @@ import cn.ezandroid.ezfilter.cache.LruBitmapCache;
 import cn.ezandroid.ezfilter.core.FBORender;
 import cn.ezandroid.ezfilter.core.FilterRender;
 import cn.ezandroid.ezfilter.core.RenderPipeline;
+import cn.ezandroid.ezfilter.environment.IRenderView;
+import cn.ezandroid.ezfilter.environment.RenderViewHelper;
 import cn.ezandroid.ezfilter.io.input.BitmapInput;
 import cn.ezandroid.ezfilter.io.input.Camera2Input;
 import cn.ezandroid.ezfilter.io.input.CameraInput;
@@ -24,8 +26,6 @@ import cn.ezandroid.ezfilter.io.input.VideoInput;
 import cn.ezandroid.ezfilter.io.input.ViewInput;
 import cn.ezandroid.ezfilter.offscreen.OffscreenHelper;
 import cn.ezandroid.ezfilter.view.IGLView;
-import cn.ezandroid.ezfilter.view.IRenderView;
-import cn.ezandroid.ezfilter.view.RenderViewHelper;
 
 /**
  * 滤镜处理
@@ -284,7 +284,7 @@ public class EZFilter {
         }
 
         public RenderPipeline into(IRenderView view) {
-            mGLView.setRender(view);
+            mGLView.setGLEnvironment(view);
             return super.into(view);
         }
     }

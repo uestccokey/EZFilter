@@ -1,36 +1,37 @@
-package cn.ezandroid.ezfilter.view;
+package cn.ezandroid.ezfilter.environment;
 
 import android.content.Context;
+import android.opengl.GLSurfaceView;
 import android.util.AttributeSet;
 
 import cn.ezandroid.ezfilter.core.FBORender;
 import cn.ezandroid.ezfilter.core.RenderPipeline;
 
 /**
- * SurfaceRenderView
+ * TextureRenderView
  *
  * @author like
  * @date 2017-09-15
  */
-public class SurfaceRenderView extends GLSurfaceView implements IRenderView {
+public class TextureRenderView extends GLTextureView implements IRenderView {
 
     private RenderPipeline mPipeline;
 
     private RenderViewHelper mHelper;
 
-    public SurfaceRenderView(final Context context) {
+    public TextureRenderView(final Context context) {
         this(context, null);
         init();
     }
 
-    public SurfaceRenderView(final Context context, AttributeSet attr) {
+    public TextureRenderView(final Context context, AttributeSet attr) {
         super(context, attr);
         init();
     }
 
     private void init() {
-        setDebugFlags(android.opengl.GLSurfaceView.DEBUG_CHECK_GL_ERROR
-                | android.opengl.GLSurfaceView.DEBUG_LOG_GL_CALLS);
+        setDebugFlags(GLSurfaceView.DEBUG_CHECK_GL_ERROR
+                | GLSurfaceView.DEBUG_LOG_GL_CALLS);
         setEGLContextClientVersion(2);
         mHelper = new RenderViewHelper();
 

@@ -14,8 +14,9 @@ import javax.microedition.khronos.egl.EGLDisplay;
 import javax.microedition.khronos.egl.EGLSurface;
 
 import cn.ezandroid.ezfilter.core.RenderPipeline;
+import cn.ezandroid.ezfilter.environment.GLEnvironment;
 import cn.ezandroid.ezfilter.io.input.ViewInput;
-import cn.ezandroid.ezfilter.view.GLEnvironment;
+import cn.ezandroid.ezfilter.view.GLLinearLayout;
 
 /**
  * 演示GLEnvironment的用法，用来配合SurfaceView和TextureView
@@ -62,7 +63,7 @@ public class GLActivity extends BaseActivity {
 //        VideoInput videoInput = new VideoInput(this, mGLEnvironment,
 //                Uri.parse("android.resource://" + getPackageName() + "/" + R.raw.test2));
 //        videoInput.start();
-        mGLLinearLayout.setRender(mGLEnvironment);
+        mGLLinearLayout.setGLEnvironment(mGLEnvironment);
         ViewInput viewInput = new ViewInput(mGLLinearLayout);
         pipeline.setStartPointRender(viewInput);
         pipeline.startRender();

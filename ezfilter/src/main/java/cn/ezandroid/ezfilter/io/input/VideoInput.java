@@ -14,9 +14,9 @@ import java.io.IOException;
 import javax.microedition.khronos.opengles.GL10;
 
 import cn.ezandroid.ezfilter.core.FBORender;
+import cn.ezandroid.ezfilter.environment.IGLEnvironment;
 import cn.ezandroid.ezfilter.io.player.IMediaPlayer;
 import cn.ezandroid.ezfilter.io.player.SystemMediaPlayer;
-import cn.ezandroid.ezfilter.view.IRender;
 
 /**
  * VideoInput
@@ -36,7 +36,7 @@ public class VideoInput extends FBORender implements SurfaceTexture.OnFrameAvail
     private int mMatrixHandle;
     private float[] mMatrix = new float[16];
 
-    private IRender mRender;
+    private IGLEnvironment mRender;
 
     private boolean mStartWhenReady;
     private boolean mReady;
@@ -53,12 +53,12 @@ public class VideoInput extends FBORender implements SurfaceTexture.OnFrameAvail
         void OnPlayerPrepared(IMediaPlayer player);
     }
 
-    public VideoInput(IRender render) {
+    public VideoInput(IGLEnvironment render) {
         super();
         this.mRender = render;
     }
 
-    public VideoInput(Context context, IRender render, Uri uri) {
+    public VideoInput(Context context, IGLEnvironment render, Uri uri) {
         super();
         this.mRender = render;
         try {
@@ -68,7 +68,7 @@ public class VideoInput extends FBORender implements SurfaceTexture.OnFrameAvail
         }
     }
 
-    public VideoInput(Context context, IRender render, Uri uri, IMediaPlayer player) {
+    public VideoInput(Context context, IGLEnvironment render, Uri uri, IMediaPlayer player) {
         super();
         this.mRender = render;
         try {
