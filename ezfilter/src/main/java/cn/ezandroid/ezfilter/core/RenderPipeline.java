@@ -10,17 +10,17 @@ import javax.microedition.khronos.opengles.GL10;
 
 import cn.ezandroid.ezfilter.io.output.BitmapOutput;
 import cn.ezandroid.ezfilter.io.output.BufferOutput;
-import cn.ezandroid.ezfilter.view.GLTextureView;
+import cn.ezandroid.ezfilter.view.Renderer;
 
 /**
  * 渲染管道
  * <p>
- * 一个完整的渲染管道由渲染起点，滤镜列表和渲染终点组成
+ * 一个完整的渲染管道由渲染起点，滤镜列表（可以为空）和渲染终点组成
  *
  * @author like
  * @date 2017-09-15
  */
-public class RenderPipeline implements GLTextureView.Renderer {
+public class RenderPipeline implements Renderer {
 
     private boolean mIsRendering;
 

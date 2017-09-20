@@ -132,7 +132,7 @@ public class EZFilter {
 
         @Override
         protected float setRenderPipeline(IRenderView view) {
-            VideoInput videoInput = new VideoInput(view, mVideo);
+            VideoInput videoInput = new VideoInput(view.getContext(), view, mVideo);
             videoInput.setLoop(mVideoLoop);
             videoInput.start();
             view.initRenderPipeline(videoInput);

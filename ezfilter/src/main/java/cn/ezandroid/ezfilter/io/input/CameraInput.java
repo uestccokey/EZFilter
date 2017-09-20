@@ -8,7 +8,7 @@ import android.opengl.GLES20;
 import javax.microedition.khronos.opengles.GL10;
 
 import cn.ezandroid.ezfilter.core.FBORender;
-import cn.ezandroid.ezfilter.view.IRenderView;
+import cn.ezandroid.ezfilter.view.IRender;
 
 /**
  * CameraInput
@@ -26,12 +26,13 @@ public class CameraInput extends FBORender implements SurfaceTexture.OnFrameAvai
     private int mMatrixHandle;
     private float[] mMatrix = new float[16];
 
-    private IRenderView mRenderView;
+    private IRender mRender;
+
     private Camera.Size mPreviewSize;
 
-    public CameraInput(IRenderView renderView, Camera camera) {
+    public CameraInput(IRender render, Camera camera) {
         super();
-        this.mRenderView = renderView;
+        this.mRender = render;
         this.mCamera = camera;
         Camera.Parameters params = mCamera.getParameters();
         this.mPreviewSize = params.getPreviewSize();
@@ -120,7 +121,7 @@ public class CameraInput extends FBORender implements SurfaceTexture.OnFrameAvai
 
     @Override
     public void onFrameAvailable(SurfaceTexture arg0) {
-        mRenderView.requestRender();
+        mRender.requestRender();
     }
 
     @Override

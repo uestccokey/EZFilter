@@ -11,7 +11,7 @@ import cn.ezandroid.ezfilter.core.RenderPipeline;
  * @author like
  * @date 2017-03-27
  */
-public interface IRenderView {
+public interface IRenderView extends IRender {
 
     /**
      * 初始化渲染管道
@@ -54,10 +54,6 @@ public interface IRenderView {
      */
     boolean setRotate90Degrees(int numOfTimes);
 
-    /**
-     * 刷新渲染器
-     */
-    void requestRender();
 
     /**
      * 刷新视图

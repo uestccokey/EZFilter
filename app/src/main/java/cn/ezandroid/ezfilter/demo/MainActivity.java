@@ -58,7 +58,7 @@ public class MainActivity extends BaseActivity {
         $(R.id.camera2_filter).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Intent intent = new Intent(MainActivity.this, Camera2FilterActivity.class);
+                Intent intent = new Intent(MainActivity.this, GLActivity.class);
                 startActivity(intent);
             }
         });

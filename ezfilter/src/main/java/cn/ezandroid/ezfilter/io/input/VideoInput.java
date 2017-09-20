@@ -1,5 +1,6 @@
 package cn.ezandroid.ezfilter.io.input;
 
+import android.content.Context;
 import android.graphics.SurfaceTexture;
 import android.net.Uri;
 import android.opengl.GLES11Ext;
@@ -15,7 +16,7 @@ import javax.microedition.khronos.opengles.GL10;
 import cn.ezandroid.ezfilter.core.FBORender;
 import cn.ezandroid.ezfilter.io.player.IMediaPlayer;
 import cn.ezandroid.ezfilter.io.player.SystemMediaPlayer;
-import cn.ezandroid.ezfilter.view.IRenderView;
+import cn.ezandroid.ezfilter.view.IRender;
 
 /**
  * VideoInput
@@ -35,7 +36,7 @@ public class VideoInput extends FBORender implements SurfaceTexture.OnFrameAvail
     private int mMatrixHandle;
     private float[] mMatrix = new float[16];
 
-    private IRenderView mRenderView;
+    private IRender mRender;
 
     private boolean mStartWhenReady;
     private boolean mReady;
@@ -52,26 +53,26 @@ public class VideoInput extends FBORender implements SurfaceTexture.OnFrameAvail
         void OnPlayerPrepared(IMediaPlayer player);
     }
 
-    public VideoInput(IRenderView mRenderView) {
+    public VideoInput(IRender render) {
         super();
-        this.mRenderView = mRenderView;
+        this.mRender = render;
     }
 
-    public VideoInput(IRenderView mRenderView, Uri uri) {
+    public VideoInput(Context context, IRender render, Uri uri) {
         super();
-        this.mRenderView = mRenderView;
+        this.mRender = render;
         try {
-            setVideoUri(uri);
+            setVideoUri(context, uri);
         } catch (IOException e) {
             e.printStackTrace();
         }
     }
 
-    public VideoInput(IRenderView mRenderView, Uri uri, IMediaPlayer player) {
+    public VideoInput(Context context, IRender render, Uri uri, IMediaPlayer player) {
         super();
-        this.mRenderView = mRenderView;
+        this.mRender = render;
         try {
-            setVideoUri(uri, player);
+            setVideoUri(context, uri, player);
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -81,20 +82,20 @@ public class VideoInput extends FBORender implements SurfaceTexture.OnFrameAvail
         mOnPlayerPreparedListener = listener;
     }
 
-    public void setVideoUri(Uri uri, IMediaPlayer player) throws IOException {
+    public void setVideoUri(Context context, Uri uri, IMediaPlayer player) throws IOException {
         if (uri != null) {
             release();
             mVideoUri = uri;
             mPlayer = player;
-            mPlayer.setDataSource(mRenderView.getContext(), mVideoUri);
+            mPlayer.setDataSource(context, mVideoUri);
             mPlayer.setVolume(mVideoVolumeLeft, mVideoVolumeRight);
             mPlayer.setLooping(mIsLoop);
             reInit();
         }
     }
 
-    public void setVideoUri(Uri uri) throws IOException {
-        setVideoUri(uri, new SystemMediaPlayer());
+    public void setVideoUri(Context context, Uri uri) throws IOException {
+        setVideoUri(context, uri, new SystemMediaPlayer());
     }
 
     public IMediaPlayer getMediaPlayer() {
@@ -223,7 +224,7 @@ public class VideoInput extends FBORender implements SurfaceTexture.OnFrameAvail
 
     @Override
     public void onFrameAvailable(SurfaceTexture arg0) {
-        mRenderView.requestRender();
+        mRender.requestRender();
     }
 
     @Override
