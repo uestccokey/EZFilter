@@ -2,16 +2,22 @@
 # EZFilter
 一个轻量级，易扩展的Android滤镜框架，支持拍照，视频，图片添加滤镜，支持离屏渲染
 
-#### Demo
+### Demo
+
 [下载地址](https://raw.githubusercontent.com/uestccokey/EZFilter/master/demo.apk)
 
-#### 功能介绍
+### 功能介绍
+
 1.Camera添加滤镜
+
 2.Camera2添加滤镜（Api21以上）
+
 3.视频添加滤镜（支持自定义播放器）
+
 4.图片添加滤镜（支持离屏渲染）
 
-#### 依赖配置
+### 依赖配置
+
 ``` gradle
 dependencies {
     compile 'cn.ezandroid:EZFilter:1.3.1' // Gradle 3.0以下
@@ -19,7 +25,9 @@ dependencies {
     implementation 'cn.ezandroid:EZFilter:1.3.1' // Gradle3.0及以上
 }
 ```
-#### 使用方式
+
+### 使用方式
+
 图片加滤镜显示
 
 ``` java
@@ -71,7 +79,7 @@ mPipeline = new EZFilter.Camera2Builder()
 ``` java
 mPipeline(new BitmapOutput.BitmapOutputCallback() {
         @Override
-        public void bitmapOutput ( final Bitmap bitmap){
+        public void bitmapOutput(Bitmap bitmap){
         }
     },true); // 第二个boolean参数表示是否截原图还是截添加了滤镜之后的图
 ```
