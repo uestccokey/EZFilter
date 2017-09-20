@@ -8,13 +8,13 @@
         android:id="@+id/image_filter"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="图片加滤镜" />
+        android:text="Bitmap加滤镜" />
 
     <Button
         android:id="@+id/video_filter"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="视频加滤镜" />
+        android:text="Video加滤镜" />
 
     <Button
         android:id="@+id/camera_filter"
@@ -27,4 +27,10 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="Camera2加滤镜" />
+
+    <Button
+        android:id="@+id/view_filter"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="View加滤镜" />
 </LinearLayout>

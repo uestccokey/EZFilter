@@ -41,7 +41,7 @@ public class RenderPipeline implements Renderer {
 
     @Override
     public void onSurfaceCreated(GL10 gl10, EGLConfig eglConfig) {
-//        Log.e("RenderPipeline", this + " onSurfaceCreated:" + mWidth + "x" + mHeight);
+//        Log.e("RenderPipeline", this + " onSurfaceCreated");
         for (OnSurfaceListener listener : mOnSurfaceListeners) {
             listener.onSurfaceCreated(gl10, eglConfig);
         }

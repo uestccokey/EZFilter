@@ -31,6 +31,9 @@
             </intent-filter>
         </activity>
         <activity
+            android:name=".ViewFilterActivity"
+            android:screenOrientation="portrait" />
+        <activity
             android:name=".ImageFilterActivity"
             android:screenOrientation="portrait" />
         <activity

@@ -74,6 +74,13 @@ public class GLEnvironment implements SurfaceHolder.Callback2, IRender {
     public final static int DEBUG_LOG_GL_CALLS = 2;
 
     public GLEnvironment() {
+        init();
+    }
+
+    private void init() {
+        setEGLConfigChooser(8, 8, 8, 8, 16, 8);
+        setPreserveEGLContextOnPause(true);
+        setEGLContextClientVersion(2);
     }
 
     @Override

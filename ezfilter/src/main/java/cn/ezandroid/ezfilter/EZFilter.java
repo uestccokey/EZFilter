@@ -14,13 +14,16 @@ import java.util.List;
 
 import cn.ezandroid.ezfilter.cache.IBitmapCache;
 import cn.ezandroid.ezfilter.cache.LruBitmapCache;
+import cn.ezandroid.ezfilter.core.FBORender;
 import cn.ezandroid.ezfilter.core.FilterRender;
 import cn.ezandroid.ezfilter.core.RenderPipeline;
 import cn.ezandroid.ezfilter.io.input.BitmapInput;
 import cn.ezandroid.ezfilter.io.input.Camera2Input;
 import cn.ezandroid.ezfilter.io.input.CameraInput;
 import cn.ezandroid.ezfilter.io.input.VideoInput;
+import cn.ezandroid.ezfilter.io.input.ViewInput;
 import cn.ezandroid.ezfilter.offscreen.OffscreenHelper;
+import cn.ezandroid.ezfilter.view.IGLView;
 import cn.ezandroid.ezfilter.view.IRenderView;
 import cn.ezandroid.ezfilter.view.RenderViewHelper;
 
@@ -90,9 +93,12 @@ public class EZFilter {
         }
 
         @Override
-        protected float setRenderPipeline(IRenderView view) {
-            BitmapInput bitmapInput = new BitmapInput(mBitmap);
-            view.initRenderPipeline(bitmapInput);
+        FBORender getStartPointRender(IRenderView view) {
+            return new BitmapInput(mBitmap);
+        }
+
+        @Override
+        float getAspectRatio(IRenderView view) {
             return mBitmap.getWidth() * 1.0f / mBitmap.getHeight();
         }
 
@@ -131,11 +137,15 @@ public class EZFilter {
         }
 
         @Override
-        protected float setRenderPipeline(IRenderView view) {
+        FBORender getStartPointRender(IRenderView view) {
             VideoInput videoInput = new VideoInput(view.getContext(), view, mVideo);
             videoInput.setLoop(mVideoLoop);
             videoInput.start();
-            view.initRenderPipeline(videoInput);
+            return videoInput;
+        }
+
+        @Override
+        float getAspectRatio(IRenderView view) {
             MediaMetadataRetriever metadata = new MediaMetadataRetriever();
             metadata.setDataSource(view.getContext(), mVideo);
             String width = metadata.extractMetadata(MediaMetadataRetriever.METADATA_KEY_VIDEO_WIDTH);
@@ -172,9 +182,12 @@ public class EZFilter {
         }
 
         @Override
-        protected float setRenderPipeline(IRenderView view) {
-            CameraInput cameraInput = new CameraInput(view, mCamera);
-            view.initRenderPipeline(cameraInput);
+        FBORender getStartPointRender(IRenderView view) {
+            return new CameraInput(view, mCamera);
+        }
+
+        @Override
+        float getAspectRatio(IRenderView view) {
             Camera.Size previewSize = mCamera.getParameters().getPreviewSize();
             return previewSize.height * 1.0f / previewSize.width;
         }
@@ -208,9 +221,12 @@ public class EZFilter {
         }
 
         @Override
-        float setRenderPipeline(IRenderView view) {
-            Camera2Input camera2Input = new Camera2Input(view, mCameraDevice, mPreviewSize);
-            view.initRenderPipeline(camera2Input);
+        FBORender getStartPointRender(IRenderView view) {
+            return new Camera2Input(view, mCameraDevice, mPreviewSize);
+        }
+
+        @Override
+        float getAspectRatio(IRenderView view) {
             return mPreviewSize.getHeight() * 1.0f / mPreviewSize.getWidth();
         }
 
@@ -230,6 +246,44 @@ public class EZFilter {
         }
     }
 
+    public static class ViewBuilder extends Builder {
+
+        public IGLView mGLView;
+
+        public ViewBuilder setView(IGLView view) {
+            mGLView = view;
+            return this;
+        }
+
+        @Override
+        FBORender getStartPointRender(IRenderView view) {
+            return new ViewInput(mGLView);
+        }
+
+        @Override
+        float getAspectRatio(IRenderView view) {
+            if (mGLView.getHeight() != 0) {
+                return mGLView.getWidth() * 1.0f / mGLView.getHeight();
+            }
+            return 1;
+        }
+
+        @Override
+        public ViewBuilder setScaleType(RenderViewHelper.ScaleType scaleType) {
+            return (ViewBuilder) super.setScaleType(scaleType);
+        }
+
+        @Override
+        public ViewBuilder setRotation(int rotation) {
+            return (ViewBuilder) super.setRotation(rotation);
+        }
+
+        @Override
+        public ViewBuilder addFilter(FilterRender filterRender) {
+            return (ViewBuilder) super.addFilter(filterRender);
+        }
+    }
+
     /**
      * 构造器基类
      */
@@ -243,6 +297,20 @@ public class EZFilter {
 
         private Builder() {
         }
+
+        /**
+         * 获取渲染起点
+         *
+         * @return 宽高比
+         */
+        abstract FBORender getStartPointRender(IRenderView view);
+
+        /**
+         * 获取渲染视图宽高比
+         *
+         * @return
+         */
+        abstract float getAspectRatio(IRenderView view);
 
         Builder setScaleType(RenderViewHelper.ScaleType scaleType) {
             mScaleType = scaleType;
@@ -262,14 +330,6 @@ public class EZFilter {
             return this;
         }
 
-        /**
-         * 设置渲染管道，返回宽高比
-         *
-         * @param view
-         * @return 宽高比
-         */
-        abstract float setRenderPipeline(IRenderView view);
-
         public RenderPipeline into(IRenderView view) {
             RenderPipeline pipeline = view.getRenderPipeline();
             // 如果渲染管道不为空，确保渲染管道是干净的
@@ -277,7 +337,7 @@ public class EZFilter {
                 pipeline.clean();
             }
 
-            float ratio = setRenderPipeline(view);
+            view.initRenderPipeline(getStartPointRender(view));
 
             pipeline = view.getRenderPipeline();
             if (pipeline != null) {
@@ -288,7 +348,7 @@ public class EZFilter {
             }
 
             view.setScaleType(mScaleType);
-            boolean change = view.setAspectRatio(ratio, 0, 0);
+            boolean change = view.setAspectRatio(getAspectRatio(view), 0, 0);
             change = view.setRotate90Degrees(mRotation) || change;
             view.requestRender();
             if (change) {
