@@ -3,6 +3,7 @@ package cn.ezandroid.ezfilter.demo;
 import android.annotation.SuppressLint;
 import android.annotation.TargetApi;
 import android.content.Context;
+import android.graphics.Bitmap;
 import android.graphics.Point;
 import android.graphics.SurfaceTexture;
 import android.hardware.camera2.CameraAccessException;
@@ -17,6 +18,7 @@ import android.os.Looper;
 import android.util.Size;
 import android.view.Surface;
 import android.view.View;
+import android.widget.ImageView;
 import android.widget.Toast;
 
 import java.util.ArrayList;
@@ -26,9 +28,11 @@ import java.util.Comparator;
 import java.util.List;
 
 import cn.ezandroid.ezfilter.EZFilter;
+import cn.ezandroid.ezfilter.core.RenderPipeline;
 import cn.ezandroid.ezfilter.demo.render.BWRender;
 import cn.ezandroid.ezfilter.environment.RenderViewHelper;
 import cn.ezandroid.ezfilter.environment.SurfaceRenderView;
+import cn.ezandroid.ezfilter.io.output.BitmapOutput;
 
 /**
  * Camera2FilterActivity
@@ -46,6 +50,7 @@ public class Camera2FilterActivity extends BaseActivity {
     private static final int MAX_PREVIEW_HEIGHT = 1080;
 
     private SurfaceRenderView mRenderView;
+    private ImageView mPreviewImage;
 
     private CameraManager mCameraManager;
 
@@ -56,11 +61,14 @@ public class Camera2FilterActivity extends BaseActivity {
 
     private Size mPreviewSize;
 
+    private RenderPipeline mRenderPipeline;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_camera2_filter);
         mRenderView = findViewById(R.id.render_view);
+        mPreviewImage = $(R.id.preview_image);
 
         mCameraManager = (CameraManager) getSystemService(Context.CAMERA_SERVICE);
         openCamera(mCurrentCameraId);
@@ -69,6 +77,23 @@ public class Camera2FilterActivity extends BaseActivity {
             @Override
             public void onClick(View view) {
                 switchCamera();
+            }
+        });
+
+        $(R.id.capture).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                mRenderPipeline.capture(new BitmapOutput.BitmapOutputCallback() {
+                    @Override
+                    public void bitmapOutput(final Bitmap bitmap) {
+                        runOnUiThread(new Runnable() {
+                            @Override
+                            public void run() {
+                                mPreviewImage.setImageBitmap(bitmap);
+                            }
+                        });
+                    }
+                }, true);
             }
         });
     }
@@ -194,7 +219,7 @@ public class Camera2FilterActivity extends BaseActivity {
         @Override
         public void onOpened(CameraDevice camera) { // 打开摄像头
             mCameraDevice = camera;
-            EZFilter.setCamera2(mCameraDevice, mPreviewSize)
+            mRenderPipeline = EZFilter.setCamera2(mCameraDevice, mPreviewSize)
                     .setScaleType(RenderViewHelper.ScaleType.CENTER_CROP)
                     .addFilter(new BWRender(Camera2FilterActivity.this))
                     .into(mRenderView);

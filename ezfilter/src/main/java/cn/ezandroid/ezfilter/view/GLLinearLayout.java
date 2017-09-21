@@ -4,6 +4,7 @@ import android.content.Context;
 import android.graphics.Canvas;
 import android.util.AttributeSet;
 import android.view.Surface;
+import android.view.ViewTreeObserver;
 import android.widget.LinearLayout;
 
 import cn.ezandroid.ezfilter.environment.IGLEnvironment;
@@ -20,10 +21,28 @@ public class GLLinearLayout extends LinearLayout implements IGLView {
 
     public GLLinearLayout(Context context) {
         super(context);
+        init();
     }
 
     public GLLinearLayout(Context context, AttributeSet attrs) {
         super(context, attrs);
+        init();
+    }
+
+    private void init() {
+        ViewTreeObserver observer = getViewTreeObserver();
+        if (observer != null) {
+            observer.addOnPreDrawListener(new ViewTreeObserver.OnPreDrawListener() {
+                @Override
+                public boolean onPreDraw() {
+                    if (isDirty()) {
+                        // 只在需要绘制的时候刷新
+                        invalidate();
+                    }
+                    return true;
+                }
+            });
+        }
     }
 
     @Override
@@ -44,7 +63,6 @@ public class GLLinearLayout extends LinearLayout implements IGLView {
         } else {
             super.draw(surfaceCanvas);
             mGLViewHelper.drawEnd(surfaceCanvas);
-            invalidate(); // 立即重新刷新 FIXME 优化
         }
     }
 }

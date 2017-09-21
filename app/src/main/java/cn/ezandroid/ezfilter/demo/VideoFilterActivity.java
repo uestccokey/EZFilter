@@ -1,5 +1,6 @@
 package cn.ezandroid.ezfilter.demo;
 
+import android.graphics.Bitmap;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
@@ -11,6 +12,7 @@ import cn.ezandroid.ezfilter.core.RenderPipeline;
 import cn.ezandroid.ezfilter.demo.render.BWRender;
 import cn.ezandroid.ezfilter.environment.SurfaceRenderView;
 import cn.ezandroid.ezfilter.io.input.VideoInput;
+import cn.ezandroid.ezfilter.io.output.BitmapOutput;
 
 /**
  * VideoFilterActivity
@@ -51,6 +53,23 @@ public class VideoFilterActivity extends BaseActivity {
             @Override
             public void onClick(View view) {
                 changeVideo();
+            }
+        });
+
+        $(R.id.capture).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                mRenderPipeline.capture(new BitmapOutput.BitmapOutputCallback() {
+                    @Override
+                    public void bitmapOutput(final Bitmap bitmap) {
+                        runOnUiThread(new Runnable() {
+                            @Override
+                            public void run() {
+                                mPreviewImage.setImageBitmap(bitmap);
+                            }
+                        });
+                    }
+                }, true);
             }
         });
     }

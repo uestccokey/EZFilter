@@ -1,6 +1,7 @@
 package cn.ezandroid.ezfilter.demo;
 
 import android.content.res.Configuration;
+import android.graphics.Bitmap;
 import android.hardware.Camera;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
@@ -8,9 +9,11 @@ import android.view.View;
 import android.widget.ImageView;
 
 import cn.ezandroid.ezfilter.EZFilter;
+import cn.ezandroid.ezfilter.core.RenderPipeline;
 import cn.ezandroid.ezfilter.demo.render.BWRender;
 import cn.ezandroid.ezfilter.environment.RenderViewHelper;
 import cn.ezandroid.ezfilter.environment.TextureRenderView;
+import cn.ezandroid.ezfilter.io.output.BitmapOutput;
 
 /**
  * CameraFilterActivity
@@ -27,6 +30,8 @@ public class CameraFilterActivity extends BaseActivity {
 
     private int mCurrentCameraId = Camera.CameraInfo.CAMERA_FACING_FRONT;
 
+    private RenderPipeline mRenderPipeline;
+
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -34,18 +39,29 @@ public class CameraFilterActivity extends BaseActivity {
         mRenderView = $(R.id.render_view);
         mPreviewImage = $(R.id.preview_image);
 
-        mCamera = Camera.open(mCurrentCameraId);
-        setCameraParameters();
-
-        EZFilter.setCamera(mCamera)
-                .setScaleType(RenderViewHelper.ScaleType.CENTER_CROP)
-                .addFilter(new BWRender(this))
-                .into(mRenderView);
+        openCamera(mCurrentCameraId);
 
         $(R.id.switch_camera).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 switchCamera();
+            }
+        });
+
+        $(R.id.capture).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                mRenderPipeline.capture(new BitmapOutput.BitmapOutputCallback() {
+                    @Override
+                    public void bitmapOutput(final Bitmap bitmap) {
+                        runOnUiThread(new Runnable() {
+                            @Override
+                            public void run() {
+                                mPreviewImage.setImageBitmap(bitmap);
+                            }
+                        });
+                    }
+                }, true);
             }
         });
     }
@@ -82,7 +98,7 @@ public class CameraFilterActivity extends BaseActivity {
         mCamera = Camera.open(id);
         setCameraParameters();
 
-        EZFilter.setCamera(mCamera)
+        mRenderPipeline = EZFilter.setCamera(mCamera)
                 .setScaleType(RenderViewHelper.ScaleType.CENTER_CROP)
                 .addFilter(new BWRender(this))
                 .into(mRenderView);

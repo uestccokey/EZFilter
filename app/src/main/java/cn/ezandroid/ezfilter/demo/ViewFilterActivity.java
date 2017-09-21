@@ -1,15 +1,19 @@
 package cn.ezandroid.ezfilter.demo;
 
+import android.graphics.Bitmap;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
+import android.view.View;
 import android.webkit.WebChromeClient;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
 import android.widget.ImageView;
 
 import cn.ezandroid.ezfilter.EZFilter;
+import cn.ezandroid.ezfilter.core.RenderPipeline;
 import cn.ezandroid.ezfilter.demo.render.BWRender;
 import cn.ezandroid.ezfilter.environment.TextureRenderView;
+import cn.ezandroid.ezfilter.io.output.BitmapOutput;
 import cn.ezandroid.ezfilter.view.GLLinearLayout;
 
 /**
@@ -24,6 +28,8 @@ public class ViewFilterActivity extends BaseActivity {
     private ImageView mPreviewImage;
     private GLLinearLayout mLinearLayout;
     private WebView mWebView;
+
+    private RenderPipeline mRenderPipeline;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -42,9 +48,27 @@ public class ViewFilterActivity extends BaseActivity {
         mLinearLayout.post(new Runnable() {
             @Override
             public void run() {
-                EZFilter.setView(mLinearLayout)
+                mRenderPipeline = EZFilter.setView(mLinearLayout)
                         .addFilter(new BWRender(ViewFilterActivity.this))
                         .into(mRenderView);
+            }
+        });
+
+        $(R.id.capture).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                mRenderPipeline.capture(new BitmapOutput.BitmapOutputCallback() {
+                    @Override
+                    public void bitmapOutput(final Bitmap bitmap) {
+                        runOnUiThread(new Runnable() {
+                            @Override
+                            public void run() {
+                                mPreviewImage.setImageBitmap(bitmap);
+                            }
+                        });
+                    }
+                }, true);
+                mRenderView.requestRender();
             }
         });
     }
