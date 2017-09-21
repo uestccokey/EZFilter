@@ -75,7 +75,7 @@ public abstract class AbstractRender {
         mRunOnDrawEnd = new LinkedList<>();
     }
 
-    private void initRenderVertices(float[] vertices) {
+    protected void initRenderVertices(float[] vertices) {
         mRenderVertices = ByteBuffer.allocateDirect(vertices.length * 4)
                 .order(ByteOrder.nativeOrder()).asFloatBuffer();
         mRenderVertices.put(vertices).position(0);

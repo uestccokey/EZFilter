@@ -37,8 +37,7 @@ public class CameraFilterActivity extends BaseActivity {
         mCamera = Camera.open(mCurrentCameraId);
         setCameraParameters();
 
-        new EZFilter.CameraBuilder()
-                .setCamera(mCamera)
+        EZFilter.setCamera(mCamera)
                 .setScaleType(RenderViewHelper.ScaleType.CENTER_CROP)
                 .addFilter(new BWRender(this))
                 .into(mRenderView);
@@ -83,8 +82,7 @@ public class CameraFilterActivity extends BaseActivity {
         mCamera = Camera.open(id);
         setCameraParameters();
 
-        new EZFilter.CameraBuilder()
-                .setCamera(mCamera)
+        EZFilter.setCamera(mCamera)
                 .setScaleType(RenderViewHelper.ScaleType.CENTER_CROP)
                 .addFilter(new BWRender(this))
                 .into(mRenderView);

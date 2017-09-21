@@ -39,15 +39,13 @@ public class ImageFilterActivity extends BaseActivity {
 
         mCurrentBitmap = mBitmap1;
 
-        new EZFilter.BitmapBuilder()
-                .setBitmap(mCurrentBitmap)
+        EZFilter.setBitmap(mCurrentBitmap)
                 .addFilter(new LookupRender(ImageFilterActivity.this, R.drawable.langman))
                 .into(mRenderView);
 
         new Thread() {
             public void run() {
-                final Bitmap bitmap = new EZFilter.BitmapBuilder()
-                        .setBitmap(mCurrentBitmap)
+                final Bitmap bitmap = EZFilter.setBitmap(mCurrentBitmap)
                         .addFilter(new LookupRender(ImageFilterActivity.this, R.drawable.shishang))
                         .capture();
                 runOnUiThread(new Runnable() {
@@ -74,15 +72,13 @@ public class ImageFilterActivity extends BaseActivity {
             mCurrentBitmap = mBitmap1;
         }
 
-        new EZFilter.BitmapBuilder()
-                .setBitmap(mCurrentBitmap)
+        EZFilter.setBitmap(mCurrentBitmap)
                 .addFilter(new LookupRender(ImageFilterActivity.this, R.drawable.langman))
                 .into(mRenderView);
 
         new Thread() {
             public void run() {
-                final Bitmap bitmap = new EZFilter.BitmapBuilder()
-                        .setBitmap(mCurrentBitmap)
+                final Bitmap bitmap = EZFilter.setBitmap(mCurrentBitmap)
                         .addFilter(new LookupRender(ImageFilterActivity.this, R.drawable.shishang))
                         .capture();
                 runOnUiThread(new Runnable() {

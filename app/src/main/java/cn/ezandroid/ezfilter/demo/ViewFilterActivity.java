@@ -42,8 +42,7 @@ public class ViewFilterActivity extends BaseActivity {
         mLinearLayout.post(new Runnable() {
             @Override
             public void run() {
-                new EZFilter.ViewBuilder()
-                        .setView(mLinearLayout)
+                EZFilter.setView(mLinearLayout)
                         .addFilter(new BWRender(ViewFilterActivity.this))
                         .into(mRenderView);
             }

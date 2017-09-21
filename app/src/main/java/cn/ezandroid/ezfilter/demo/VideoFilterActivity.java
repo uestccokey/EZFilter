@@ -42,8 +42,7 @@ public class VideoFilterActivity extends BaseActivity {
 
         mCurrentUri = uri1;
 
-        mRenderPipeline = new EZFilter.VideoBuilder()
-                .setVideo(mCurrentUri)
+        mRenderPipeline = EZFilter.setVideo(mCurrentUri)
                 .setVideoLoop(true)
                 .addFilter(new BWRender(this))
                 .into(mRenderView);
@@ -63,8 +62,7 @@ public class VideoFilterActivity extends BaseActivity {
             mCurrentUri = uri1;
         }
 
-        mRenderPipeline = new EZFilter.VideoBuilder()
-                .setVideo(mCurrentUri)
+        mRenderPipeline = EZFilter.setVideo(mCurrentUri)
                 .setVideoLoop(true)
                 .addFilter(new BWRender(this))
                 .into(mRenderView);

@@ -194,9 +194,7 @@ public class Camera2FilterActivity extends BaseActivity {
         @Override
         public void onOpened(CameraDevice camera) { // 打开摄像头
             mCameraDevice = camera;
-
-            new EZFilter.Camera2Builder()
-                    .setCamera2(mCameraDevice, mPreviewSize)
+            EZFilter.setCamera2(mCameraDevice, mPreviewSize)
                     .setScaleType(RenderViewHelper.ScaleType.CENTER_CROP)
                     .addFilter(new BWRender(Camera2FilterActivity.this))
                     .into(mRenderView);

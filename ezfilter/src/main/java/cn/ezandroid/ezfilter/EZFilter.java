@@ -35,6 +35,9 @@ import cn.ezandroid.ezfilter.view.IGLView;
  */
 public class EZFilter {
 
+    private EZFilter() {
+    }
+
     /**
      * 默认的图片缓存 4分支1最大内存
      */
@@ -59,6 +62,57 @@ public class EZFilter {
     }
 
     /**
+     * 设置图片输入
+     *
+     * @param bitmap
+     * @return
+     */
+    public static BitmapBuilder setBitmap(Bitmap bitmap) {
+        return new BitmapBuilder(bitmap);
+    }
+
+    /**
+     * 设置视频输入
+     *
+     * @param uri
+     * @return
+     */
+    public static VideoBuilder setVideo(Uri uri) {
+        return new VideoBuilder(uri);
+    }
+
+    /**
+     * 设置Camera输入
+     *
+     * @param camera
+     * @return
+     */
+    public static CameraBuilder setCamera(Camera camera) {
+        return new CameraBuilder(camera);
+    }
+
+    /**
+     * 设置Camera2输入
+     *
+     * @param camera2
+     * @param size
+     * @return
+     */
+    public static Camera2Builder setCamera2(CameraDevice camera2, Size size) {
+        return new Camera2Builder(camera2, size);
+    }
+
+    /**
+     * 设置View输入
+     *
+     * @param view
+     * @return
+     */
+    public static ViewBuilder setView(IGLView view) {
+        return new ViewBuilder(view);
+    }
+
+    /**
      * 图片处理构造器
      * <p>
      * 支持链式操作
@@ -69,9 +123,8 @@ public class EZFilter {
 
         private Bitmap mBitmap;
 
-        public BitmapBuilder setBitmap(Bitmap bitmap) {
+        private BitmapBuilder(Bitmap bitmap) {
             mBitmap = bitmap;
-            return this;
         }
 
         public Bitmap capture() {
@@ -118,17 +171,13 @@ public class EZFilter {
         }
     }
 
-    /**
-     * 视频处理构造器
-     */
     public static class VideoBuilder extends Builder {
 
         private Uri mVideo;
         private boolean mVideoLoop;
 
-        public VideoBuilder setVideo(Uri uri) {
+        private VideoBuilder(Uri uri) {
             mVideo = uri;
-            return this;
         }
 
         public VideoBuilder setVideoLoop(boolean loop) {
@@ -169,16 +218,12 @@ public class EZFilter {
         }
     }
 
-    /**
-     * 拍照处理构造器
-     */
     public static class CameraBuilder extends Builder {
 
         private Camera mCamera;
 
-        public CameraBuilder setCamera(Camera camera) {
+        private CameraBuilder(Camera camera) {
             mCamera = camera;
-            return this;
         }
 
         @Override
@@ -214,10 +259,9 @@ public class EZFilter {
         private CameraDevice mCameraDevice;
         private Size mPreviewSize;
 
-        public Camera2Builder setCamera2(CameraDevice camera2, Size size) {
+        private Camera2Builder(CameraDevice camera2, Size size) {
             mCameraDevice = camera2;
             mPreviewSize = size;
-            return this;
         }
 
         @Override
@@ -248,11 +292,10 @@ public class EZFilter {
 
     public static class ViewBuilder extends Builder {
 
-        public IGLView mGLView;
+        private IGLView mGLView;
 
-        public ViewBuilder setView(IGLView view) {
+        private ViewBuilder(IGLView view) {
             mGLView = view;
-            return this;
         }
 
         @Override
