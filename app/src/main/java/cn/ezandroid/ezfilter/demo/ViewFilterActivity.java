@@ -1,6 +1,7 @@
 package cn.ezandroid.ezfilter.demo;
 
 import android.graphics.Bitmap;
+import android.opengl.GLSurfaceView;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.view.View;
@@ -11,7 +12,7 @@ import android.widget.ImageView;
 
 import cn.ezandroid.ezfilter.EZFilter;
 import cn.ezandroid.ezfilter.core.RenderPipeline;
-import cn.ezandroid.ezfilter.demo.render.BWRender;
+import cn.ezandroid.ezfilter.demo.render.WobbleRender;
 import cn.ezandroid.ezfilter.environment.TextureRenderView;
 import cn.ezandroid.ezfilter.io.output.BitmapOutput;
 import cn.ezandroid.ezfilter.view.GLLinearLayout;
@@ -38,6 +39,7 @@ public class ViewFilterActivity extends BaseActivity {
         mRenderView = $(R.id.render_view);
         mPreviewImage = $(R.id.preview_image);
         mLinearLayout = $(R.id.gl_layout);
+        mLinearLayout.setRenderMode(GLSurfaceView.RENDERMODE_CONTINUOUSLY); // 设置为连续刷新模式，这样能看到WobbleRender的效果
         mWebView = $(R.id.web_view);
 
         mWebView.setWebViewClient(new WebViewClient());
@@ -49,7 +51,7 @@ public class ViewFilterActivity extends BaseActivity {
             @Override
             public void run() {
                 mRenderPipeline = EZFilter.setView(mLinearLayout)
-                        .addFilter(new BWRender(ViewFilterActivity.this))
+                        .addFilter(new WobbleRender())
                         .into(mRenderView);
             }
         });

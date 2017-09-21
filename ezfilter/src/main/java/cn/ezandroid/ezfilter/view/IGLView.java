@@ -39,4 +39,13 @@ public interface IGLView {
      * @param render
      */
     void setGLEnvironment(IGLEnvironment render);
+
+    /**
+     * 设置刷新模式
+     * <p>
+     * RENDERMODE_WHEN_DIRTY 或 RENDERMODE_CONTINUOUSLY
+     *
+     * @param model
+     */
+    void setRenderMode(int model);
 }

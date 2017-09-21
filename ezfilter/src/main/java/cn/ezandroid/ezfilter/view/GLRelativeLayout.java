@@ -2,6 +2,7 @@ package cn.ezandroid.ezfilter.view;
 
 import android.content.Context;
 import android.graphics.Canvas;
+import android.opengl.GLSurfaceView;
 import android.util.AttributeSet;
 import android.view.Surface;
 import android.view.ViewTreeObserver;
@@ -18,6 +19,8 @@ import cn.ezandroid.ezfilter.environment.IGLEnvironment;
 public class GLRelativeLayout extends RelativeLayout implements IGLView {
 
     private GLViewHelper mGLViewHelper = new GLViewHelper();
+
+    private int mRenderMode = GLSurfaceView.RENDERMODE_WHEN_DIRTY;
 
     public GLRelativeLayout(Context context) {
         super(context);
@@ -37,7 +40,9 @@ public class GLRelativeLayout extends RelativeLayout implements IGLView {
                 public boolean onPreDraw() {
                     if (isDirty()) {
                         // 只在需要绘制的时候刷新
-                        invalidate();
+                        if (mRenderMode == GLSurfaceView.RENDERMODE_WHEN_DIRTY) {
+                            invalidate();
+                        }
                     }
                     return true;
                 }
@@ -56,6 +61,11 @@ public class GLRelativeLayout extends RelativeLayout implements IGLView {
     }
 
     @Override
+    public void setRenderMode(int model) {
+        mRenderMode = model;
+    }
+
+    @Override
     public void draw(Canvas canvas) {
         Canvas surfaceCanvas = mGLViewHelper.drawStart(canvas);
         if (surfaceCanvas == null) {
@@ -63,6 +73,9 @@ public class GLRelativeLayout extends RelativeLayout implements IGLView {
         } else {
             super.draw(surfaceCanvas);
             mGLViewHelper.drawEnd(surfaceCanvas);
+            if (mRenderMode == GLSurfaceView.RENDERMODE_CONTINUOUSLY) {
+                invalidate();
+            }
         }
     }
 }
