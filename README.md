@@ -6,6 +6,10 @@
 
 [下载地址](https://raw.githubusercontent.com/uestccokey/EZFilter/master/demo.apk)
 
+### 截图
+
+![View加滤镜](https://raw.githubusercontent.com/uestccokey/EZFilter/develop/view-filter.gif)
+
 ### 功能介绍
 
 1.Camera添加滤镜
