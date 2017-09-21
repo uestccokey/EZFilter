@@ -22,9 +22,9 @@
 
 ``` gradle
 dependencies {
-    compile 'cn.ezandroid:EZFilter:1.4.1' // Gradle 3.0以下
+    compile 'cn.ezandroid:EZFilter:1.4.2' // Gradle 3.0以下
     // 或者
-    implementation 'cn.ezandroid:EZFilter:1.4.1' // Gradle3.0及以上
+    implementation 'cn.ezandroid:EZFilter:1.4.2' // Gradle3.0及以上
 }
 ```
 
@@ -33,26 +33,23 @@ dependencies {
 图片加滤镜显示
 
 ``` java
-new EZFilter.BitmapBuilder()
-        .setBitmap(bitmap)
+EZFilter.setBitmap(bitmap)
         .addFilter(filter)
         .into(view);
 ```
 图片加滤镜离屏渲染
 
 ``` java
-Bitmap bitmap = new EZFilter.BitmapBuilder()
-                        .setBitmap(bitmap)
-                        .addFilter(filter)
-                        .capture();
+Bitmap bitmap = EZFilter.setBitmap(bitmap)
+                    .addFilter(filter)
+                    .capture();
 
 ```
 
 视频加滤镜显示
 
 ``` java
-mPipeline = new EZFilter.VideoBuilder()
-                .setVideo(video)
+mPipeline = EZFilter.setVideo(video)
                 .setVideoLoop(true)
                 .addFilter(filter)
                 .into(view);
@@ -61,8 +58,7 @@ mPipeline = new EZFilter.VideoBuilder()
 拍照加滤镜（Camera）
 
 ``` java
-mPipeline = new EZFilter.CameraBuilder()
-                .setCamera(camera)
+mPipeline = EZFilter.setCamera(camera)
                 .addFilter(filter)
                 .into(view);
 ```
@@ -70,8 +66,7 @@ mPipeline = new EZFilter.CameraBuilder()
 拍照加滤镜（Camera2）
 
 ``` java
-mPipeline = new EZFilter.Camera2Builder()
-                .setCamera2(camera2)
+mPipeline = EZFilter.setCamera2(camera2)
                 .addFilter(filter)
                 .into(view);
 ```
@@ -79,8 +74,7 @@ mPipeline = new EZFilter.Camera2Builder()
 视图加滤镜（View）
 
 ``` java
-mPipeline = new EZFilter.ViewBuilder()
-                .setView(glview)
+mPipeline = EZFilter.setView(glview)
                 .addFilter(filter)
                 .into(view);
 ```
@@ -93,11 +87,13 @@ mPipeline.capture(new BitmapOutput.BitmapOutputCallback() {
         public void bitmapOutput(Bitmap bitmap){
         }
     },true); // 第二个boolean参数表示是否截原图还是截添加了滤镜之后的图
+view.requestRender();
     // 或者
 mPipeline.capture(new BitmapOutput.BitmapOutputCallback() {
         @Override
         public void bitmapOutput(Bitmap bitmap){
         }
     }, width, height, true); // 中间的两个参数表示截图的宽高
+view.requestRender();
 ```
 
