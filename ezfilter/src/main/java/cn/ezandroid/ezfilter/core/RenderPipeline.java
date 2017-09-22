@@ -1,6 +1,7 @@
 package cn.ezandroid.ezfilter.core;
 
 import android.graphics.Bitmap;
+import android.util.Log;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -11,6 +12,7 @@ import javax.microedition.khronos.opengles.GL10;
 import cn.ezandroid.ezfilter.environment.Renderer;
 import cn.ezandroid.ezfilter.io.output.BitmapOutput;
 import cn.ezandroid.ezfilter.io.output.BufferOutput;
+import cn.ezandroid.ezfilter.util.L;
 
 /**
  * 渲染管道
@@ -41,7 +43,9 @@ public class RenderPipeline implements Renderer {
 
     @Override
     public void onSurfaceCreated(GL10 gl10, EGLConfig eglConfig) {
-//        Log.e("RenderPipeline", this + " onSurfaceCreated");
+        if (L.LOG_PIPELINE_CREATE) {
+            Log.e("RenderPipeline", this + " onSurfaceCreated");
+        }
         for (OnSurfaceListener listener : mOnSurfaceListeners) {
             listener.onSurfaceCreated(gl10, eglConfig);
         }
@@ -49,7 +53,9 @@ public class RenderPipeline implements Renderer {
 
     @Override
     public void onSurfaceChanged(GL10 gl10, int width, int height) {
-//        Log.e("RenderPipeline", this + " onSurfaceChanged:" + width + "x" + height);
+        if (L.LOG_PIPELINE_CHANGE) {
+            Log.e("RenderPipeline", this + " onSurfaceChanged:" + width + "x" + height);
+        }
         this.mWidth = width;
         this.mHeight = height;
         updateRenderSize();
@@ -61,7 +67,9 @@ public class RenderPipeline implements Renderer {
 
     @Override
     public void onDrawFrame(GL10 gl10) {
-//        Log.e("RenderPipeline", this + " onDrawFrame:" + mWidth + "x" + mHeight + " " + isRendering());
+        if (L.LOG_PIPELINE_DRAW) {
+            Log.e("RenderPipeline", this + " onDrawFrame:" + mWidth + "x" + mHeight + " " + isRendering());
+        }
         if (isRendering()) {
             if (mStartPointRender != null) {
                 mStartPointRender.onDrawFrame();
@@ -79,7 +87,9 @@ public class RenderPipeline implements Renderer {
 
     @Override
     public void onSurfaceDestroyed() {
-//        Log.e("RenderPipeline", this + " onSurfaceDestroyed " + Thread.currentThread().getName());
+        if (L.LOG_PIPELINE_DESTROY) {
+            Log.e("RenderPipeline", this + " onSurfaceDestroyed " + Thread.currentThread().getName());
+        }
         if (mStartPointRender != null) {
             mStartPointRender.destroy();
         }

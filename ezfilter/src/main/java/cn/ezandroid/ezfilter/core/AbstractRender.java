@@ -1,12 +1,15 @@
 package cn.ezandroid.ezfilter.core;
 
 import android.opengl.GLES20;
+import android.util.Log;
 
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
 import java.nio.FloatBuffer;
 import java.util.LinkedList;
 import java.util.Queue;
+
+import cn.ezandroid.ezfilter.util.L;
 
 /**
  * 滤镜核心类
@@ -258,7 +261,9 @@ public abstract class AbstractRender {
      * 只应该在RenderPipeline的onDrawFrame中调用
      */
     protected void onDrawFrame() {
-//        Log.e("AbstractRender", this + " onDrawFrame:" + mWidth + "x" + mHeight + " " + mCurrentRotation);
+        if (L.LOG_RENDER_DRAW) {
+            Log.e("AbstractRender", this + " onDrawFrame:" + mWidth + "x" + mHeight + " " + mCurrentRotation);
+        }
         if (!mInitialized) {
             initGLContext();
             mInitialized = true;
@@ -395,7 +400,9 @@ public abstract class AbstractRender {
      * 必须在GL线程执行，释放纹理等OpenGL资源
      */
     public void destroy() {
-//        Log.e("AbstractRender", this + " destroy " + Thread.currentThread().getName());
+        if (L.LOG_RENDER_DESTROY) {
+            Log.e("AbstractRender", this + " destroy " + Thread.currentThread().getName());
+        }
         mInitialized = false;
         if (mProgramHandle != 0) {
             GLES20.glDeleteProgram(mProgramHandle);

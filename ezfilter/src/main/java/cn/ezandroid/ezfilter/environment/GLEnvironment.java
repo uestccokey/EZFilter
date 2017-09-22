@@ -87,6 +87,24 @@ public class GLEnvironment implements SurfaceHolder.Callback2, IGLEnvironment {
         setEGLContextClientVersion(2);
     }
 
+    /**
+     * Set the glWrapper. If the glWrapper is not null, its
+     * {@link GLWrapper#wrap(GL)} method is called
+     * whenever a surface is created. A GLWrapper can be used to wrap
+     * the GL object that's passed to the renderer. Wrapping a GL
+     * object enables examining and modifying the behavior of the
+     * GL calls made by the renderer.
+     * <p>
+     * Wrapping is typically used for debugging purposes.
+     * <p>
+     * The default value is null.
+     *
+     * @param glWrapper the new GLWrapper
+     */
+    public void setGLWrapper(GLWrapper glWrapper) {
+        mGLWrapper = glWrapper;
+    }
+
     @Override
     protected void finalize() throws Throwable {
         try {
@@ -497,6 +515,38 @@ public class GLEnvironment implements SurfaceHolder.Callback2, IGLEnvironment {
     // ----------------------------------------------------------------------
 
     /**
+     * An interface used to wrap a GL interface.
+     * <p>Typically
+     * used for implementing debugging and tracing on top of the default
+     * GL interface. You would typically use this by creating your own class
+     * that implemented all the GL methods by delegating to another GL instance.
+     * Then you could add your own behavior before or after calling the
+     * delegate. All the GLWrapper would do was instantiate and return the
+     * wrapper GL instance:
+     * <pre class="prettyprint">
+     * class MyGLWrapper implements GLWrapper {
+     * GL wrap(GL gl) {
+     * return new MyGLImplementation(gl);
+     * }
+     * static class MyGLImplementation implements GL,GL10,GL11,... {
+     * ...
+     * }
+     * }
+     * </pre>
+     *
+     * @see #setGLWrapper(GLWrapper)
+     */
+    public interface GLWrapper {
+        /**
+         * Wraps a gl interface in another gl interface.
+         *
+         * @param gl a GL interface that is to be wrapped.
+         * @return either the input argument or another GL object that wraps the input argument.
+         */
+        GL wrap(GL gl);
+    }
+
+    /**
      * An interface for customizing the eglCreateContext and eglDestroyContext calls.
      * <p>
      * This interface must be implemented by clients wishing to call
@@ -873,6 +923,9 @@ public class GLEnvironment implements SurfaceHolder.Callback2, IGLEnvironment {
             GL gl = mEglContext.getGL();
             GLEnvironment view = mGLSurfaceViewWeakRef.get();
             if (view != null) {
+                if (view.mGLWrapper != null) {
+                    gl = view.mGLWrapper.wrap(gl);
+                }
 
                 if ((view.mDebugFlags & (DEBUG_CHECK_GL_ERROR | DEBUG_LOG_GL_CALLS)) != 0) {
                     int configFlags = 0;
@@ -1622,6 +1675,7 @@ public class GLEnvironment implements SurfaceHolder.Callback2, IGLEnvironment {
     private EGLConfigChooser mEGLConfigChooser;
     private EGLContextFactory mEGLContextFactory;
     private EGLWindowSurfaceFactory mEGLWindowSurfaceFactory;
+    private GLWrapper mGLWrapper;
     private int mDebugFlags;
     private int mEGLContextClientVersion;
     private boolean mPreserveEGLContextOnPause;
