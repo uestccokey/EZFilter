@@ -725,12 +725,6 @@ public class GLEnvironment implements SurfaceHolder.Callback2, IGLEnvironment {
         }
     }
 
-    private Object mNativeWindow;
-
-    public void setNativeWindow(Object object) {
-        this.mNativeWindow = object;
-    }
-
     /**
      * An EGL helper class.
      */
@@ -839,7 +833,7 @@ public class GLEnvironment implements SurfaceHolder.Callback2, IGLEnvironment {
             GLEnvironment view = mGLSurfaceViewWeakRef.get();
             if (view != null) {
                 mEglSurface = view.mEGLWindowSurfaceFactory.createSurface(mEgl,
-                        mEglDisplay, mEglConfig, view.mNativeWindow);
+                        mEglDisplay, mEglConfig, null);
             } else {
                 mEglSurface = null;
             }

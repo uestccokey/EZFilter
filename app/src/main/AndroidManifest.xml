@@ -45,9 +45,6 @@
         <activity
             android:name=".Camera2FilterActivity"
             android:screenOrientation="portrait" />
-        <activity
-            android:name=".GLActivity"
-            android:screenOrientation="portrait" />
     </application>
 
 </manifest>

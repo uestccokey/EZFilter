@@ -1,7 +1,6 @@
 package cn.ezandroid.ezfilter.demo;
 
 import android.graphics.Bitmap;
-import android.opengl.GLSurfaceView;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.view.View;
@@ -39,7 +38,6 @@ public class ViewFilterActivity extends BaseActivity {
         mRenderView = $(R.id.render_view);
         mPreviewImage = $(R.id.preview_image);
         mLinearLayout = $(R.id.gl_layout);
-        mLinearLayout.setRenderMode(GLSurfaceView.RENDERMODE_CONTINUOUSLY); // 设置为连续刷新模式，这样能看到WobbleRender的效果
         mWebView = $(R.id.web_view);
 
         mWebView.setWebViewClient(new WebViewClient());
