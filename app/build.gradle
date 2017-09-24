@@ -44,7 +44,10 @@ dependencies {
     implementation "com.android.support:design:$rootProject.ext.supportLibraryVersion"
     implementation 'com.android.support:multidex:1.0.2'
 
-//    implementation 'cn.ezandroid:EZFilter:1.4.2'
+    implementation 'com.zhihu.android:matisse:0.5.0-alpha4'
+    implementation 'com.squareup.picasso:picasso:2.5.2'
+
+//    implementation 'cn.ezandroid:EZFilter:1.4.5'
 
     implementation project(':ezfilter')
 }

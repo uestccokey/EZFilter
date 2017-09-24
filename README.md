@@ -16,7 +16,7 @@
 
 2.Camera2添加滤镜（Api21以上）
 
-3.Video添加滤镜（支持自定义播放器）
+3.Video添加滤镜（支持自定义播放器，支持离屏渲染）
 
 4.Bitmap添加滤镜（支持离屏渲染）
 
@@ -26,9 +26,9 @@
 
 ``` gradle
 dependencies {
-    compile 'cn.ezandroid:EZFilter:1.4.2' // Gradle 3.0以下
+    compile 'cn.ezandroid:EZFilter:1.4.5' // Gradle 3.0以下
     // 或者
-    implementation 'cn.ezandroid:EZFilter:1.4.2' // Gradle3.0及以上
+    implementation 'cn.ezandroid:EZFilter:1.4.5' // Gradle3.0及以上
 }
 ```
 

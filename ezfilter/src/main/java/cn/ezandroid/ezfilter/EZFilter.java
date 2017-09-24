@@ -199,6 +199,7 @@ public class EZFilter {
             metadata.setDataSource(view.getContext(), mVideo);
             String width = metadata.extractMetadata(MediaMetadataRetriever.METADATA_KEY_VIDEO_WIDTH);
             String height = metadata.extractMetadata(MediaMetadataRetriever.METADATA_KEY_VIDEO_HEIGHT);
+            metadata.release();
             return Integer.parseInt(width) * 1.0f / Integer.parseInt(height);
         }
 

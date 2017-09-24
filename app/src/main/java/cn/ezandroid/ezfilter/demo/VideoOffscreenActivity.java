@@ -1,12 +1,24 @@
 package cn.ezandroid.ezfilter.demo;
 
+import android.content.Intent;
+import android.content.pm.ActivityInfo;
 import android.media.MediaExtractor;
 import android.media.MediaFormat;
 import android.media.MediaMetadataRetriever;
 import android.media.MediaMuxer;
+import android.net.Uri;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
+import android.view.View;
 
+import com.zhihu.matisse.Matisse;
+import com.zhihu.matisse.MimeType;
+import com.zhihu.matisse.engine.impl.PicassoEngine;
+
+import java.util.List;
+
+import cn.ezandroid.ezfilter.EZFilter;
+import cn.ezandroid.ezfilter.environment.SurfaceRenderView;
 import cn.ezandroid.ezfilter.media.AudioTrackTranscoder;
 import cn.ezandroid.ezfilter.media.MediaUtil;
 import cn.ezandroid.ezfilter.media.QueuedMuxer;
@@ -20,13 +32,49 @@ import cn.ezandroid.ezfilter.media.VideoTrackTranscoder;
  */
 public class VideoOffscreenActivity extends BaseActivity {
 
+    private static final int REQUEST_CODE_CHOOSE = 1;
+
+    private SurfaceRenderView mRenderView;
+
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_video_offscreen);
+        mRenderView = $(R.id.render_view);
+
+        $(R.id.choose_video).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Matisse.from(VideoOffscreenActivity.this)
+                        .choose(MimeType.of(MimeType.MP4), false)
+                        .showSingleMediaType(true)
+                        .maxSelectable(1)
+                        .countable(false)
+                        .gridExpectedSize(getResources().getDimensionPixelSize(R.dimen.grid_expected_size))
+                        .restrictOrientation(ActivityInfo.SCREEN_ORIENTATION_UNSPECIFIED)
+                        .thumbnailScale(0.85f)
+                        .imageEngine(new PicassoEngine())
+                        .forResult(REQUEST_CODE_CHOOSE);
+            }
+        });
     }
 
-    public static boolean renderVideo(String input, String output) {
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        if (requestCode == REQUEST_CODE_CHOOSE && resultCode == RESULT_OK) {
+            final List<String> paths = Matisse.obtainPathResult(data);
+            if (!paths.isEmpty()) {
+                new Thread() {
+                    public void run() {
+                        renderVideo(paths.get(0), "/sdcard/render.mp4");
+                    }
+                }.start();
+            }
+        }
+    }
+
+    public boolean renderVideo(String input, final String output) {
         MediaExtractor extractor = new MediaExtractor();
         try {
             extractor.setDataSource(input);
@@ -118,6 +166,17 @@ public class VideoOffscreenActivity extends BaseActivity {
 
             muxer.stop();
             muxer.release();
+
+            runOnUiThread(new Runnable() {
+                @Override
+                public void run() {
+                    EZFilter.setVideo(Uri.parse(output))
+                            .setVideoLoop(true)
+                            .into(mRenderView);
+
+                }
+            });
+
             return true;
         } catch (Exception e) {
             e.printStackTrace();
