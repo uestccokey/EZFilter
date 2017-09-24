@@ -59,6 +59,14 @@ mPipeline = EZFilter.setVideo(video)
                 .into(view);
 ```
 
+视频加滤镜保存
+
+``` java
+EZFilter.setVideo(video)
+    .addFilter(filter)
+    .save(path)
+```
+
 拍照加滤镜（Camera）
 
 ``` java
