@@ -33,4 +33,10 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="View加滤镜" />
+
+    <Button
+        android:id="@+id/video_offscreen"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Video离屏渲染" />
 </LinearLayout>

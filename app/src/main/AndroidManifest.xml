@@ -45,6 +45,10 @@
         <activity
             android:name=".Camera2FilterActivity"
             android:screenOrientation="portrait" />
+
+        <activity
+            android:name=".VideoOffscreenActivity"
+            android:screenOrientation="portrait" />
     </application>
 
 </manifest>

@@ -76,6 +76,14 @@ public class MainActivity extends BaseActivity {
                 startActivity(intent);
             }
         });
+
+        $(R.id.video_offscreen).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Intent intent = new Intent(MainActivity.this, VideoOffscreenActivity.class);
+                startActivity(intent);
+            }
+        });
     }
 
     /**
