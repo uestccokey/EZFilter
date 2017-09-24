@@ -9,6 +9,7 @@ import android.net.Uri;
 import android.os.Build;
 import android.util.Size;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -24,7 +25,8 @@ import cn.ezandroid.ezfilter.io.input.Camera2Input;
 import cn.ezandroid.ezfilter.io.input.CameraInput;
 import cn.ezandroid.ezfilter.io.input.VideoInput;
 import cn.ezandroid.ezfilter.io.input.ViewInput;
-import cn.ezandroid.ezfilter.offscreen.OffscreenHelper;
+import cn.ezandroid.ezfilter.offscreen.OffscreenImage;
+import cn.ezandroid.ezfilter.offscreen.OffscreenVideo;
 import cn.ezandroid.ezfilter.view.IGLView;
 
 /**
@@ -129,20 +131,20 @@ public class EZFilter {
 
         public Bitmap capture() {
             // 离屏渲染
-            OffscreenHelper helper = new OffscreenHelper(mBitmap);
+            OffscreenImage offscreenImage = new OffscreenImage(mBitmap);
             for (FilterRender filterRender : mFilterRenders) {
-                helper.addFilterRender(filterRender);
+                offscreenImage.addFilterRender(filterRender);
             }
-            return helper.capture();
+            return offscreenImage.capture();
         }
 
         public Bitmap capture(int width, int height) {
             // 离屏渲染
-            OffscreenHelper helper = new OffscreenHelper(mBitmap);
+            OffscreenImage offscreenImage = new OffscreenImage(mBitmap);
             for (FilterRender filterRender : mFilterRenders) {
-                helper.addFilterRender(filterRender);
+                offscreenImage.addFilterRender(filterRender);
             }
-            return helper.capture(width, height);
+            return offscreenImage.capture(width, height);
         }
 
         @Override
@@ -183,6 +185,19 @@ public class EZFilter {
         public VideoBuilder setVideoLoop(boolean loop) {
             mVideoLoop = loop;
             return this;
+        }
+
+        public void save(String output) {
+            // 离屏渲染
+            OffscreenVideo offscreenVideo = new OffscreenVideo(mVideo.getPath());
+            try {
+                for (FilterRender filterRender : mFilterRenders) {
+                    offscreenVideo.addFilterRender(filterRender);
+                }
+                offscreenVideo.save(output);
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
         }
 
         @Override

@@ -23,12 +23,12 @@ import static javax.microedition.khronos.opengles.GL10.GL_RGBA;
 import static javax.microedition.khronos.opengles.GL10.GL_UNSIGNED_BYTE;
 
 /**
- * 离屏渲染辅助类
+ * 离屏渲染图片
  *
  * @author like
  * @date 2017-09-18
  */
-public class OffscreenHelper {
+public class OffscreenImage {
 
     private RenderPipeline mPipeline;
 
@@ -42,7 +42,7 @@ public class OffscreenHelper {
     private int mWidth;
     private int mHeight;
 
-    public OffscreenHelper(Bitmap bitmap) {
+    public OffscreenImage(Bitmap bitmap) {
         mWidth = bitmap.getWidth();
         mHeight = bitmap.getHeight();
 
@@ -76,19 +76,14 @@ public class OffscreenHelper {
     }
 
     public Bitmap capture(int width, int height) {
-//        long time = System.currentTimeMillis();
         mPipeline.onSurfaceChanged(mGL, width, height);
         mPipeline.startRender();
         mPipeline.onDrawFrame(mGL);
-//        Log.e("OffscreenHelper", "capture draw useTime:" + (System.currentTimeMillis() - time));
 
-//        time = System.currentTimeMillis();
         int[] iat = new int[width * height];
         IntBuffer ib = IntBuffer.allocate(width * height);
         mGL.glReadPixels(0, 0, width, height, GL_RGBA, GL_UNSIGNED_BYTE, ib);
-//        Log.e("OffscreenHelper", "capture readPixels useTime:" + (System.currentTimeMillis() - time));
 
-//        time = System.currentTimeMillis();
         int[] ia = ib.array();
         // Convert upside down mirror -reversed image to right - side up normal image.
         for (int i = 0; i < height; i++) {
@@ -96,7 +91,6 @@ public class OffscreenHelper {
         }
         Bitmap bitmap = Bitmap.createBitmap(width, height, Bitmap.Config.ARGB_8888);
         bitmap.copyPixelsFromBuffer(IntBuffer.wrap(iat));
-//        Log.e("OffscreenHelper", "capture createBitmap useTime:" + (System.currentTimeMillis() - time));
 
         mPipeline.onSurfaceDestroyed();
 
