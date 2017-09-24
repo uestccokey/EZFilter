@@ -18,10 +18,13 @@ import com.zhihu.matisse.engine.impl.PicassoEngine;
 import java.util.List;
 
 import cn.ezandroid.ezfilter.EZFilter;
+import cn.ezandroid.ezfilter.core.RenderPipeline;
+import cn.ezandroid.ezfilter.demo.render.WobbleRender;
 import cn.ezandroid.ezfilter.environment.SurfaceRenderView;
 import cn.ezandroid.ezfilter.media.AudioTrackTranscoder;
 import cn.ezandroid.ezfilter.media.MediaUtil;
 import cn.ezandroid.ezfilter.media.QueuedMuxer;
+import cn.ezandroid.ezfilter.media.TextureFBORender;
 import cn.ezandroid.ezfilter.media.VideoTrackTranscoder;
 
 /**
@@ -121,11 +124,21 @@ public class VideoOffscreenActivity extends BaseActivity {
             MediaMuxer muxer = new MediaMuxer(output, MediaMuxer.OutputFormat.MUXER_OUTPUT_MPEG_4);
             QueuedMuxer queuedMuxer = new QueuedMuxer(muxer);
 
+            TextureFBORender offscreenInput = new TextureFBORender();
+            RenderPipeline pipeline = new RenderPipeline();
+            pipeline.onSurfaceCreated(null, null);
+            pipeline.onSurfaceChanged(null, w, h);
+            pipeline.setStartPointRender(offscreenInput);
+            pipeline.addFilterRender(new WobbleRender());
+            pipeline.startRender();
+
             if (null != track.audioTrackFormat) {
                 // 音视频轨道都需要
                 queuedMuxer.setTrackCount(QueuedMuxer.TRACK_VIDEO & QueuedMuxer.TRACK_AUDIO);
-                VideoTrackTranscoder videoTrack = new VideoTrackTranscoder(extractor, track.videoTrackIndex, videoFormat, queuedMuxer);
-                AudioTrackTranscoder audioTrack = new AudioTrackTranscoder(extractor, track.audioTrackIndex, audioFormat, queuedMuxer);
+                VideoTrackTranscoder videoTrack = new VideoTrackTranscoder(extractor, track.videoTrackIndex,
+                        videoFormat, queuedMuxer, offscreenInput);
+                AudioTrackTranscoder audioTrack = new AudioTrackTranscoder(extractor, track.audioTrackIndex,
+                        audioFormat, queuedMuxer);
 
                 videoTrack.setup();
                 audioTrack.setup();
@@ -141,12 +154,14 @@ public class VideoOffscreenActivity extends BaseActivity {
                     }
                 }
 
+                pipeline.onSurfaceDestroyed();
                 videoTrack.release();
                 audioTrack.release();
             } else {
                 // 只需视频轨
                 queuedMuxer.setTrackCount(QueuedMuxer.TRACK_VIDEO);
-                VideoTrackTranscoder videoTrack = new VideoTrackTranscoder(extractor, track.videoTrackIndex, videoFormat, queuedMuxer);
+                VideoTrackTranscoder videoTrack = new VideoTrackTranscoder(extractor, track.videoTrackIndex,
+                        videoFormat, queuedMuxer, offscreenInput);
 
                 videoTrack.setup();
 
@@ -161,6 +176,7 @@ public class VideoOffscreenActivity extends BaseActivity {
                     }
                 }
 
+                pipeline.onSurfaceDestroyed();
                 videoTrack.release();
             }
 
