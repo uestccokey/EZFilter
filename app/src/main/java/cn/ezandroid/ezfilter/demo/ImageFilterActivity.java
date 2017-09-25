@@ -9,9 +9,9 @@ import android.widget.ImageView;
 
 import cn.ezandroid.ezfilter.EZFilter;
 import cn.ezandroid.ezfilter.core.RenderPipeline;
+import cn.ezandroid.ezfilter.core.output.BitmapOutput;
 import cn.ezandroid.ezfilter.demo.render.LookupRender;
-import cn.ezandroid.ezfilter.environment.TextureRenderView;
-import cn.ezandroid.ezfilter.io.output.BitmapOutput;
+import cn.ezandroid.ezfilter.environment.TextureFitView;
 
 /**
  * ImageFilterActivity
@@ -21,7 +21,7 @@ import cn.ezandroid.ezfilter.io.output.BitmapOutput;
  */
 public class ImageFilterActivity extends BaseActivity {
 
-    private TextureRenderView mRenderView;
+    private TextureFitView mRenderView;
     private ImageView mPreviewImage;
 
     private Bitmap mBitmap1;
@@ -43,7 +43,7 @@ public class ImageFilterActivity extends BaseActivity {
 
         mCurrentBitmap = mBitmap1;
 
-        mRenderPipeline = EZFilter.setBitmap(mCurrentBitmap)
+        mRenderPipeline = EZFilter.input(mCurrentBitmap)
                 .addFilter(new LookupRender(ImageFilterActivity.this, R.drawable.langman))
                 .into(mRenderView);
 
@@ -80,7 +80,7 @@ public class ImageFilterActivity extends BaseActivity {
             mCurrentBitmap = mBitmap1;
         }
 
-        mRenderPipeline = EZFilter.setBitmap(mCurrentBitmap)
+        mRenderPipeline = EZFilter.input(mCurrentBitmap)
                 .addFilter(new LookupRender(ImageFilterActivity.this, R.drawable.langman))
                 .into(mRenderView);
     }

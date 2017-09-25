@@ -5,7 +5,7 @@ import java.util.List;
 
 import cn.ezandroid.ezfilter.core.FBORender;
 import cn.ezandroid.ezfilter.core.FilterRender;
-import cn.ezandroid.ezfilter.core.OnTextureAvailableListener;
+import cn.ezandroid.ezfilter.core.OnTextureAcceptableListener;
 
 /**
  * 组合滤镜渲染器
@@ -50,18 +50,18 @@ public class GroupFilterRender extends FilterRender {
     }
 
     @Override
-    public void onTextureAvailable(int texture, FBORender source) {
+    public void onTextureAcceptable(int texture, FBORender source) {
         if (mTerminalFilters.contains(source)) {
             setWidth(source.getWidth());
             setHeight(source.getHeight());
             synchronized (getLock()) {
-                for (OnTextureAvailableListener target : getTargets()) {
-                    target.onTextureAvailable(texture, this);
+                for (OnTextureAcceptableListener target : getTargets()) {
+                    target.onTextureAcceptable(texture, this);
                 }
             }
         } else {
             for (FilterRender initialFilter : mInitialFilters) {
-                initialFilter.onTextureAvailable(texture, source);
+                initialFilter.onTextureAcceptable(texture, source);
             }
         }
     }

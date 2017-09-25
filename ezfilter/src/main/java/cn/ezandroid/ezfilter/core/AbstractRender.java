@@ -9,7 +9,7 @@ import java.nio.FloatBuffer;
 import java.util.LinkedList;
 import java.util.Queue;
 
-import cn.ezandroid.ezfilter.util.L;
+import cn.ezandroid.ezfilter.core.util.L;
 
 /**
  * 滤镜核心类

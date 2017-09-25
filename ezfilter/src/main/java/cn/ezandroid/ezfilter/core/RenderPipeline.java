@@ -9,10 +9,10 @@ import java.util.List;
 import javax.microedition.khronos.egl.EGLConfig;
 import javax.microedition.khronos.opengles.GL10;
 
+import cn.ezandroid.ezfilter.core.output.BitmapOutput;
+import cn.ezandroid.ezfilter.core.output.BufferOutput;
+import cn.ezandroid.ezfilter.core.util.L;
 import cn.ezandroid.ezfilter.environment.Renderer;
-import cn.ezandroid.ezfilter.io.output.BitmapOutput;
-import cn.ezandroid.ezfilter.io.output.BufferOutput;
-import cn.ezandroid.ezfilter.util.L;
 
 /**
  * 渲染管道
@@ -295,7 +295,7 @@ public class RenderPipeline implements Renderer {
      */
     public synchronized void setStartPointRender(FBORender rootRenderer) {
         if (mStartPointRender != null) {
-            for (OnTextureAvailableListener render : mStartPointRender.getTargets()) {
+            for (OnTextureAcceptableListener render : mStartPointRender.getTargets()) {
                 rootRenderer.addTarget(render);
             }
             mStartPointRender.clearTargets();

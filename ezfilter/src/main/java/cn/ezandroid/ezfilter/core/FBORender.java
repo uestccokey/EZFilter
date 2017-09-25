@@ -8,7 +8,8 @@ import java.util.List;
 /**
  * 支持帧缓冲的渲染器
  * <p>
- * 会将图像渲染到一个输出纹理中
+ * 会将图像渲染到一个输出纹理中。
+ * FBORender需要与EndPointRender配合使用才能将帧缓冲中的内容显示出来。
  *
  * @author like
  * @date 2017-09-15
@@ -19,7 +20,7 @@ public class FBORender extends AbstractRender {
     protected int[] mTextureOut;
     protected int[] mDepthRenderBuffer;
 
-    protected List<OnTextureAvailableListener> mTargets;
+    protected List<OnTextureAcceptableListener> mTargets;
     private final Object mListLock = new Object();
 
     public FBORender() {
@@ -61,9 +62,9 @@ public class FBORender extends AbstractRender {
         GLES20.glBindFramebuffer(GLES20.GL_FRAMEBUFFER, 0);
 
         synchronized (mListLock) {
-            for (OnTextureAvailableListener target : mTargets) {
+            for (OnTextureAcceptableListener target : mTargets) {
                 if (null != target && null != mTextureOut && mTextureOut.length > 0) {
-                    target.onTextureAvailable(mTextureOut[0], this);
+                    target.onTextureAcceptable(mTextureOut[0], this);
                 }
             }
         }
@@ -132,11 +133,11 @@ public class FBORender extends AbstractRender {
                 mDepthRenderBuffer[0]);
     }
 
-    public List<OnTextureAvailableListener> getTargets() {
+    public List<OnTextureAcceptableListener> getTargets() {
         return mTargets;
     }
 
-    public synchronized void addTarget(OnTextureAvailableListener target) {
+    public synchronized void addTarget(OnTextureAcceptableListener target) {
         synchronized (mListLock) {
             if (!mTargets.contains(target) && target != null) {
                 mTargets.add(target);
@@ -144,7 +145,7 @@ public class FBORender extends AbstractRender {
         }
     }
 
-    public void removeTarget(OnTextureAvailableListener target) {
+    public void removeTarget(OnTextureAcceptableListener target) {
         synchronized (mListLock) {
             mTargets.remove(target);
         }

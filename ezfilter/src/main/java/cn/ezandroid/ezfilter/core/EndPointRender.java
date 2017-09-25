@@ -8,10 +8,10 @@ package cn.ezandroid.ezfilter.core;
  * @author like
  * @date 2017-09-15
  */
-public class EndPointRender extends AbstractRender implements OnTextureAvailableListener {
+public class EndPointRender extends AbstractRender implements OnTextureAcceptableListener {
 
     @Override
-    public void onTextureAvailable(int texture, FBORender source) {
+    public void onTextureAcceptable(int texture, FBORender source) {
         mTextureIn = texture;
         setWidth(source.getWidth());
         setHeight(source.getHeight());

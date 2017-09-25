@@ -10,10 +10,10 @@ import android.widget.ImageView;
 
 import cn.ezandroid.ezfilter.EZFilter;
 import cn.ezandroid.ezfilter.core.RenderPipeline;
+import cn.ezandroid.ezfilter.core.output.BitmapOutput;
 import cn.ezandroid.ezfilter.demo.render.BWRender;
-import cn.ezandroid.ezfilter.environment.RenderViewHelper;
-import cn.ezandroid.ezfilter.environment.TextureRenderView;
-import cn.ezandroid.ezfilter.io.output.BitmapOutput;
+import cn.ezandroid.ezfilter.environment.FitViewHelper;
+import cn.ezandroid.ezfilter.environment.TextureFitView;
 
 /**
  * CameraFilterActivity
@@ -23,7 +23,7 @@ import cn.ezandroid.ezfilter.io.output.BitmapOutput;
  */
 public class CameraFilterActivity extends BaseActivity {
 
-    private TextureRenderView mRenderView;
+    private TextureFitView mRenderView;
     private ImageView mPreviewImage;
 
     private Camera mCamera;
@@ -98,8 +98,8 @@ public class CameraFilterActivity extends BaseActivity {
         mCamera = Camera.open(id);
         setCameraParameters();
 
-        mRenderPipeline = EZFilter.setCamera(mCamera)
-                .setScaleType(RenderViewHelper.ScaleType.CENTER_CROP)
+        mRenderPipeline = EZFilter.input(mCamera)
+                .setScaleType(FitViewHelper.ScaleType.CENTER_CROP)
                 .addFilter(new BWRender(this))
                 .into(mRenderView);
     }

@@ -6,9 +6,9 @@ import android.opengl.GLES20;
 
 import cn.ezandroid.ezfilter.core.FBORender;
 import cn.ezandroid.ezfilter.core.FilterRender;
-import cn.ezandroid.ezfilter.util.BitmapUtil;
-import cn.ezandroid.ezfilter.util.PathPrefix;
-import cn.ezandroid.ezfilter.util.TextureBindUtil;
+import cn.ezandroid.ezfilter.core.util.BitmapUtil;
+import cn.ezandroid.ezfilter.core.util.PathPrefix;
+import cn.ezandroid.ezfilter.core.util.TextureBindUtil;
 
 /**
  * 多图片输入滤镜渲染器
@@ -104,14 +104,13 @@ public class MultiBitmapInputRender extends FilterRender {
     }
 
     @Override
-    public void onTextureAvailable(int texture, FBORender source) {
+    public void onTextureAcceptable(int texture, FBORender source) {
         mTextureIn = texture;
 
         if (mTextureNum > 1) {
             // 只bind一次，直到destroy，避免每次都去loadBitmap和bindBitmap耗时
             for (int i = 0; i < mTextures.length; i++) {
                 if (mTextures[i] == 0) {
-//                    long time = System.currentTimeMillis();
                     String key = "";
                     if (mResources != null) {
                         int resource = mResources[i];
@@ -135,10 +134,7 @@ public class MultiBitmapInputRender extends FilterRender {
                             mBitmaps[i] = BitmapUtil.loadBitmap(mContext, key);
                         }
                     }
-//                    Log.e("MultiBitmapInputRender", key + " loadBitmap useTime:" + (System.currentTimeMillis() - time));
-//                    time = System.currentTimeMillis();
                     mTextures[i] = TextureBindUtil.bindBitmap(mBitmaps[i]);
-//                    Log.e("MultiBitmapInputRender", key + " bindBitmap useTime:" + (System.currentTimeMillis() - time));
                 }
             }
         }

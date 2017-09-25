@@ -29,10 +29,10 @@ import java.util.List;
 
 import cn.ezandroid.ezfilter.EZFilter;
 import cn.ezandroid.ezfilter.core.RenderPipeline;
+import cn.ezandroid.ezfilter.core.output.BitmapOutput;
 import cn.ezandroid.ezfilter.demo.render.BWRender;
-import cn.ezandroid.ezfilter.environment.RenderViewHelper;
-import cn.ezandroid.ezfilter.environment.SurfaceRenderView;
-import cn.ezandroid.ezfilter.io.output.BitmapOutput;
+import cn.ezandroid.ezfilter.environment.FitViewHelper;
+import cn.ezandroid.ezfilter.environment.SurfaceFitView;
 
 /**
  * Camera2FilterActivity
@@ -49,7 +49,7 @@ public class Camera2FilterActivity extends BaseActivity {
     private static final int MAX_PREVIEW_WIDTH = 1920;
     private static final int MAX_PREVIEW_HEIGHT = 1080;
 
-    private SurfaceRenderView mRenderView;
+    private SurfaceFitView mRenderView;
     private ImageView mPreviewImage;
 
     private CameraManager mCameraManager;
@@ -219,8 +219,8 @@ public class Camera2FilterActivity extends BaseActivity {
         @Override
         public void onOpened(CameraDevice camera) { // 打开摄像头
             mCameraDevice = camera;
-            mRenderPipeline = EZFilter.setCamera2(mCameraDevice, mPreviewSize)
-                    .setScaleType(RenderViewHelper.ScaleType.CENTER_CROP)
+            mRenderPipeline = EZFilter.input(mCameraDevice, mPreviewSize)
+                    .setScaleType(FitViewHelper.ScaleType.CENTER_CROP)
                     .addFilter(new BWRender(Camera2FilterActivity.this))
                     .into(mRenderView);
         }

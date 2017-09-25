@@ -11,10 +11,10 @@ import android.widget.ImageView;
 
 import cn.ezandroid.ezfilter.EZFilter;
 import cn.ezandroid.ezfilter.core.RenderPipeline;
+import cn.ezandroid.ezfilter.core.output.BitmapOutput;
 import cn.ezandroid.ezfilter.demo.render.WobbleRender;
-import cn.ezandroid.ezfilter.environment.TextureRenderView;
-import cn.ezandroid.ezfilter.io.output.BitmapOutput;
-import cn.ezandroid.ezfilter.view.GLLinearLayout;
+import cn.ezandroid.ezfilter.environment.TextureFitView;
+import cn.ezandroid.ezfilter.view.glview.GLLinearLayout;
 
 /**
  * ViewFilterActivity
@@ -24,7 +24,7 @@ import cn.ezandroid.ezfilter.view.GLLinearLayout;
  */
 public class ViewFilterActivity extends BaseActivity {
 
-    private TextureRenderView mRenderView;
+    private TextureFitView mRenderView;
     private ImageView mPreviewImage;
     private GLLinearLayout mLinearLayout;
     private WebView mWebView;
@@ -48,7 +48,7 @@ public class ViewFilterActivity extends BaseActivity {
         mLinearLayout.post(new Runnable() {
             @Override
             public void run() {
-                mRenderPipeline = EZFilter.setView(mLinearLayout)
+                mRenderPipeline = EZFilter.input(mLinearLayout)
                         .addFilter(new WobbleRender())
                         .into(mRenderView);
             }

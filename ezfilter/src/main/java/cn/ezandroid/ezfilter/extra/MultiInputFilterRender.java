@@ -34,7 +34,7 @@ public class MultiInputFilterRender extends FilterRender {
     }
 
     @Override
-    public synchronized void onTextureAvailable(int texture, FBORender source) {
+    public synchronized void onTextureAcceptable(int texture, FBORender source) {
         if (!mTexturesReceived.contains(source)) {
             mTexturesReceived.add(source);
         }

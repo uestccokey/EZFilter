@@ -9,10 +9,10 @@ import android.widget.ImageView;
 
 import cn.ezandroid.ezfilter.EZFilter;
 import cn.ezandroid.ezfilter.core.RenderPipeline;
+import cn.ezandroid.ezfilter.core.output.BitmapOutput;
 import cn.ezandroid.ezfilter.demo.render.BWRender;
-import cn.ezandroid.ezfilter.environment.SurfaceRenderView;
-import cn.ezandroid.ezfilter.io.input.VideoInput;
-import cn.ezandroid.ezfilter.io.output.BitmapOutput;
+import cn.ezandroid.ezfilter.environment.SurfaceFitView;
+import cn.ezandroid.ezfilter.video.VideoInput;
 
 /**
  * VideoFilterActivity
@@ -22,7 +22,7 @@ import cn.ezandroid.ezfilter.io.output.BitmapOutput;
  */
 public class VideoFilterActivity extends BaseActivity {
 
-    private SurfaceRenderView mRenderView;
+    private SurfaceFitView mRenderView;
     private ImageView mPreviewImage;
 
     private Uri uri1;
@@ -44,8 +44,8 @@ public class VideoFilterActivity extends BaseActivity {
 
         mCurrentUri = uri1;
 
-        mRenderPipeline = EZFilter.setVideo(mCurrentUri)
-                .setVideoLoop(true)
+        mRenderPipeline = EZFilter.input(mCurrentUri)
+                .setLoop(true)
                 .addFilter(new BWRender(this))
                 .into(mRenderView);
 
@@ -81,8 +81,8 @@ public class VideoFilterActivity extends BaseActivity {
             mCurrentUri = uri1;
         }
 
-        mRenderPipeline = EZFilter.setVideo(mCurrentUri)
-                .setVideoLoop(true)
+        mRenderPipeline = EZFilter.input(mCurrentUri)
+                .setLoop(true)
                 .addFilter(new BWRender(this))
                 .into(mRenderView);
     }

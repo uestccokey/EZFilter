@@ -16,7 +16,7 @@ import java.util.List;
 import cn.ezandroid.ezfilter.EZFilter;
 import cn.ezandroid.ezfilter.demo.render.BWRender;
 import cn.ezandroid.ezfilter.demo.render.WobbleRender;
-import cn.ezandroid.ezfilter.environment.SurfaceRenderView;
+import cn.ezandroid.ezfilter.environment.SurfaceFitView;
 
 /**
  * VideoOffscreenActivity
@@ -28,7 +28,7 @@ public class VideoOffscreenActivity extends BaseActivity {
 
     private static final int REQUEST_CODE_CHOOSE = 1;
 
-    private SurfaceRenderView mRenderView;
+    private SurfaceFitView mRenderView;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -63,16 +63,16 @@ public class VideoOffscreenActivity extends BaseActivity {
                     public void run() {
                         final String output = "/sdcard/render.mp4";
                         // save是耗时操作，需要在异步线程调用
-                        EZFilter.setVideo(Uri.parse(paths.get(0)))
+                        EZFilter.input(Uri.parse(paths.get(0)))
                                 .addFilter(new BWRender(VideoOffscreenActivity.this))
                                 .addFilter(new WobbleRender())
-                                .save(output);
+                                .output(output);
 
                         runOnUiThread(new Runnable() {
                             @Override
                             public void run() {
-                                EZFilter.setVideo(Uri.parse(output))
-                                        .setVideoLoop(true)
+                                EZFilter.input(Uri.parse(output))
+                                        .setLoop(true)
                                         .into(mRenderView);
                             }
                         });

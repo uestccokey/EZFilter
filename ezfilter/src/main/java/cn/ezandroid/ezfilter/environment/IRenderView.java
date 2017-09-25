@@ -32,7 +32,7 @@ public interface IRenderView extends IGLEnvironment {
      *
      * @param scaleType 缩放规则
      */
-    void setScaleType(RenderViewHelper.ScaleType scaleType);
+    void setScaleType(FitViewHelper.ScaleType scaleType);
 
     /**
      * 设置宽高比及最大宽度最大高度
