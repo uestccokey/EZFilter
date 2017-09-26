@@ -8,7 +8,6 @@ import cn.ezandroid.ezfilter.core.FBORender;
 import cn.ezandroid.ezfilter.core.FilterRender;
 import cn.ezandroid.ezfilter.core.util.BitmapUtil;
 import cn.ezandroid.ezfilter.core.util.PathPrefix;
-import cn.ezandroid.ezfilter.core.util.TextureBindUtil;
 
 /**
  * 多图片输入滤镜渲染器
@@ -134,7 +133,7 @@ public class MultiBitmapInputRender extends FilterRender {
                             mBitmaps[i] = BitmapUtil.loadBitmap(mContext, key);
                         }
                     }
-                    mTextures[i] = TextureBindUtil.bindBitmap(mBitmaps[i]);
+                    mTextures[i] = BitmapUtil.bindBitmap(mBitmaps[i]);
                 }
             }
         }

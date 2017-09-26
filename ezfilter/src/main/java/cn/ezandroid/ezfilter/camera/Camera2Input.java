@@ -14,7 +14,7 @@ import android.os.HandlerThread;
 import android.util.Size;
 import android.view.Surface;
 
-import java.util.Arrays;
+import java.util.Collections;
 
 import javax.microedition.khronos.opengles.GL10;
 
@@ -22,7 +22,9 @@ import cn.ezandroid.ezfilter.core.FBORender;
 import cn.ezandroid.ezfilter.environment.IGLEnvironment;
 
 /**
- * 5.0以上支持CameraDevice输入
+ * CameraDevice输入
+ * <p>
+ * API21及以上支持
  *
  * @author like
  * @date 2017-09-19
@@ -131,7 +133,7 @@ public class Camera2Input extends FBORender implements SurfaceTexture.OnFrameAva
             Surface surface = new Surface(mSurfaceTexture);
             mPreviewRequestBuilder = mCamera.createCaptureRequest(CameraDevice.TEMPLATE_PREVIEW);
             mPreviewRequestBuilder.addTarget(surface);
-            mCamera.createCaptureSession(Arrays.asList(surface), mSessionPreviewStateCallback, mPreviewHandler);
+            mCamera.createCaptureSession(Collections.singletonList(surface), mSessionPreviewStateCallback, mPreviewHandler);
         } catch (Exception e) {
             e.printStackTrace();
         }

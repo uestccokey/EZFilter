@@ -19,22 +19,17 @@ public class LruBitmapCache implements IBitmapCache {
             protected int sizeOf(String key, Bitmap value) {
                 return value.getRowBytes() * value.getHeight();
             }
-
-//            @Override
-//            protected void entryRemoved(boolean evicted, String key, Bitmap oldValue, Bitmap newValue) {
-//                Log.e("LruBitmapCache", "entryRemoved:" + key + " " + sizeOf(key, oldValue) + " " + size() + " " + maxSize());
-//            }
         };
     }
 
     @Override
-    public Bitmap get(String path) {
-        return mLruCache.get(path);
+    public Bitmap get(String key) {
+        return mLruCache.get(key);
     }
 
     @Override
-    public void put(String path, Bitmap bitmap) {
-        mLruCache.put(path, bitmap);
+    public void put(String key, Bitmap bitmap) {
+        mLruCache.put(key, bitmap);
     }
 
     @Override

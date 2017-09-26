@@ -12,9 +12,9 @@ import android.graphics.Bitmap;
  */
 public interface IBitmapCache {
 
-    Bitmap get(String path);
+    Bitmap get(String key);
 
-    void put(String path, Bitmap bitmap);
+    void put(String key, Bitmap bitmap);
 
     void clear();
 }

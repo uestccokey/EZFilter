@@ -8,7 +8,7 @@ import java.nio.ByteOrder;
 import java.nio.FloatBuffer;
 
 import cn.ezandroid.ezfilter.core.FBORender;
-import cn.ezandroid.ezfilter.core.util.TextureBindUtil;
+import cn.ezandroid.ezfilter.core.util.BitmapUtil;
 
 /**
  * 图片输入
@@ -97,7 +97,7 @@ public class BitmapInput extends FBORender {
             tex[0] = mTextureIn;
             GLES20.glDeleteTextures(1, tex, 0);
         }
-        mTextureIn = TextureBindUtil.bindBitmap(mBitmap);
+        mTextureIn = BitmapUtil.bindBitmap(mBitmap);
     }
 
     @Override
