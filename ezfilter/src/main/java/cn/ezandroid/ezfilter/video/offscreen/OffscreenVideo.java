@@ -94,21 +94,25 @@ public class OffscreenVideo {
     }
 
     public void save(String output) throws IOException {
+        if (null == mTrack || null == mTrack.videoTrackFormat) {
+            return;
+        }
         mPipeline.startRender();
-
-        int sampleRate = mTrack.audioTrackFormat.getInteger(MediaFormat.KEY_SAMPLE_RATE);
-        int channel = mTrack.audioTrackFormat.getInteger(MediaFormat.KEY_CHANNEL_COUNT);
 
         // 视频Format
         MediaFormat videoFormat = MediaUtil.createVideoFormat(mWidth, mHeight);
-        // 音频Format
-        MediaFormat audioFormat = MediaUtil.createAudioFormat(sampleRate, channel);
 
         // 初始化转码器
         MediaMuxer muxer = new MediaMuxer(output, MediaMuxer.OutputFormat.MUXER_OUTPUT_MPEG_4);
         QueuedMuxer queuedMuxer = new QueuedMuxer(muxer);
 
         if (null != mTrack.audioTrackFormat) {
+            int sampleRate = mTrack.audioTrackFormat.getInteger(MediaFormat.KEY_SAMPLE_RATE);
+            int channel = mTrack.audioTrackFormat.getInteger(MediaFormat.KEY_CHANNEL_COUNT);
+
+            // 音频Format
+            MediaFormat audioFormat = MediaUtil.createAudioFormat(sampleRate, channel);
+
             // 音视频轨道都需要
             queuedMuxer.setTrackCount(QueuedMuxer.TRACK_VIDEO & QueuedMuxer.TRACK_AUDIO);
             VideoTrackTranscoder videoTrack = new VideoTrackTranscoder(mExtractor, mTrack.videoTrackIndex,
