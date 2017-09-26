@@ -29,6 +29,7 @@ import cn.ezandroid.ezfilter.image.BitmapInput;
 import cn.ezandroid.ezfilter.image.offscreen.OffscreenImage;
 import cn.ezandroid.ezfilter.video.VideoInput;
 import cn.ezandroid.ezfilter.video.offscreen.OffscreenVideo;
+import cn.ezandroid.ezfilter.video.player.IMediaPlayer;
 import cn.ezandroid.ezfilter.view.ViewInput;
 import cn.ezandroid.ezfilter.view.glview.IGLView;
 
@@ -188,15 +189,11 @@ public class EZFilter {
             return this;
         }
 
-        Builder addFilter(FilterRender filterRender, float progress) {
+        <T extends FilterRender & IAdjustable> Builder addFilter(T filterRender, float progress) {
             if (filterRender != null && !mFilterRenders.contains(filterRender)) {
                 filterRender.setBitmapCache(sBitmapCache);
                 // 调节强度
-                if (filterRender instanceof IAdjustable) {
-                    ((IAdjustable) filterRender).adjust(progress);
-                } else {
-                    // TODO 抛出异常？
-                }
+                filterRender.adjust(progress);
                 mFilterRenders.add(filterRender);
             }
             return this;
@@ -285,7 +282,7 @@ public class EZFilter {
         }
 
         @Override
-        public BitmapBuilder addFilter(FilterRender filterRender, float progress) {
+        public <T extends FilterRender & IAdjustable> BitmapBuilder addFilter(T filterRender, float progress) {
             return (BitmapBuilder) super.addFilter(filterRender, progress);
         }
     }
@@ -298,6 +295,8 @@ public class EZFilter {
         private Uri mVideo;
         private boolean mVideoLoop;
         private float mVideoVolume;
+        private IMediaPlayer.OnPreparedListener mPreparedListener;
+        private IMediaPlayer.OnCompletionListener mCompletionListener;
 
         private VideoBuilder(Uri uri) {
             mVideo = uri;
@@ -310,6 +309,16 @@ public class EZFilter {
 
         public VideoBuilder setVolume(float volume) {
             mVideoVolume = volume;
+            return this;
+        }
+
+        public VideoBuilder setPreparedListener(IMediaPlayer.OnPreparedListener listener) {
+            mPreparedListener = listener;
+            return this;
+        }
+
+        public VideoBuilder setCompletionListener(IMediaPlayer.OnCompletionListener listener) {
+            mCompletionListener = listener;
             return this;
         }
 
@@ -331,6 +340,8 @@ public class EZFilter {
             VideoInput videoInput = new VideoInput(view.getContext(), view, mVideo);
             videoInput.setLoop(mVideoLoop);
             videoInput.setVolume(mVideoVolume, mVideoVolume);
+            videoInput.setOnPreparedListener(mPreparedListener);
+            videoInput.setOnCompletionListener(mCompletionListener);
             videoInput.start();
             return videoInput;
         }
@@ -338,11 +349,17 @@ public class EZFilter {
         @Override
         float getAspectRatio(IFitView view) {
             MediaMetadataRetriever metadata = new MediaMetadataRetriever();
-            metadata.setDataSource(view.getContext(), mVideo);
-            String width = metadata.extractMetadata(MediaMetadataRetriever.METADATA_KEY_VIDEO_WIDTH);
-            String height = metadata.extractMetadata(MediaMetadataRetriever.METADATA_KEY_VIDEO_HEIGHT);
-            metadata.release();
-            return Integer.parseInt(width) * 1.0f / Integer.parseInt(height);
+            try {
+                metadata.setDataSource(view.getContext(), mVideo);
+                String width = metadata.extractMetadata(MediaMetadataRetriever.METADATA_KEY_VIDEO_WIDTH);
+                String height = metadata.extractMetadata(MediaMetadataRetriever.METADATA_KEY_VIDEO_HEIGHT);
+                return Integer.parseInt(width) * 1.0f / Integer.parseInt(height);
+            } catch (Exception e) {
+                e.printStackTrace();
+                return 1;
+            } finally {
+                metadata.release();
+            }
         }
 
         @Override
@@ -361,7 +378,7 @@ public class EZFilter {
         }
 
         @Override
-        public VideoBuilder addFilter(FilterRender filterRender, float progress) {
+        public <T extends FilterRender & IAdjustable> VideoBuilder addFilter(T filterRender, float progress) {
             return (VideoBuilder) super.addFilter(filterRender, progress);
         }
     }
@@ -404,7 +421,7 @@ public class EZFilter {
         }
 
         @Override
-        public CameraBuilder addFilter(FilterRender filterRender, float progress) {
+        public <T extends FilterRender & IAdjustable> CameraBuilder addFilter(T filterRender, float progress) {
             return (CameraBuilder) super.addFilter(filterRender, progress);
         }
     }
@@ -449,7 +466,7 @@ public class EZFilter {
         }
 
         @Override
-        public Camera2Builder addFilter(FilterRender filterRender, float progress) {
+        public <T extends FilterRender & IAdjustable> Camera2Builder addFilter(T filterRender, float progress) {
             return (Camera2Builder) super.addFilter(filterRender, progress);
         }
     }
@@ -494,7 +511,7 @@ public class EZFilter {
         }
 
         @Override
-        public ViewBuilder addFilter(FilterRender filterRender, float progress) {
+        public <T extends FilterRender & IAdjustable> ViewBuilder addFilter(T filterRender, float progress) {
             return (ViewBuilder) super.addFilter(filterRender, progress);
         }
 

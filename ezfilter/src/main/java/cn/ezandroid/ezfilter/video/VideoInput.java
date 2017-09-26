@@ -46,12 +46,8 @@ public class VideoInput extends FBORender implements SurfaceTexture.OnFrameAvail
 
     private boolean mIsLoop;
 
-    private OnPlayerPreparedListener mOnPlayerPreparedListener;
-
-    public interface OnPlayerPreparedListener {
-
-        void OnPlayerPrepared(IMediaPlayer player);
-    }
+    private IMediaPlayer.OnPreparedListener mPreparedListener;
+    private IMediaPlayer.OnCompletionListener mCompletionListener;
 
     public VideoInput(IGLEnvironment render) {
         super();
@@ -78,8 +74,12 @@ public class VideoInput extends FBORender implements SurfaceTexture.OnFrameAvail
         }
     }
 
-    public void setOnPlayerPreparedListener(OnPlayerPreparedListener listener) {
-        mOnPlayerPreparedListener = listener;
+    public void setOnPreparedListener(IMediaPlayer.OnPreparedListener listener) {
+        mPreparedListener = listener;
+    }
+
+    public void setOnCompletionListener(IMediaPlayer.OnCompletionListener listener) {
+        mCompletionListener = listener;
     }
 
     public void setVideoUri(Context context, Uri uri, IMediaPlayer player) throws IOException {
@@ -88,8 +88,29 @@ public class VideoInput extends FBORender implements SurfaceTexture.OnFrameAvail
             mVideoUri = uri;
             mPlayer = player;
             mPlayer.setDataSource(context, mVideoUri);
-            mPlayer.setVolume(mVideoVolumeLeft, mVideoVolumeRight);
             mPlayer.setLooping(mIsLoop);
+            mPlayer.setVolume(mVideoVolumeLeft, mVideoVolumeRight);
+            mPlayer.setOnPreparedListener(new IMediaPlayer.OnPreparedListener() {
+                @Override
+                public void onPrepared(IMediaPlayer var1) {
+                    mReady = true;
+                    if (mStartWhenReady) {
+                        mPlayer.start();
+                    }
+
+                    if (mPreparedListener != null) {
+                        mPreparedListener.onPrepared(mPlayer);
+                    }
+                }
+            });
+            mPlayer.setOnCompletionListener(new IMediaPlayer.OnCompletionListener() {
+                @Override
+                public void onCompletion(IMediaPlayer var1) {
+                    if (mCompletionListener != null) {
+                        mCompletionListener.onCompletion(var1);
+                    }
+                }
+            });
             reInit();
         }
     }
@@ -202,19 +223,6 @@ public class VideoInput extends FBORender implements SurfaceTexture.OnFrameAvail
                 // prepareAsync 不放在setVideoUri里是为了onPrepared中mPlayer.start()时已经设置了Surface，否则可能播放失败
                 try {
                     mPlayer.prepareAsync();
-                    mPlayer.setOnPreparedListener(new IMediaPlayer.OnPreparedListener() {
-                        @Override
-                        public void onPrepared(IMediaPlayer var1) {
-                            mReady = true;
-                            if (mStartWhenReady) {
-                                mPlayer.start();
-                            }
-
-                            if (mOnPlayerPreparedListener != null) {
-                                mOnPlayerPreparedListener.OnPlayerPrepared(mPlayer);
-                            }
-                        }
-                    });
                 } catch (Exception e) {
                     e.printStackTrace();
                 }

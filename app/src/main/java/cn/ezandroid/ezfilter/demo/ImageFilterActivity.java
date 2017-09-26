@@ -41,11 +41,7 @@ public class ImageFilterActivity extends BaseActivity {
         mBitmap1 = BitmapFactory.decodeResource(getResources(), R.drawable.preview);
         mBitmap2 = BitmapFactory.decodeResource(getResources(), R.mipmap.ic_launcher);
 
-        mCurrentBitmap = mBitmap1;
-
-        mRenderPipeline = EZFilter.input(mCurrentBitmap)
-                .addFilter(new LookupRender(ImageFilterActivity.this, R.drawable.langman))
-                .into(mRenderView);
+        changeBitmap();
 
         $(R.id.change_image).setOnClickListener(new View.OnClickListener() {
             @Override
