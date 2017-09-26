@@ -472,8 +472,8 @@ public class RenderPipeline implements Renderer {
      * @param callback   异步获取截图回调
      * @param withFilter 是否滤镜后的图
      */
-    public void capture(final BitmapOutput.BitmapOutputCallback callback, boolean withFilter) {
-        capture(callback, mWidth, mHeight, withFilter);
+    public void output(final BitmapOutput.BitmapOutputCallback callback, boolean withFilter) {
+        output(callback, mWidth, mHeight, withFilter);
     }
 
     /**
@@ -484,7 +484,7 @@ public class RenderPipeline implements Renderer {
      * @param height     截图高度
      * @param withFilter 是否滤镜后的图
      */
-    public void capture(final BitmapOutput.BitmapOutputCallback callback, int width, int height, boolean withFilter) {
+    public void output(final BitmapOutput.BitmapOutputCallback callback, int width, int height, boolean withFilter) {
         FBORender render = null;
         if (withFilter && !mFilterRenders.isEmpty()) {
             render = mFilterRenders.get(mFilterRenders.size() - 1);

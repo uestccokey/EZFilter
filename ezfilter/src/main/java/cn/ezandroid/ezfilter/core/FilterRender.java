@@ -7,7 +7,7 @@ import cn.ezandroid.ezfilter.core.cache.IBitmapCache;
  * <p>
  * 所有滤镜的父类
  * 继承自FBORender，支持滤镜渲染结果作为纹理输出
- * 实现了OnTextureAvailableListener接口，支持接受纹理作为输入进行渲染
+ * 实现了OnTextureAcceptableListener接口，支持接受纹理作为输入进行渲染
  *
  * @author like
  * @date 2017-09-15

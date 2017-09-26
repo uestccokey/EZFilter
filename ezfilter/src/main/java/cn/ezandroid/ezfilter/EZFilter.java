@@ -23,7 +23,8 @@ import cn.ezandroid.ezfilter.core.cache.IFileCache;
 import cn.ezandroid.ezfilter.core.cache.LruBitmapCache;
 import cn.ezandroid.ezfilter.core.cache.LruFileCache;
 import cn.ezandroid.ezfilter.environment.FitViewHelper;
-import cn.ezandroid.ezfilter.environment.IRenderView;
+import cn.ezandroid.ezfilter.environment.IFitView;
+import cn.ezandroid.ezfilter.extra.IAdjustable;
 import cn.ezandroid.ezfilter.image.BitmapInput;
 import cn.ezandroid.ezfilter.image.offscreen.OffscreenImage;
 import cn.ezandroid.ezfilter.video.VideoInput;
@@ -160,14 +161,14 @@ public class EZFilter {
          *
          * @return 宽高比
          */
-        abstract FBORender getStartPointRender(IRenderView view);
+        abstract FBORender getStartPointRender(IFitView view);
 
         /**
          * 获取渲染视图宽高比
          *
          * @return
          */
-        abstract float getAspectRatio(IRenderView view);
+        abstract float getAspectRatio(IFitView view);
 
         Builder setScaleType(FitViewHelper.ScaleType scaleType) {
             mScaleType = scaleType;
@@ -187,7 +188,21 @@ public class EZFilter {
             return this;
         }
 
-        public RenderPipeline into(IRenderView view) {
+        Builder addFilter(FilterRender filterRender, float progress) {
+            if (filterRender != null && !mFilterRenders.contains(filterRender)) {
+                filterRender.setBitmapCache(sBitmapCache);
+                // 调节强度
+                if (filterRender instanceof IAdjustable) {
+                    ((IAdjustable) filterRender).adjust(progress);
+                } else {
+                    // TODO 抛出异常？
+                }
+                mFilterRenders.add(filterRender);
+            }
+            return this;
+        }
+
+        public RenderPipeline into(IFitView view) {
             RenderPipeline pipeline = view.getRenderPipeline();
             // 如果渲染管道不为空，确保渲染管道是干净的
             if (pipeline != null) {
@@ -245,12 +260,12 @@ public class EZFilter {
         }
 
         @Override
-        FBORender getStartPointRender(IRenderView view) {
+        FBORender getStartPointRender(IFitView view) {
             return new BitmapInput(mBitmap);
         }
 
         @Override
-        float getAspectRatio(IRenderView view) {
+        float getAspectRatio(IFitView view) {
             return mBitmap.getWidth() * 1.0f / mBitmap.getHeight();
         }
 
@@ -267,6 +282,11 @@ public class EZFilter {
         @Override
         public BitmapBuilder addFilter(FilterRender filterRender) {
             return (BitmapBuilder) super.addFilter(filterRender);
+        }
+
+        @Override
+        public BitmapBuilder addFilter(FilterRender filterRender, float progress) {
+            return (BitmapBuilder) super.addFilter(filterRender, progress);
         }
     }
 
@@ -307,7 +327,7 @@ public class EZFilter {
         }
 
         @Override
-        FBORender getStartPointRender(IRenderView view) {
+        FBORender getStartPointRender(IFitView view) {
             VideoInput videoInput = new VideoInput(view.getContext(), view, mVideo);
             videoInput.setLoop(mVideoLoop);
             videoInput.setVolume(mVideoVolume, mVideoVolume);
@@ -316,7 +336,7 @@ public class EZFilter {
         }
 
         @Override
-        float getAspectRatio(IRenderView view) {
+        float getAspectRatio(IFitView view) {
             MediaMetadataRetriever metadata = new MediaMetadataRetriever();
             metadata.setDataSource(view.getContext(), mVideo);
             String width = metadata.extractMetadata(MediaMetadataRetriever.METADATA_KEY_VIDEO_WIDTH);
@@ -339,6 +359,11 @@ public class EZFilter {
         public VideoBuilder addFilter(FilterRender filterRender) {
             return (VideoBuilder) super.addFilter(filterRender);
         }
+
+        @Override
+        public VideoBuilder addFilter(FilterRender filterRender, float progress) {
+            return (VideoBuilder) super.addFilter(filterRender, progress);
+        }
     }
 
     /**
@@ -353,12 +378,12 @@ public class EZFilter {
         }
 
         @Override
-        FBORender getStartPointRender(IRenderView view) {
+        FBORender getStartPointRender(IFitView view) {
             return new CameraInput(view, mCamera);
         }
 
         @Override
-        float getAspectRatio(IRenderView view) {
+        float getAspectRatio(IFitView view) {
             Camera.Size previewSize = mCamera.getParameters().getPreviewSize();
             return previewSize.height * 1.0f / previewSize.width;
         }
@@ -377,6 +402,11 @@ public class EZFilter {
         public CameraBuilder addFilter(FilterRender filterRender) {
             return (CameraBuilder) super.addFilter(filterRender);
         }
+
+        @Override
+        public CameraBuilder addFilter(FilterRender filterRender, float progress) {
+            return (CameraBuilder) super.addFilter(filterRender, progress);
+        }
     }
 
     /**
@@ -394,12 +424,12 @@ public class EZFilter {
         }
 
         @Override
-        FBORender getStartPointRender(IRenderView view) {
+        FBORender getStartPointRender(IFitView view) {
             return new Camera2Input(view, mCameraDevice, mPreviewSize);
         }
 
         @Override
-        float getAspectRatio(IRenderView view) {
+        float getAspectRatio(IFitView view) {
             return mPreviewSize.getHeight() * 1.0f / mPreviewSize.getWidth();
         }
 
@@ -417,6 +447,11 @@ public class EZFilter {
         public Camera2Builder addFilter(FilterRender filterRender) {
             return (Camera2Builder) super.addFilter(filterRender);
         }
+
+        @Override
+        public Camera2Builder addFilter(FilterRender filterRender, float progress) {
+            return (Camera2Builder) super.addFilter(filterRender, progress);
+        }
     }
 
     /**
@@ -431,12 +466,12 @@ public class EZFilter {
         }
 
         @Override
-        FBORender getStartPointRender(IRenderView view) {
+        FBORender getStartPointRender(IFitView view) {
             return new ViewInput(mGLView);
         }
 
         @Override
-        float getAspectRatio(IRenderView view) {
+        float getAspectRatio(IFitView view) {
             if (mGLView.getHeight() != 0) {
                 return mGLView.getWidth() * 1.0f / mGLView.getHeight();
             }
@@ -458,7 +493,12 @@ public class EZFilter {
             return (ViewBuilder) super.addFilter(filterRender);
         }
 
-        public RenderPipeline into(IRenderView view) {
+        @Override
+        public ViewBuilder addFilter(FilterRender filterRender, float progress) {
+            return (ViewBuilder) super.addFilter(filterRender, progress);
+        }
+
+        public RenderPipeline into(IFitView view) {
             mGLView.setGLEnvironment(view);
             return super.into(view);
         }

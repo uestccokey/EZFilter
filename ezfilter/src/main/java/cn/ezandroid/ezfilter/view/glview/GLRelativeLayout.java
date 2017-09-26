@@ -11,7 +11,7 @@ import android.widget.RelativeLayout;
 import cn.ezandroid.ezfilter.environment.IGLEnvironment;
 
 /**
- * GLRelativeLayout
+ * 支持OpenGL渲染的相对布局
  *
  * @author like
  * @date 2017-09-21

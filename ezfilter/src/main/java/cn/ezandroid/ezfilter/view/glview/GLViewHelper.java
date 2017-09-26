@@ -6,7 +6,7 @@ import android.view.Surface;
 import cn.ezandroid.ezfilter.environment.IGLEnvironment;
 
 /**
- * GLViewHelper
+ * OpenGL渲染视图辅助类
  *
  * @author like
  * @date 2017-09-21

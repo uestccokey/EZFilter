@@ -12,7 +12,7 @@ import cn.ezandroid.ezfilter.core.RenderPipeline;
  * @author like
  * @date 2017-09-15
  */
-public class SurfaceFitView extends GLSurfaceView implements IRenderView {
+public class SurfaceFitView extends GLSurfaceView implements IFitView {
 
     private RenderPipeline mPipeline;
 

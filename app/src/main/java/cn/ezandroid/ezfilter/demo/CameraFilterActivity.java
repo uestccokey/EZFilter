@@ -51,7 +51,7 @@ public class CameraFilterActivity extends BaseActivity {
         $(R.id.capture).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                mRenderPipeline.capture(new BitmapOutput.BitmapOutputCallback() {
+                mRenderPipeline.output(new BitmapOutput.BitmapOutputCallback() {
                     @Override
                     public void bitmapOutput(final Bitmap bitmap) {
                         runOnUiThread(new Runnable() {
@@ -100,7 +100,7 @@ public class CameraFilterActivity extends BaseActivity {
 
         mRenderPipeline = EZFilter.input(mCamera)
                 .setScaleType(FitViewHelper.ScaleType.CENTER_CROP)
-                .addFilter(new BWRender(this))
+                .addFilter(new BWRender(this), 0.5f)
                 .into(mRenderView);
     }
 

@@ -6,12 +6,12 @@ import cn.ezandroid.ezfilter.core.FBORender;
 import cn.ezandroid.ezfilter.core.RenderPipeline;
 
 /**
- * 渲染视图接口
+ * 自适应渲染视图接口
  *
  * @author like
  * @date 2017-03-27
  */
-public interface IRenderView extends IGLEnvironment {
+public interface IFitView extends IGLEnvironment {
 
     /**
      * 初始化渲染管道

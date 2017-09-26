@@ -7,12 +7,12 @@ import android.opengl.GLES20;
 import cn.ezandroid.ezfilter.core.FBORender;
 import cn.ezandroid.ezfilter.core.FilterRender;
 import cn.ezandroid.ezfilter.core.util.BitmapUtil;
-import cn.ezandroid.ezfilter.core.util.PathPrefix;
+import cn.ezandroid.ezfilter.core.util.BitmapUtil.Scheme;
 
 /**
  * 多图片输入滤镜渲染器
  * <p>
- * 支持多个Bitmap作为输入
+ * 支持将多个Bitmap作为输入
  *
  * @author like
  * @date 2017-09-17
@@ -113,7 +113,7 @@ public class MultiBitmapInputRender extends FilterRender {
                     String key = "";
                     if (mResources != null) {
                         int resource = mResources[i];
-                        key = PathPrefix.PREFIX_DRAWABLE + resource;
+                        key = Scheme.DRAWABLE.wrap("" + resource);
                     } else if (mPaths != null) {
                         String path = mPaths[i];
                         key = path;

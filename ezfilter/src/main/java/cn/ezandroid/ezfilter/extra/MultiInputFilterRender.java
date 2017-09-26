@@ -11,7 +11,7 @@ import cn.ezandroid.ezfilter.core.FilterRender;
 /**
  * 多输入滤镜渲染器
  * <p>
- * 支持多个纹理作为输入
+ * 支持将多个滤镜的输出作为输入
  *
  * @author like
  * @date 2017-09-15

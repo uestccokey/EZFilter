@@ -11,7 +11,7 @@ import android.widget.LinearLayout;
 import cn.ezandroid.ezfilter.environment.IGLEnvironment;
 
 /**
- * GLLinearLayout
+ * 支持OpenGL渲染的绝对布局
  *
  * @author like
  * @date 2017-09-21

@@ -57,7 +57,7 @@ public class ImageFilterActivity extends BaseActivity {
         $(R.id.capture).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                mRenderPipeline.capture(new BitmapOutput.BitmapOutputCallback() {
+                mRenderPipeline.output(new BitmapOutput.BitmapOutputCallback() {
                     @Override
                     public void bitmapOutput(final Bitmap bitmap) {
                         runOnUiThread(new Runnable() {

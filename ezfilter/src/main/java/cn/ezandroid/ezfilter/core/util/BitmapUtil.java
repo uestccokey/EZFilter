@@ -18,7 +18,7 @@ import java.util.Locale;
  */
 public class BitmapUtil {
 
-    public static enum Scheme {
+    public enum Scheme {
         FILE("file://"), // file:// + /sdcard/demo.mp4
         ASSETS("file:///android_asset/"), // file:///android_asset/ + demo.mp4
         DRAWABLE("drawable://"), // drawable:// + 3243342

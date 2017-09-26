@@ -13,7 +13,7 @@ import cn.ezandroid.ezfilter.core.RenderPipeline;
  * @author like
  * @date 2017-09-15
  */
-public class TextureFitView extends GLTextureView implements IRenderView {
+public class TextureFitView extends GLTextureView implements IFitView {
 
     private RenderPipeline mPipeline;
 
