@@ -20,7 +20,7 @@ public class GLRelativeLayout extends RelativeLayout implements IGLView {
 
     private GLViewHelper mGLViewHelper = new GLViewHelper();
 
-    private int mRenderMode = GLSurfaceView.RENDERMODE_CONTINUOUSLY;
+    private int mRenderMode = GLSurfaceView.RENDERMODE_WHEN_DIRTY;
 
     public GLRelativeLayout(Context context) {
         super(context);

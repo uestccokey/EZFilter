@@ -41,7 +41,7 @@ public interface IGLView {
     void setGLEnvironment(IGLEnvironment render);
 
     /**
-     * 设置刷新模式，默认为RENDERMODE_CONTINUOUSLY
+     * 设置刷新模式，默认为RENDERMODE_WHEN_DIRTY
      * <p>
      * RENDERMODE_WHEN_DIRTY 或 RENDERMODE_CONTINUOUSLY
      *
