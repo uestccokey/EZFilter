@@ -152,7 +152,7 @@ public class EZFilter {
 
         List<FilterRender> mFilterRenders = new ArrayList<>();
 
-        FitViewHelper.ScaleType mScaleType = FitViewHelper.ScaleType.CENTER_INSIDE;
+        FitViewHelper.ScaleType mScaleType = FitViewHelper.ScaleType.FIT_CENTER;
 
         private Builder() {
         }
