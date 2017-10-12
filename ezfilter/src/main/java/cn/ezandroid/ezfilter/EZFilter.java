@@ -19,9 +19,7 @@ import cn.ezandroid.ezfilter.core.FBORender;
 import cn.ezandroid.ezfilter.core.FilterRender;
 import cn.ezandroid.ezfilter.core.RenderPipeline;
 import cn.ezandroid.ezfilter.core.cache.IBitmapCache;
-import cn.ezandroid.ezfilter.core.cache.IFileCache;
 import cn.ezandroid.ezfilter.core.cache.LruBitmapCache;
-import cn.ezandroid.ezfilter.core.cache.LruFileCache;
 import cn.ezandroid.ezfilter.environment.FitViewHelper;
 import cn.ezandroid.ezfilter.environment.IFitView;
 import cn.ezandroid.ezfilter.extra.IAdjustable;
@@ -50,11 +48,6 @@ public class EZFilter {
     private static IBitmapCache sBitmapCache = new LruBitmapCache((int) (Runtime.getRuntime().maxMemory() / 4));
 
     /**
-     * 默认的文件缓存
-     */
-    private static IFileCache sFileCache = new LruFileCache();
-
-    /**
      * 设置图片缓存
      *
      * @param bitmapCache
@@ -70,24 +63,6 @@ public class EZFilter {
      */
     public static IBitmapCache getBitmapCache() {
         return sBitmapCache;
-    }
-
-    /**
-     * 设置文件缓存
-     *
-     * @param fileCache
-     */
-    public static void setFileCache(IFileCache fileCache) {
-        sFileCache = fileCache;
-    }
-
-    /**
-     * 获取文件缓存
-     *
-     * @return
-     */
-    public static IFileCache getFileCache() {
-        return sFileCache;
     }
 
     /**
