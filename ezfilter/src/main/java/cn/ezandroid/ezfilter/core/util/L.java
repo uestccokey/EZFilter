@@ -10,11 +10,11 @@ package cn.ezandroid.ezfilter.core.util;
  */
 public class L {
 
-    public static final boolean LOG_PIPELINE_CREATE = false;
-    public static final boolean LOG_PIPELINE_DRAW = false;
-    public static final boolean LOG_PIPELINE_CHANGE = false;
-    public static final boolean LOG_PIPELINE_DESTROY = false;
+    public static boolean LOG_PIPELINE_CREATE = false;
+    public static boolean LOG_PIPELINE_DRAW = false;
+    public static boolean LOG_PIPELINE_CHANGE = false;
+    public static boolean LOG_PIPELINE_DESTROY = false;
 
-    public static final boolean LOG_RENDER_DRAW = false;
-    public static final boolean LOG_RENDER_DESTROY = false;
+    public static boolean LOG_RENDER_DRAW = false;
+    public static boolean LOG_RENDER_DESTROY = false;
 }

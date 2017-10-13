@@ -15,6 +15,7 @@ import java.util.List;
 
 import cn.ezandroid.ezfilter.camera.Camera2Input;
 import cn.ezandroid.ezfilter.camera.CameraInput;
+import cn.ezandroid.ezfilter.camera.record.RecordableEndPointRender;
 import cn.ezandroid.ezfilter.core.FBORender;
 import cn.ezandroid.ezfilter.core.FilterRender;
 import cn.ezandroid.ezfilter.core.RenderPipeline;
@@ -129,6 +130,8 @@ public class EZFilter {
 
         FitViewHelper.ScaleType mScaleType = FitViewHelper.ScaleType.FIT_CENTER;
 
+        boolean mEnableRecord;
+
         private Builder() {
         }
 
@@ -174,6 +177,11 @@ public class EZFilter {
             return this;
         }
 
+        Builder enableRecord(boolean enableRecord) {
+            mEnableRecord = enableRecord;
+            return this;
+        }
+
         public RenderPipeline into(IFitView view) {
             RenderPipeline pipeline = view.getRenderPipeline();
             // 如果渲染管道不为空，确保渲染管道是干净的
@@ -185,6 +193,10 @@ public class EZFilter {
 
             pipeline = view.getRenderPipeline();
             if (pipeline != null) {
+                if (mEnableRecord) {
+                    pipeline.setEndPointRender(new RecordableEndPointRender());
+                }
+
                 for (FilterRender filterRender : mFilterRenders) {
                     pipeline.addFilterRender(filterRender);
                 }
@@ -259,6 +271,11 @@ public class EZFilter {
         @Override
         public <T extends FilterRender & IAdjustable> BitmapBuilder addFilter(T filterRender, float progress) {
             return (BitmapBuilder) super.addFilter(filterRender, progress);
+        }
+
+        @Override
+        public BitmapBuilder enableRecord(boolean enableRecord) {
+            return (BitmapBuilder) super.enableRecord(enableRecord);
         }
     }
 
@@ -356,6 +373,11 @@ public class EZFilter {
         public <T extends FilterRender & IAdjustable> VideoBuilder addFilter(T filterRender, float progress) {
             return (VideoBuilder) super.addFilter(filterRender, progress);
         }
+
+        @Override
+        public VideoBuilder enableRecord(boolean enableRecord) {
+            return (VideoBuilder) super.enableRecord(enableRecord);
+        }
     }
 
     /**
@@ -398,6 +420,11 @@ public class EZFilter {
         @Override
         public <T extends FilterRender & IAdjustable> CameraBuilder addFilter(T filterRender, float progress) {
             return (CameraBuilder) super.addFilter(filterRender, progress);
+        }
+
+        @Override
+        public CameraBuilder enableRecord(boolean enableRecord) {
+            return (CameraBuilder) super.enableRecord(enableRecord);
         }
     }
 
@@ -444,6 +471,11 @@ public class EZFilter {
         public <T extends FilterRender & IAdjustable> Camera2Builder addFilter(T filterRender, float progress) {
             return (Camera2Builder) super.addFilter(filterRender, progress);
         }
+
+        @Override
+        public Camera2Builder enableRecord(boolean enableRecord) {
+            return (Camera2Builder) super.enableRecord(enableRecord);
+        }
     }
 
     /**
@@ -488,6 +520,11 @@ public class EZFilter {
         @Override
         public <T extends FilterRender & IAdjustable> ViewBuilder addFilter(T filterRender, float progress) {
             return (ViewBuilder) super.addFilter(filterRender, progress);
+        }
+
+        @Override
+        public ViewBuilder enableRecord(boolean enableRecord) {
+            return (ViewBuilder) super.enableRecord(enableRecord);
         }
 
         public RenderPipeline into(IFitView view) {

@@ -6,6 +6,7 @@ import android.hardware.Camera;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.view.View;
+import android.widget.Button;
 import android.widget.ImageView;
 
 import cn.ezandroid.ezfilter.EZFilter;
@@ -25,6 +26,7 @@ public class CameraFilterActivity extends BaseActivity {
 
     private TextureFitView mRenderView;
     private ImageView mPreviewImage;
+    private Button mRecordButton;
 
     private Camera mCamera;
 
@@ -38,6 +40,7 @@ public class CameraFilterActivity extends BaseActivity {
         setContentView(R.layout.activity_camera_filter);
         mRenderView = $(R.id.render_view);
         mPreviewImage = $(R.id.preview_image);
+        mRecordButton = $(R.id.record);
 
         openCamera(mCurrentCameraId);
 
@@ -64,6 +67,27 @@ public class CameraFilterActivity extends BaseActivity {
                 }, true);
             }
         });
+
+        mRecordButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if (mRenderPipeline.isRecording()) {
+                    stopRecording();
+                } else {
+                    startRecording();
+                }
+            }
+        });
+    }
+
+    private void startRecording() {
+        mRecordButton.setText("停止");
+        mRenderPipeline.startRecording();
+    }
+
+    private void stopRecording() {
+        mRecordButton.setText("录制");
+        mRenderPipeline.stopRecording();
     }
 
     private void setCameraParameters() {
@@ -101,6 +125,7 @@ public class CameraFilterActivity extends BaseActivity {
         mRenderPipeline = EZFilter.input(mCamera)
                 .setScaleType(FitViewHelper.ScaleType.CENTER_CROP)
                 .addFilter(new BWRender(this), 0.5f)
+                .enableRecord(true) // 支持录制为视频
                 .into(mRenderView);
     }
 

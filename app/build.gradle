@@ -47,7 +47,9 @@ dependencies {
     implementation 'com.zhihu.android:matisse:0.5.0-alpha4'
     implementation 'com.squareup.picasso:picasso:2.5.2'
 
-//    implementation 'cn.ezandroid:EZFilter:1.4.5'
+    implementation 'me.weyye.hipermission:library:1.0.7'
+
+//    implementation 'cn.ezandroid:EZFilter:1.4.7'
 
     implementation project(':ezfilter')
 }

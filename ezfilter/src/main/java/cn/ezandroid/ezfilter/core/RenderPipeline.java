@@ -9,6 +9,7 @@ import java.util.List;
 import javax.microedition.khronos.egl.EGLConfig;
 import javax.microedition.khronos.opengles.GL10;
 
+import cn.ezandroid.ezfilter.camera.record.RecordableEndPointRender;
 import cn.ezandroid.ezfilter.core.output.BitmapOutput;
 import cn.ezandroid.ezfilter.core.output.BufferOutput;
 import cn.ezandroid.ezfilter.core.util.L;
@@ -291,24 +292,44 @@ public class RenderPipeline implements Renderer {
     /**
      * 设置渲染起点
      *
-     * @param rootRenderer
+     * @param startPointRenderer
      */
-    public synchronized void setStartPointRender(FBORender rootRenderer) {
+    public synchronized void setStartPointRender(FBORender startPointRenderer) {
         if (mStartPointRender != null) {
             for (OnTextureAcceptableListener render : mStartPointRender.getTargets()) {
-                rootRenderer.addTarget(render);
+                startPointRenderer.addTarget(render);
             }
             mStartPointRender.clearTargets();
             addRenderToDestroy(mStartPointRender);
-            mStartPointRender = rootRenderer;
+            mStartPointRender = startPointRenderer;
             mStartPointRender.setWidth(mWidth);
             mStartPointRender.setHeight(mHeight);
         } else {
-            mStartPointRender = rootRenderer;
+            mStartPointRender = startPointRenderer;
             mStartPointRender.setWidth(mWidth);
             mStartPointRender.setHeight(mHeight);
             mStartPointRender.addTarget(mEndPointRender);
         }
+        updateRenderSize();
+    }
+
+    /**
+     * 设置渲染终点
+     *
+     * @param endPointRender
+     */
+    public void setEndPointRender(EndPointRender endPointRender) {
+        if (mFilterRenders.isEmpty()) {
+            mStartPointRender.addTarget(endPointRender);
+            mStartPointRender.removeTarget(mEndPointRender);
+        } else {
+            FilterRender filterRender = mFilterRenders.get(mFilterRenders.size() - 1);
+            filterRender.addTarget(endPointRender);
+            filterRender.removeTarget(mEndPointRender);
+        }
+        addRenderToDestroy(mEndPointRender);
+        mEndPointRender = endPointRender;
+
         updateRenderSize();
     }
 
@@ -506,5 +527,36 @@ public class RenderPipeline implements Renderer {
             }
         });
         addOutput(render, bitmapOutput);
+    }
+
+    /**
+     * 是否正在录制视频
+     *
+     * @return
+     */
+    public boolean isRecording() {
+        return mEndPointRender instanceof RecordableEndPointRender && ((RecordableEndPointRender) mEndPointRender).isRecording();
+    }
+
+    /**
+     * 开始录制
+     */
+    public void startRecording() {
+        if (mEndPointRender instanceof RecordableEndPointRender) {
+            ((RecordableEndPointRender) mEndPointRender).startRecording();
+        } else {
+            // TODO 抛出异常
+        }
+    }
+
+    /**
+     * 结束录制
+     */
+    public void stopRecording() {
+        if (mEndPointRender instanceof RecordableEndPointRender) {
+            ((RecordableEndPointRender) mEndPointRender).stopRecording();
+        } else {
+            // TODO 抛出异常
+        }
     }
 }
