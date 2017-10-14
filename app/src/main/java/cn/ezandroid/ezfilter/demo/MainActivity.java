@@ -14,9 +14,6 @@ import me.weyye.hipermission.PermissionItem;
 public class MainActivity extends BaseActivity {
 
     private static final String TAG = "MainActivity";
-    private static final int REQUEST_CAMERA = 1;
-    private static final int REQUEST_STORAGE = 2;
-    private static final int REQUEST_AUDIO = 3;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
