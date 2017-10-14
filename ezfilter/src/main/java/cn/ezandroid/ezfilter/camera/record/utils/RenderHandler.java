@@ -5,15 +5,11 @@ import android.opengl.EGLContext;
 import android.opengl.GLES20;
 import android.opengl.Matrix;
 import android.text.TextUtils;
-import android.util.Log;
 import android.view.Surface;
 import android.view.SurfaceHolder;
 
-/**
- * Helper class to draw texture to whole view on private thread
- */
 public final class RenderHandler implements Runnable {
-    private static final boolean DEBUG = false;    // TODO set false on release
+
     private static final String TAG = "RenderHandler";
 
     private final Object mSync = new Object();
@@ -27,8 +23,7 @@ public final class RenderHandler implements Runnable {
     private boolean mRequestRelease;
     private int mRequestDraw;
 
-    public static final RenderHandler createHandler(final String name) {
-        if (DEBUG) Log.v(TAG, "createHandler:");
+    public static RenderHandler createHandler(final String name) {
         final RenderHandler handler = new RenderHandler();
         synchronized (handler.mSync) {
             new Thread(handler, !TextUtils.isEmpty(name) ? name : TAG).start();
@@ -40,10 +35,11 @@ public final class RenderHandler implements Runnable {
         return handler;
     }
 
-    public final void setEglContext(final EGLContext shared_context, final int tex_id, final Object surface, final boolean isRecordable) {
-        if (DEBUG) Log.i(TAG, "setEglContext:");
-        if (!(surface instanceof Surface) && !(surface instanceof SurfaceTexture) && !(surface instanceof SurfaceHolder))
+    public final void setEglContext(final EGLContext shared_context, final int tex_id,
+                                    final Object surface, final boolean isRecordable) {
+        if (!(surface instanceof Surface) && !(surface instanceof SurfaceTexture) && !(surface instanceof SurfaceHolder)) {
             throw new RuntimeException("unsupported window type:" + surface);
+        }
         synchronized (mSync) {
             if (mRequestRelease) return;
             mShard_context = shared_context;
@@ -111,7 +107,6 @@ public final class RenderHandler implements Runnable {
     }
 
     public final void release() {
-        if (DEBUG) Log.i(TAG, "release:");
         synchronized (mSync) {
             if (mRequestRelease) return;
             mRequestRelease = true;
@@ -123,15 +118,12 @@ public final class RenderHandler implements Runnable {
         }
     }
 
-    //********************************************************************************
-//********************************************************************************
     private EGLBase mEgl;
     private EGLBase.EglSurface mInputSurface;
     private GLDrawer2D mDrawer;
 
     @Override
     public final void run() {
-        if (DEBUG) Log.i(TAG, "RenderHandler thread started:");
         synchronized (mSync) {
             mRequestSetEglContext = mRequestRelease = false;
             mRequestDraw = 0;
@@ -176,11 +168,9 @@ public final class RenderHandler implements Runnable {
             internalRelease();
             mSync.notifyAll();
         }
-        if (DEBUG) Log.i(TAG, "RenderHandler thread finished:");
     }
 
-    private final void internalPrepare() {
-        if (DEBUG) Log.i(TAG, "internalPrepare:");
+    private void internalPrepare() {
         internalRelease();
         mEgl = new EGLBase(mShard_context, false, mIsRecordable);
 
@@ -192,8 +182,7 @@ public final class RenderHandler implements Runnable {
         mSync.notifyAll();
     }
 
-    private final void internalRelease() {
-        if (DEBUG) Log.i(TAG, "internalRelease:");
+    private void internalRelease() {
         if (mInputSurface != null) {
             mInputSurface.release();
             mInputSurface = null;
@@ -207,5 +196,4 @@ public final class RenderHandler implements Runnable {
             mEgl = null;
         }
     }
-
 }

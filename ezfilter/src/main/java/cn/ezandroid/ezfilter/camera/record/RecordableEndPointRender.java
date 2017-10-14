@@ -66,7 +66,7 @@ public class RecordableEndPointRender extends EndPointRender {
      */
     public void startRecording() {
         try {
-            mMuxerWrapper = new MediaMuxerWrapper(".mp4");
+            mMuxerWrapper = new MediaMuxerWrapper("/sdcard/record.mp4");
             new MediaVideoEncoder(mMuxerWrapper, mMediaEncoderListener,
                     getWidth(), getHeight());
             new MediaAudioEncoder(mMuxerWrapper, mMediaEncoderListener);
@@ -92,7 +92,7 @@ public class RecordableEndPointRender extends EndPointRender {
         super.drawFrame();
         synchronized (this) {
             if (mVideoEncoder != null) {
-                mVideoEncoder.frameAvailableSoon(null);
+                mVideoEncoder.frameAvailableSoon();
             }
         }
     }
