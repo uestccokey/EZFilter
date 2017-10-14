@@ -318,7 +318,7 @@ public class RenderPipeline implements Renderer {
      *
      * @param endPointRender
      */
-    public void setEndPointRender(EndPointRender endPointRender) {
+    public synchronized void setEndPointRender(EndPointRender endPointRender) {
         if (mFilterRenders.isEmpty()) {
             mStartPointRender.addTarget(endPointRender);
             mStartPointRender.removeTarget(mEndPointRender);

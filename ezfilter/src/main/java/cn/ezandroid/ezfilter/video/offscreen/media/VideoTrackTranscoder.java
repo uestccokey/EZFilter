@@ -1,8 +1,10 @@
 package cn.ezandroid.ezfilter.video.offscreen.media;
 
+import android.annotation.TargetApi;
 import android.media.MediaCodec;
 import android.media.MediaExtractor;
 import android.media.MediaFormat;
+import android.os.Build;
 
 import java.io.IOException;
 import java.nio.ByteBuffer;
@@ -13,6 +15,7 @@ import java.nio.ByteBuffer;
  *
  * @date 2017-08-23
  */
+@TargetApi(Build.VERSION_CODES.JELLY_BEAN_MR2)
 public class VideoTrackTranscoder implements TrackTranscoder {
 
     private static final int DRAIN_STATE_NONE = 0;

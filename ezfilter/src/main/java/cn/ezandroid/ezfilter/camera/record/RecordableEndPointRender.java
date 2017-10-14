@@ -1,7 +1,5 @@
 package cn.ezandroid.ezfilter.camera.record;
 
-import android.opengl.EGL14;
-
 import java.io.IOException;
 
 import cn.ezandroid.ezfilter.core.EndPointRender;
@@ -22,21 +20,22 @@ public class RecordableEndPointRender extends EndPointRender {
 
     private String mOutputPath;
 
-    private final MediaEncoder.MediaEncoderListener mMediaEncoderListener = new MediaEncoder.MediaEncoderListener() {
-        @Override
-        public void onPrepared(final MediaEncoder encoder) {
-            if (encoder instanceof MediaVideoEncoder) {
-                setVideoEncoder((MediaVideoEncoder) encoder);
-            }
-        }
+    private final MediaEncoder.MediaEncoderListener mMediaEncoderListener =
+            new MediaEncoder.MediaEncoderListener() {
+                @Override
+                public void onPrepared(final MediaEncoder encoder) {
+                    if (encoder instanceof MediaVideoEncoder) {
+                        setVideoEncoder((MediaVideoEncoder) encoder);
+                    }
+                }
 
-        @Override
-        public void onStopped(final MediaEncoder encoder) {
-            if (encoder instanceof MediaVideoEncoder) {
-                setVideoEncoder(null);
-            }
-        }
-    };
+                @Override
+                public void onStopped(final MediaEncoder encoder) {
+                    if (encoder instanceof MediaVideoEncoder) {
+                        setVideoEncoder(null);
+                    }
+                }
+            };
 
     public RecordableEndPointRender(String outputPath, boolean recordVideo, boolean recordAudio) {
         mOutputPath = outputPath;
@@ -51,12 +50,13 @@ public class RecordableEndPointRender extends EndPointRender {
      * @param encoder
      */
     public void setVideoEncoder(final MediaVideoEncoder encoder) {
+        // 在GL线程绑定输入纹理
         runOnDraw(new Runnable() {
             @Override
             public void run() {
                 synchronized (this) {
                     if (encoder != null) {
-                        encoder.setEglContext(EGL14.eglGetCurrentContext(), mTextureIn);
+                        encoder.setInputTextureId(mTextureIn);
                     }
                     mVideoEncoder = encoder;
                 }

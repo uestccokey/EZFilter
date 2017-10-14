@@ -1,10 +1,12 @@
 package cn.ezandroid.ezfilter.camera.record;
 
+import android.annotation.TargetApi;
 import android.media.MediaCodec;
 import android.media.MediaCodecInfo;
 import android.media.MediaCodecList;
 import android.media.MediaFormat;
-import android.opengl.EGLContext;
+import android.opengl.EGL14;
+import android.os.Build;
 import android.util.Log;
 import android.view.Surface;
 
@@ -12,6 +14,7 @@ import java.io.IOException;
 
 import cn.ezandroid.ezfilter.camera.record.utils.RenderHandler;
 
+@TargetApi(Build.VERSION_CODES.JELLY_BEAN_MR2)
 public class MediaVideoEncoder extends MediaEncoder {
 
     private static final String TAG = "MediaVideoEncoder";
@@ -25,8 +28,8 @@ public class MediaVideoEncoder extends MediaEncoder {
     private RenderHandler mRenderHandler;
     private Surface mSurface;
 
-    public MediaVideoEncoder(final MediaMuxerWrapper muxer, final MediaEncoderListener listener,
-                             final int width, final int height) {
+    public MediaVideoEncoder(MediaMuxerWrapper muxer, MediaEncoderListener listener,
+                             int width, int height) {
         super(muxer, listener);
         mWidth = width;
         mHeight = height;
@@ -95,8 +98,15 @@ public class MediaVideoEncoder extends MediaEncoder {
         }
     }
 
-    public void setEglContext(final EGLContext sharedContext, final int texId) {
-        mRenderHandler.setEglContext(sharedContext, texId, mSurface, true);
+    /**
+     * 设置输入纹理
+     * <p>
+     * 必须在GL线程调用
+     *
+     * @param texId
+     */
+    public void setInputTextureId(final int texId) {
+        mRenderHandler.setEglContext(EGL14.eglGetCurrentContext(), texId, mSurface, true);
     }
 
     @Override
@@ -155,13 +165,9 @@ public class MediaVideoEncoder extends MediaEncoder {
         return result;
     }
 
-    private static int[] recognizedFormats;
-
-    static {
-        recognizedFormats = new int[]{
-                MediaCodecInfo.CodecCapabilities.COLOR_FormatSurface,
-        };
-    }
+    private static int[] recognizedFormats = new int[]{
+            MediaCodecInfo.CodecCapabilities.COLOR_FormatSurface,
+    };
 
     private static boolean isRecognizedVideoFormat(final int colorFormat) {
         final int n = recognizedFormats != null ? recognizedFormats.length : 0;

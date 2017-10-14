@@ -34,7 +34,7 @@ ext {
     versionName = '1.0.0' // 这里的versionName完整格式为 x.x.x
 
     // Sdk and tools
-    minSdkVersion = 18
+    minSdkVersion = 15
     targetSdkVersion = 26
     compileSdkVersion = 26
     buildToolsVersion = "26.0.2"

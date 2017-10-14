@@ -13,10 +13,9 @@ import android.view.Surface;
 import android.view.SurfaceHolder;
 import android.view.SurfaceView;
 
-@TargetApi(Build.VERSION_CODES.JELLY_BEAN_MR2)
+@TargetApi(Build.VERSION_CODES.JELLY_BEAN_MR1)
 public class EGLBase {    // API >= 17
 
-    private static final boolean DEBUG = false;    // TODO set false on release
     private static final String TAG = "EGLBase";
 
     private static final int EGL_RECORDABLE_ANDROID = 0x3142;
@@ -32,7 +31,6 @@ public class EGLBase {    // API >= 17
         private final int mWidth, mHeight;
 
         EglSurface(final EGLBase egl, final Object surface) {
-            if (DEBUG) Log.v(TAG, "EglSurface:");
             if (!(surface instanceof SurfaceView)
                     && !(surface instanceof Surface)
                     && !(surface instanceof SurfaceHolder)
@@ -42,11 +40,9 @@ public class EGLBase {    // API >= 17
             mEglSurface = mEgl.createWindowSurface(surface);
             mWidth = mEgl.querySurface(mEglSurface, EGL14.EGL_WIDTH);
             mHeight = mEgl.querySurface(mEglSurface, EGL14.EGL_HEIGHT);
-            if (DEBUG) Log.v(TAG, String.format("EglSurface:size(%d,%d)", mWidth, mHeight));
         }
 
         EglSurface(final EGLBase egl, final int width, final int height) {
-            if (DEBUG) Log.v(TAG, "EglSurface:");
             mEgl = egl;
             mEglSurface = mEgl.createOffscreenSurface(width, height);
             mWidth = width;
@@ -66,7 +62,6 @@ public class EGLBase {    // API >= 17
         }
 
         public void release() {
-            if (DEBUG) Log.v(TAG, "EglSurface:release:");
             mEgl.makeDefault();
             mEgl.destroyWindowSurface(mEglSurface);
             mEglSurface = EGL14.EGL_NO_SURFACE;
@@ -82,12 +77,10 @@ public class EGLBase {    // API >= 17
     }
 
     public EGLBase(final EGLContext shared_context, final boolean with_depth_buffer, final boolean isRecordable) {
-        if (DEBUG) Log.v(TAG, "EGLBase:");
         init(shared_context, with_depth_buffer, isRecordable);
     }
 
     public void release() {
-        if (DEBUG) Log.v(TAG, "release:");
         if (mEglDisplay != EGL14.EGL_NO_DISPLAY) {
             destroyContext();
             EGL14.eglTerminate(mEglDisplay);
@@ -98,14 +91,12 @@ public class EGLBase {    // API >= 17
     }
 
     public EglSurface createFromSurface(final Object surface) {
-        if (DEBUG) Log.v(TAG, "createFromSurface:");
         final EglSurface eglSurface = new EglSurface(this, surface);
         eglSurface.makeCurrent();
         return eglSurface;
     }
 
     public EglSurface createOffscreen(final int width, final int height) {
-        if (DEBUG) Log.v(TAG, "createOffscreen:");
         final EglSurface eglSurface = new EglSurface(this, width, height);
         eglSurface.makeCurrent();
         return eglSurface;
@@ -122,7 +113,6 @@ public class EGLBase {    // API >= 17
     }
 
     private void init(EGLContext shared_context, final boolean with_depth_buffer, final boolean isRecordable) {
-        if (DEBUG) Log.v(TAG, "init:");
         if (mEglDisplay != EGL14.EGL_NO_DISPLAY) {
             throw new RuntimeException("EGL already set up");
         }
@@ -150,7 +140,6 @@ public class EGLBase {    // API >= 17
         // confirm whether the EGL rendering context is successfully created
         final int[] values = new int[1];
         EGL14.eglQueryContext(mEglDisplay, mEglContext, EGL14.EGL_CONTEXT_CLIENT_VERSION, values, 0);
-        if (DEBUG) Log.d(TAG, "EGLContext created, client version " + values[0]);
         makeDefault();    // makeCurrent(EGL14.EGL_NO_SURFACE);
     }
 
@@ -160,10 +149,6 @@ public class EGLBase {    // API >= 17
      * @return
      */
     private boolean makeCurrent(final EGLSurface surface) {
-//		if (DEBUG) Log.v(TAG, "makeCurrent:");
-        if (mEglDisplay == null) {
-            if (DEBUG) Log.d(TAG, "makeCurrent:eglDisplay not initialized");
-        }
         if (surface == null || surface == EGL14.EGL_NO_SURFACE) {
             final int error = EGL14.eglGetError();
             if (error == EGL14.EGL_BAD_NATIVE_WINDOW) {
@@ -180,25 +165,20 @@ public class EGLBase {    // API >= 17
     }
 
     private void makeDefault() {
-        if (DEBUG) Log.v(TAG, "makeDefault:");
         if (!EGL14.eglMakeCurrent(mEglDisplay, EGL14.EGL_NO_SURFACE, EGL14.EGL_NO_SURFACE, EGL14.EGL_NO_CONTEXT)) {
             Log.w("TAG", "makeDefault" + EGL14.eglGetError());
         }
     }
 
     private int swap(final EGLSurface surface) {
-//		if (DEBUG) Log.v(TAG, "swap:");
         if (!EGL14.eglSwapBuffers(mEglDisplay, surface)) {
             final int err = EGL14.eglGetError();
-            if (DEBUG) Log.w(TAG, "swap:err=" + err);
             return err;
         }
         return EGL14.EGL_SUCCESS;
     }
 
     private EGLContext createContext(final EGLContext shared_context) {
-//		if (DEBUG) Log.v(TAG, "createContext:");
-
         final int[] attrib_list = {
                 EGL14.EGL_CONTEXT_CLIENT_VERSION, 2,
                 EGL14.EGL_NONE
@@ -209,8 +189,6 @@ public class EGLBase {    // API >= 17
     }
 
     private void destroyContext() {
-        if (DEBUG) Log.v(TAG, "destroyContext:");
-
         if (!EGL14.eglDestroyContext(mEglDisplay, mEglContext)) {
             Log.e("destroyContext", "display:" + mEglDisplay + " context: " + mEglContext);
             Log.e(TAG, "eglDestroyContex:" + EGL14.eglGetError());
@@ -226,8 +204,6 @@ public class EGLBase {    // API >= 17
     }
 
     private EGLSurface createWindowSurface(final Object nativeWindow) {
-        if (DEBUG) Log.v(TAG, "createWindowSurface:nativeWindow=" + nativeWindow);
-
         final int[] surfaceAttribs = {
                 EGL14.EGL_NONE
         };
@@ -244,7 +220,6 @@ public class EGLBase {    // API >= 17
      * Creates an EGL surface associated with an offscreen buffer.
      */
     private EGLSurface createOffscreenSurface(final int width, final int height) {
-        if (DEBUG) Log.v(TAG, "createOffscreenSurface:");
         final int[] surfaceAttribs = {
                 EGL14.EGL_WIDTH, width,
                 EGL14.EGL_HEIGHT, height,
@@ -266,15 +241,12 @@ public class EGLBase {    // API >= 17
     }
 
     private void destroyWindowSurface(EGLSurface surface) {
-        if (DEBUG) Log.v(TAG, "destroySurface:");
-
         if (surface != EGL14.EGL_NO_SURFACE) {
             EGL14.eglMakeCurrent(mEglDisplay,
                     EGL14.EGL_NO_SURFACE, EGL14.EGL_NO_SURFACE, EGL14.EGL_NO_CONTEXT);
             EGL14.eglDestroySurface(mEglDisplay, surface);
         }
         surface = EGL14.EGL_NO_SURFACE;
-        if (DEBUG) Log.v(TAG, "destroySurface:finished");
     }
 
     private void checkEglError(final String msg) {

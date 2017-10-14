@@ -1,5 +1,6 @@
 package cn.ezandroid.ezfilter.camera.record;
 
+import android.annotation.TargetApi;
 import android.media.AudioFormat;
 import android.media.AudioRecord;
 import android.media.MediaCodec;
@@ -7,11 +8,13 @@ import android.media.MediaCodecInfo;
 import android.media.MediaCodecList;
 import android.media.MediaFormat;
 import android.media.MediaRecorder;
+import android.os.Build;
 import android.util.Log;
 
 import java.io.IOException;
 import java.nio.ByteBuffer;
 
+@TargetApi(Build.VERSION_CODES.JELLY_BEAN)
 public class MediaAudioEncoder extends MediaEncoder {
 
     private static final String TAG = "MediaAudioEncoder";
