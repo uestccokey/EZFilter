@@ -42,6 +42,8 @@ public class CameraFilterActivity extends BaseActivity {
         mPreviewImage = $(R.id.preview_image);
         mRecordButton = $(R.id.record);
 
+        mRenderView.setScaleType(FitViewHelper.ScaleType.CENTER_CROP);
+
         openCamera(mCurrentCameraId);
 
         $(R.id.switch_camera).setOnClickListener(new View.OnClickListener() {
@@ -123,7 +125,6 @@ public class CameraFilterActivity extends BaseActivity {
         setCameraParameters();
 
         mRenderPipeline = EZFilter.input(mCamera)
-                .setScaleType(FitViewHelper.ScaleType.CENTER_CROP)
                 .addFilter(new BWRender(this), 0.5f)
                 .enableRecord("/sdcard/record.mp4", true, true) // 支持录制为视频
                 .into(mRenderView);

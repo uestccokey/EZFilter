@@ -1,9 +1,11 @@
 package cn.ezandroid.ezfilter.video.offscreen;
 
+import android.annotation.TargetApi;
 import android.media.MediaExtractor;
 import android.media.MediaFormat;
 import android.media.MediaMetadataRetriever;
 import android.media.MediaMuxer;
+import android.os.Build;
 
 import java.io.IOException;
 
@@ -21,6 +23,7 @@ import cn.ezandroid.ezfilter.video.offscreen.media.VideoTrackTranscoder;
  * @author like
  * @date 2017-09-24
  */
+@TargetApi(Build.VERSION_CODES.JELLY_BEAN_MR2)
 public class OffscreenVideo {
 
     private RenderPipeline mPipeline;

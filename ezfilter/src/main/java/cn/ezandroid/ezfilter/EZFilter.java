@@ -21,7 +21,6 @@ import cn.ezandroid.ezfilter.core.FilterRender;
 import cn.ezandroid.ezfilter.core.RenderPipeline;
 import cn.ezandroid.ezfilter.core.cache.IBitmapCache;
 import cn.ezandroid.ezfilter.core.cache.LruBitmapCache;
-import cn.ezandroid.ezfilter.environment.FitViewHelper;
 import cn.ezandroid.ezfilter.environment.IFitView;
 import cn.ezandroid.ezfilter.extra.IAdjustable;
 import cn.ezandroid.ezfilter.image.BitmapInput;
@@ -124,11 +123,7 @@ public class EZFilter {
      */
     public abstract static class Builder {
 
-        int mRotation;
-
         List<FilterRender> mFilterRenders = new ArrayList<>();
-
-        FitViewHelper.ScaleType mScaleType = FitViewHelper.ScaleType.FIT_CENTER;
 
         boolean mEnableRecordVideo;
         boolean mEnableRecordAudio;
@@ -152,16 +147,12 @@ public class EZFilter {
          */
         abstract float getAspectRatio(IFitView view);
 
-        Builder setScaleType(FitViewHelper.ScaleType scaleType) {
-            mScaleType = scaleType;
-            return this;
-        }
-
-        Builder setRotation(int rotation) {
-            mRotation = rotation;
-            return this;
-        }
-
+        /**
+         * 添加滤镜
+         *
+         * @param filterRender
+         * @return
+         */
         Builder addFilter(FilterRender filterRender) {
             if (filterRender != null && !mFilterRenders.contains(filterRender)) {
                 filterRender.setBitmapCache(sBitmapCache);
@@ -170,6 +161,14 @@ public class EZFilter {
             return this;
         }
 
+        /**
+         * 添加滤镜，并设置强度
+         *
+         * @param filterRender
+         * @param progress
+         * @param <T>
+         * @return
+         */
         <T extends FilterRender & IAdjustable> Builder addFilter(T filterRender, float progress) {
             if (filterRender != null && !mFilterRenders.contains(filterRender)) {
                 filterRender.setBitmapCache(sBitmapCache);
@@ -181,7 +180,7 @@ public class EZFilter {
         }
 
         /**
-         * 支持录制
+         * 支持录制开关
          *
          * @param outputPath  输出路径
          * @param recordVideo 录制视频
@@ -218,9 +217,7 @@ public class EZFilter {
                 pipeline.startRender();
             }
 
-            view.setScaleType(mScaleType);
             boolean change = view.setAspectRatio(getAspectRatio(view), 0, 0);
-            change = view.setRotate90Degrees(mRotation) || change;
             view.requestRender();
             if (change) {
                 view.requestLayout();
@@ -266,16 +263,6 @@ public class EZFilter {
         @Override
         float getAspectRatio(IFitView view) {
             return mBitmap.getWidth() * 1.0f / mBitmap.getHeight();
-        }
-
-        @Override
-        public BitmapBuilder setScaleType(FitViewHelper.ScaleType scaleType) {
-            return (BitmapBuilder) super.setScaleType(scaleType);
-        }
-
-        @Override
-        public BitmapBuilder setRotation(int rotation) {
-            return (BitmapBuilder) super.setRotation(rotation);
         }
 
         @Override
@@ -370,16 +357,6 @@ public class EZFilter {
         }
 
         @Override
-        public VideoBuilder setScaleType(FitViewHelper.ScaleType scaleType) {
-            return (VideoBuilder) super.setScaleType(scaleType);
-        }
-
-        @Override
-        public VideoBuilder setRotation(int rotation) {
-            return (VideoBuilder) super.setRotation(rotation);
-        }
-
-        @Override
         public VideoBuilder addFilter(FilterRender filterRender) {
             return (VideoBuilder) super.addFilter(filterRender);
         }
@@ -415,16 +392,6 @@ public class EZFilter {
         float getAspectRatio(IFitView view) {
             Camera.Size previewSize = mCamera.getParameters().getPreviewSize();
             return previewSize.height * 1.0f / previewSize.width;
-        }
-
-        @Override
-        public CameraBuilder setScaleType(FitViewHelper.ScaleType scaleType) {
-            return (CameraBuilder) super.setScaleType(scaleType);
-        }
-
-        @Override
-        public CameraBuilder setRotation(int rotation) {
-            return (CameraBuilder) super.setRotation(rotation);
         }
 
         @Override
@@ -468,16 +435,6 @@ public class EZFilter {
         }
 
         @Override
-        public Camera2Builder setScaleType(FitViewHelper.ScaleType scaleType) {
-            return (Camera2Builder) super.setScaleType(scaleType);
-        }
-
-        @Override
-        public Camera2Builder setRotation(int rotation) {
-            return (Camera2Builder) super.setRotation(rotation);
-        }
-
-        @Override
         public Camera2Builder addFilter(FilterRender filterRender) {
             return (Camera2Builder) super.addFilter(filterRender);
         }
@@ -515,16 +472,6 @@ public class EZFilter {
                 return mGLView.getWidth() * 1.0f / mGLView.getHeight();
             }
             return 1;
-        }
-
-        @Override
-        public ViewBuilder setScaleType(FitViewHelper.ScaleType scaleType) {
-            return (ViewBuilder) super.setScaleType(scaleType);
-        }
-
-        @Override
-        public ViewBuilder setRotation(int rotation) {
-            return (ViewBuilder) super.setRotation(rotation);
         }
 
         @Override

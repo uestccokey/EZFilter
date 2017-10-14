@@ -70,6 +70,8 @@ public class Camera2FilterActivity extends BaseActivity {
         mRenderView = findViewById(R.id.render_view);
         mPreviewImage = $(R.id.preview_image);
 
+        mRenderView.setScaleType(FitViewHelper.ScaleType.CENTER_CROP);
+
         mCameraManager = (CameraManager) getSystemService(Context.CAMERA_SERVICE);
         openCamera(mCurrentCameraId);
 
@@ -220,7 +222,6 @@ public class Camera2FilterActivity extends BaseActivity {
         public void onOpened(CameraDevice camera) { // 打开摄像头
             mCameraDevice = camera;
             mRenderPipeline = EZFilter.input(mCameraDevice, mPreviewSize)
-                    .setScaleType(FitViewHelper.ScaleType.CENTER_CROP)
                     .addFilter(new BWRender(Camera2FilterActivity.this))
                     .into(mRenderView);
         }
