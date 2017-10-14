@@ -545,7 +545,7 @@ public class RenderPipeline implements Renderer {
         if (mEndPointRender instanceof RecordableEndPointRender) {
             ((RecordableEndPointRender) mEndPointRender).startRecording();
         } else {
-            // TODO 抛出异常
+            throw new UnsupportedOperationException("unsupported record");
         }
     }
 
@@ -556,7 +556,7 @@ public class RenderPipeline implements Renderer {
         if (mEndPointRender instanceof RecordableEndPointRender) {
             ((RecordableEndPointRender) mEndPointRender).stopRecording();
         } else {
-            // TODO 抛出异常
+            throw new UnsupportedOperationException("unsupported record");
         }
     }
 }

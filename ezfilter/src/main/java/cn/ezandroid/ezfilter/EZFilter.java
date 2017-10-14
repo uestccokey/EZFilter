@@ -130,7 +130,10 @@ public class EZFilter {
 
         FitViewHelper.ScaleType mScaleType = FitViewHelper.ScaleType.FIT_CENTER;
 
-        boolean mEnableRecord;
+        boolean mEnableRecordVideo;
+        boolean mEnableRecordAudio;
+
+        String mOutputPath;
 
         private Builder() {
         }
@@ -177,8 +180,19 @@ public class EZFilter {
             return this;
         }
 
-        Builder enableRecord(boolean enableRecord) {
-            mEnableRecord = enableRecord;
+        /**
+         * 支持录制
+         *
+         * @param outputPath  输出路径
+         * @param recordVideo 录制视频
+         * @param recordAudio 录制音频
+         * @return
+         */
+        Builder enableRecord(String outputPath, boolean recordVideo, boolean recordAudio) {
+            mOutputPath = outputPath;
+
+            mEnableRecordVideo = recordVideo;
+            mEnableRecordAudio = recordAudio;
             return this;
         }
 
@@ -193,8 +207,9 @@ public class EZFilter {
 
             pipeline = view.getRenderPipeline();
             if (pipeline != null) {
-                if (mEnableRecord) {
-                    pipeline.setEndPointRender(new RecordableEndPointRender());
+                if (mEnableRecordVideo || mEnableRecordAudio) {
+                    pipeline.setEndPointRender(new RecordableEndPointRender(mOutputPath,
+                            mEnableRecordVideo, mEnableRecordAudio));
                 }
 
                 for (FilterRender filterRender : mFilterRenders) {
@@ -274,8 +289,8 @@ public class EZFilter {
         }
 
         @Override
-        public BitmapBuilder enableRecord(boolean enableRecord) {
-            return (BitmapBuilder) super.enableRecord(enableRecord);
+        public BitmapBuilder enableRecord(String outputPath, boolean recordVideo, boolean recordAudio) {
+            return (BitmapBuilder) super.enableRecord(outputPath, recordVideo, recordAudio);
         }
     }
 
@@ -375,8 +390,8 @@ public class EZFilter {
         }
 
         @Override
-        public VideoBuilder enableRecord(boolean enableRecord) {
-            return (VideoBuilder) super.enableRecord(enableRecord);
+        public VideoBuilder enableRecord(String outputPath, boolean recordVideo, boolean recordAudio) {
+            return (VideoBuilder) super.enableRecord(outputPath, recordVideo, recordAudio);
         }
     }
 
@@ -423,8 +438,8 @@ public class EZFilter {
         }
 
         @Override
-        public CameraBuilder enableRecord(boolean enableRecord) {
-            return (CameraBuilder) super.enableRecord(enableRecord);
+        public CameraBuilder enableRecord(String outputPath, boolean recordVideo, boolean recordAudio) {
+            return (CameraBuilder) super.enableRecord(outputPath, recordVideo, recordAudio);
         }
     }
 
@@ -473,8 +488,8 @@ public class EZFilter {
         }
 
         @Override
-        public Camera2Builder enableRecord(boolean enableRecord) {
-            return (Camera2Builder) super.enableRecord(enableRecord);
+        public Camera2Builder enableRecord(String outputPath, boolean recordVideo, boolean recordAudio) {
+            return (Camera2Builder) super.enableRecord(outputPath, recordVideo, recordAudio);
         }
     }
 
@@ -523,8 +538,8 @@ public class EZFilter {
         }
 
         @Override
-        public ViewBuilder enableRecord(boolean enableRecord) {
-            return (ViewBuilder) super.enableRecord(enableRecord);
+        public ViewBuilder enableRecord(String outputPath, boolean recordVideo, boolean recordAudio) {
+            return (ViewBuilder) super.enableRecord(outputPath, recordVideo, recordAudio);
         }
 
         public RenderPipeline into(IFitView view) {

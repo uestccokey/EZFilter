@@ -17,6 +17,18 @@ public class RecordableEndPointRender extends EndPointRender {
     private MediaVideoEncoder mVideoEncoder;
     private MediaMuxerWrapper mMuxerWrapper;
 
+    private boolean mRecordVideo = true;
+    private boolean mRecordAudio = true;
+
+    private String mOutputPath;
+
+    public RecordableEndPointRender(String outputPath, boolean recordVideo, boolean recordAudio) {
+        mOutputPath = outputPath;
+
+        mRecordVideo = recordVideo;
+        mRecordAudio = recordAudio;
+    }
+
     private final MediaEncoder.MediaEncoderListener mMediaEncoderListener = new MediaEncoder.MediaEncoderListener() {
         @Override
         public void onPrepared(final MediaEncoder encoder) {
@@ -66,10 +78,13 @@ public class RecordableEndPointRender extends EndPointRender {
      */
     public void startRecording() {
         try {
-            mMuxerWrapper = new MediaMuxerWrapper("/sdcard/record.mp4");
-            new MediaVideoEncoder(mMuxerWrapper, mMediaEncoderListener,
-                    getWidth(), getHeight());
-            new MediaAudioEncoder(mMuxerWrapper, mMediaEncoderListener);
+            mMuxerWrapper = new MediaMuxerWrapper(mOutputPath);
+            if (mRecordVideo) {
+                new MediaVideoEncoder(mMuxerWrapper, mMediaEncoderListener, getWidth(), getHeight());
+            }
+            if (mRecordAudio) {
+                new MediaAudioEncoder(mMuxerWrapper, mMediaEncoderListener);
+            }
             mMuxerWrapper.prepare();
             mMuxerWrapper.startRecording();
         } catch (final IOException e) {
