@@ -22,13 +22,6 @@ public class RecordableEndPointRender extends EndPointRender {
 
     private String mOutputPath;
 
-    public RecordableEndPointRender(String outputPath, boolean recordVideo, boolean recordAudio) {
-        mOutputPath = outputPath;
-
-        mRecordVideo = recordVideo;
-        mRecordAudio = recordAudio;
-    }
-
     private final MediaEncoder.MediaEncoderListener mMediaEncoderListener = new MediaEncoder.MediaEncoderListener() {
         @Override
         public void onPrepared(final MediaEncoder encoder) {
@@ -44,6 +37,13 @@ public class RecordableEndPointRender extends EndPointRender {
             }
         }
     };
+
+    public RecordableEndPointRender(String outputPath, boolean recordVideo, boolean recordAudio) {
+        mOutputPath = outputPath;
+
+        mRecordVideo = recordVideo;
+        mRecordAudio = recordAudio;
+    }
 
     /**
      * 设置视频编码器

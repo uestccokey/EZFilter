@@ -125,7 +125,7 @@ public class CameraFilterActivity extends BaseActivity {
         mRenderPipeline = EZFilter.input(mCamera)
                 .setScaleType(FitViewHelper.ScaleType.CENTER_CROP)
                 .addFilter(new BWRender(this), 0.5f)
-                .enableRecord(true) // 支持录制为视频
+                .enableRecord("/sdcard/record.mp4", true, true) // 支持录制为视频
                 .into(mRenderView);
     }
 
