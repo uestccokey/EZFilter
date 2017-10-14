@@ -85,7 +85,6 @@ public class OffscreenVideo {
             mOffscreenRender = new VideoFBORender();
             mPipeline = new RenderPipeline();
             mPipeline.onSurfaceCreated(null, null);
-            mPipeline.onSurfaceChanged(null, w, h);
             mPipeline.setStartPointRender(mOffscreenRender);
         } catch (Exception e) {
             e.printStackTrace();
@@ -97,13 +96,18 @@ public class OffscreenVideo {
     }
 
     public void save(String output) throws IOException {
+        save(output, mWidth, mHeight);
+    }
+
+    public void save(String output, int width, int height) throws IOException {
         if (null == mTrack || null == mTrack.videoTrackFormat) {
             return;
         }
+        mPipeline.onSurfaceChanged(null, width, height);
         mPipeline.startRender();
 
         // 视频Format
-        MediaFormat videoFormat = MediaUtil.createVideoFormat(mWidth, mHeight);
+        MediaFormat videoFormat = MediaUtil.createVideoFormat(width, height);
 
         // 初始化转码器
         MediaMuxer muxer = new MediaMuxer(output, MediaMuxer.OutputFormat.MUXER_OUTPUT_MPEG_4);

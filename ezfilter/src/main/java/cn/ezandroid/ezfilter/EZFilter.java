@@ -136,14 +136,14 @@ public class EZFilter {
         /**
          * 获取渲染起点
          *
-         * @return 宽高比
+         * @return 渲染起点
          */
         abstract FBORender getStartPointRender(IFitView view);
 
         /**
          * 获取渲染视图宽高比
          *
-         * @return
+         * @return 宽高比
          */
         abstract float getAspectRatio(IFitView view);
 
@@ -324,6 +324,19 @@ public class EZFilter {
                     offscreenVideo.addFilterRender(filterRender);
                 }
                 offscreenVideo.save(output);
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
+
+        public void output(String output, int width, int height) {
+            // 离屏渲染
+            OffscreenVideo offscreenVideo = new OffscreenVideo(mVideo.getPath());
+            try {
+                for (FilterRender filterRender : mFilterRenders) {
+                    offscreenVideo.addFilterRender(filterRender);
+                }
+                offscreenVideo.save(output, width, height);
             } catch (IOException e) {
                 e.printStackTrace();
             }
