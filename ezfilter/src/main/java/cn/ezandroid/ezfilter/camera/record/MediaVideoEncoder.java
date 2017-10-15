@@ -14,6 +14,9 @@ import java.io.IOException;
 
 import cn.ezandroid.ezfilter.camera.record.utils.RenderHandler;
 
+/**
+ * 视频编码器
+ */
 @TargetApi(Build.VERSION_CODES.JELLY_BEAN_MR2)
 public class MediaVideoEncoder extends MediaEncoder {
 
