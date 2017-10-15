@@ -1,4 +1,4 @@
-![Logo](https://raw.githubusercontent.com/uestccokey/EZFilter/master/logo.png)
+# ![Logo](https://raw.githubusercontent.com/uestccokey/EZFilter/master/logo.png)
 # EZFilter
 一个轻量级，易扩展的Android滤镜框架，支持拍照，视频，图片添加滤镜，支持离屏渲染
 
@@ -14,23 +14,23 @@
 
 ### 功能介绍
 
-1.Camera添加滤镜
+1.Camera添加滤镜（支持录制视频）
 
-2.Camera2添加滤镜（Api21以上）
+2.Camera2添加滤镜（Api21以上，支持录制视频）
 
-3.Video添加滤镜（支持自定义播放器，支持离屏渲染）
+3.Video添加滤镜（支持自定义播放器，支持离屏渲染，支持录制视频）
 
-4.Bitmap添加滤镜（支持离屏渲染）
+4.Bitmap添加滤镜（支持离屏渲染，支持录制视频）
 
-5.View添加滤镜
+5.View添加滤镜（支持录制视频）
 
 ### 依赖配置
 
 ``` gradle
 dependencies {
-    compile 'cn.ezandroid:EZFilter:1.4.6' // Gradle 3.0以下
+    compile 'cn.ezandroid:EZFilter:1.5.0' // Gradle 3.0以下
     // 或者
-    implementation 'cn.ezandroid:EZFilter:1.4.6' // Gradle3.0及以上
+    implementation 'cn.ezandroid:EZFilter:1.5.0' // Gradle3.0及以上
 }
 ```
 
@@ -111,5 +111,21 @@ mPipeline.output(new BitmapOutput.BitmapOutputCallback() {
         }
     }, width, height, true); // 中间的两个参数表示截图的宽高
 view.requestRender();
+```
+
+录制视频
+
+``` java
+// 调用enableRecord函数打开支持录制开关
+mPipeline = EZFilter.input(camera)
+                .addFilter(filter)
+                .enableRecord(path, true, true)
+                .into(view);
+// 是否正在录制视频
+mPipeline.isRecording()
+// 开始录制
+mPipeline.startRecording()
+// 结束录制
+mPipeline.stopRecording()
 ```
 
