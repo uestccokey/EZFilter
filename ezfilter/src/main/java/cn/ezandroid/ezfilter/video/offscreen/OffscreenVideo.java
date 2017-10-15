@@ -1,9 +1,11 @@
 package cn.ezandroid.ezfilter.video.offscreen;
 
+import android.annotation.TargetApi;
 import android.media.MediaExtractor;
 import android.media.MediaFormat;
 import android.media.MediaMetadataRetriever;
 import android.media.MediaMuxer;
+import android.os.Build;
 
 import java.io.IOException;
 
@@ -21,6 +23,7 @@ import cn.ezandroid.ezfilter.video.offscreen.media.VideoTrackTranscoder;
  * @author like
  * @date 2017-09-24
  */
+@TargetApi(Build.VERSION_CODES.JELLY_BEAN_MR2)
 public class OffscreenVideo {
 
     private RenderPipeline mPipeline;
@@ -82,7 +85,6 @@ public class OffscreenVideo {
             mOffscreenRender = new VideoFBORender();
             mPipeline = new RenderPipeline();
             mPipeline.onSurfaceCreated(null, null);
-            mPipeline.onSurfaceChanged(null, w, h);
             mPipeline.setStartPointRender(mOffscreenRender);
         } catch (Exception e) {
             e.printStackTrace();
@@ -94,13 +96,18 @@ public class OffscreenVideo {
     }
 
     public void save(String output) throws IOException {
+        save(output, mWidth, mHeight);
+    }
+
+    public void save(String output, int width, int height) throws IOException {
         if (null == mTrack || null == mTrack.videoTrackFormat) {
             return;
         }
+        mPipeline.onSurfaceChanged(null, width, height);
         mPipeline.startRender();
 
         // 视频Format
-        MediaFormat videoFormat = MediaUtil.createVideoFormat(mWidth, mHeight);
+        MediaFormat videoFormat = MediaUtil.createVideoFormat(width, height);
 
         // 初始化转码器
         MediaMuxer muxer = new MediaMuxer(output, MediaMuxer.OutputFormat.MUXER_OUTPUT_MPEG_4);

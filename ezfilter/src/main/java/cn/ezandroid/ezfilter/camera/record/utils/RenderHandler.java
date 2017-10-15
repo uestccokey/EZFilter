@@ -1,0 +1,157 @@
+package cn.ezandroid.ezfilter.camera.record.utils;
+
+import android.graphics.SurfaceTexture;
+import android.opengl.EGLContext;
+import android.text.TextUtils;
+import android.view.Surface;
+import android.view.SurfaceHolder;
+
+import cn.ezandroid.ezfilter.core.AbstractRender;
+
+public final class RenderHandler implements Runnable {
+
+    private static final String TAG = "RenderHandler";
+
+    private final Object mSync = new Object();
+    private EGLContext mShardContext;
+    private Object mSurface;
+    private int mTexId = -1;
+
+    private boolean mRequestSetEglContext;
+    private boolean mRequestRelease;
+    private int mRequestDraw;
+
+    private EGLBase mEgl;
+    private EGLBase.EglSurface mInputSurface;
+    private SimpleRender mRecordRender;
+
+    public static RenderHandler createHandler(final String name) {
+        final RenderHandler handler = new RenderHandler();
+        synchronized (handler.mSync) {
+            new Thread(handler, !TextUtils.isEmpty(name) ? name : TAG).start();
+            try {
+                handler.mSync.wait();
+            } catch (final InterruptedException e) {
+            }
+        }
+        return handler;
+    }
+
+    public final void setEglContext(final EGLContext shared_context, final int texId, final Object surface) {
+        if (!(surface instanceof Surface)
+                && !(surface instanceof SurfaceTexture)
+                && !(surface instanceof SurfaceHolder)) {
+            throw new RuntimeException("unsupported window type:" + surface);
+        }
+        synchronized (mSync) {
+            if (mRequestRelease) return;
+            mShardContext = shared_context;
+            mTexId = texId;
+            mSurface = surface;
+            mRequestSetEglContext = true;
+            mSync.notifyAll();
+            try {
+                mSync.wait();
+            } catch (final InterruptedException e) {
+            }
+        }
+    }
+
+    public final void draw() {
+        synchronized (mSync) {
+            if (mRequestRelease) return;
+            mRequestDraw++;
+            mSync.notifyAll();
+        }
+    }
+
+    public final void release() {
+        synchronized (mSync) {
+            if (mRequestRelease) return;
+            mRequestRelease = true;
+            mSync.notifyAll();
+            try {
+                mSync.wait();
+            } catch (final InterruptedException e) {
+            }
+        }
+    }
+
+    @Override
+    public final void run() {
+        synchronized (mSync) {
+            mRequestSetEglContext = mRequestRelease = false;
+            mRequestDraw = 0;
+            mSync.notifyAll();
+        }
+        boolean localRequestDraw;
+        for (; ; ) {
+            synchronized (mSync) {
+                if (mRequestRelease) break;
+                if (mRequestSetEglContext) {
+                    mRequestSetEglContext = false;
+                    internalPrepare();
+                }
+                localRequestDraw = mRequestDraw > 0;
+                if (localRequestDraw) {
+                    mRequestDraw--;
+                }
+            }
+            if (localRequestDraw) {
+                if ((mEgl != null) && mTexId >= 0) {
+                    mInputSurface.makeCurrent();
+                    mRecordRender.draw(mTexId);
+                    mInputSurface.swap();
+                }
+            } else {
+                synchronized (mSync) {
+                    try {
+                        mSync.wait();
+                    } catch (final InterruptedException e) {
+                        break;
+                    }
+                }
+            }
+        }
+        synchronized (mSync) {
+            mRequestRelease = true;
+            internalRelease();
+            mSync.notifyAll();
+        }
+    }
+
+    private void internalPrepare() {
+        internalRelease();
+        mEgl = new EGLBase(mShardContext, false);
+
+        mInputSurface = mEgl.createFromSurface(mSurface);
+
+        mInputSurface.makeCurrent();
+        mRecordRender = new SimpleRender();
+        mSurface = null;
+        mSync.notifyAll();
+    }
+
+    private void internalRelease() {
+        if (mInputSurface != null) {
+            mInputSurface.release();
+            mInputSurface = null;
+        }
+        if (mRecordRender != null) {
+            mRecordRender.destroy();
+            mRecordRender = null;
+        }
+        if (mEgl != null) {
+            mEgl.release();
+            mEgl = null;
+        }
+    }
+
+    class SimpleRender extends AbstractRender {
+
+        public void draw(int textureIn) {
+            mTextureIn = textureIn;
+            onDrawFrame();
+        }
+    }
+}

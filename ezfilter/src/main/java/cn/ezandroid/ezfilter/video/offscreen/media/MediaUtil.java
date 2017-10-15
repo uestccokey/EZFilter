@@ -1,5 +1,6 @@
 package cn.ezandroid.ezfilter.video.offscreen.media;
 
+import android.annotation.TargetApi;
 import android.media.AudioFormat;
 import android.media.MediaCodec;
 import android.media.MediaCodecInfo;
@@ -16,6 +17,7 @@ import java.nio.ByteBuffer;
  * @author like
  * @date 2017-09-23
  */
+@TargetApi(Build.VERSION_CODES.JELLY_BEAN)
 public class MediaUtil {
 
     // 兼容低版本

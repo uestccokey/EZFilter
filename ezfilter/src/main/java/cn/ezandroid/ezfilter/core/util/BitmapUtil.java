@@ -24,10 +24,10 @@ public class BitmapUtil {
         DRAWABLE("drawable://"), // drawable:// + 3243342
         UNKNOWN("");
 
-        private String scheme;
+        private String mScheme;
 
         private Scheme(String scheme) {
-            this.scheme = scheme;
+            this.mScheme = scheme;
         }
 
         public static Scheme ofUri(String uri) {
@@ -44,18 +44,18 @@ public class BitmapUtil {
         }
 
         private boolean belongsTo(String uri) {
-            return uri.toLowerCase(Locale.US).startsWith(this.scheme);
+            return uri.toLowerCase(Locale.US).startsWith(this.mScheme);
         }
 
         public String wrap(String path) {
-            return this.scheme + path;
+            return this.mScheme + path;
         }
 
         public String crop(String uri) {
             if (!this.belongsTo(uri)) {
-                throw new IllegalArgumentException(String.format("URI [%1$s] doesn't have expected scheme [%2$s]", new Object[]{uri, this.scheme}));
+                throw new IllegalArgumentException(String.format("URI [%1$s] doesn't have expected mScheme [%2$s]", new Object[]{uri, this.mScheme}));
             } else {
-                return uri.substring(this.scheme.length());
+                return uri.substring(this.mScheme.length());
             }
         }
     }
