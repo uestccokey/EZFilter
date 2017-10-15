@@ -1,4 +1,4 @@
-package cn.ezandroid.ezfilter.camera.record.utils;
+package cn.ezandroid.ezfilter.camera.record;
 
 import android.graphics.SurfaceTexture;
 import android.opengl.EGLContext;
@@ -7,13 +7,14 @@ import android.view.Surface;
 import android.view.SurfaceHolder;
 
 import cn.ezandroid.ezfilter.core.AbstractRender;
+import cn.ezandroid.ezfilter.environment.EGLEnvironment;
 
 public final class RenderHandler implements Runnable {
 
     private static final String TAG = "RenderHandler";
 
     private final Object mSync = new Object();
-    private EGLContext mShardContext;
+    private EGLContext mSharedContext;
     private Object mSurface;
     private int mTexId = -1;
 
@@ -21,8 +22,8 @@ public final class RenderHandler implements Runnable {
     private boolean mRequestRelease;
     private int mRequestDraw;
 
-    private EGLBase mEgl;
-    private EGLBase.EglSurface mInputSurface;
+    private EGLEnvironment mEgl;
+    private EGLEnvironment.EglSurface mInputSurface;
     private SimpleRender mRecordRender;
 
     public static RenderHandler createHandler(final String name) {
@@ -37,7 +38,7 @@ public final class RenderHandler implements Runnable {
         return handler;
     }
 
-    public final void setEglContext(final EGLContext shared_context, final int texId, final Object surface) {
+    public final void setInputTextureId(final EGLContext shared_context, final Object surface, final int texId) {
         if (!(surface instanceof Surface)
                 && !(surface instanceof SurfaceTexture)
                 && !(surface instanceof SurfaceHolder)) {
@@ -45,7 +46,7 @@ public final class RenderHandler implements Runnable {
         }
         synchronized (mSync) {
             if (mRequestRelease) return;
-            mShardContext = shared_context;
+            mSharedContext = shared_context;
             mTexId = texId;
             mSurface = surface;
             mRequestSetEglContext = true;
@@ -122,11 +123,11 @@ public final class RenderHandler implements Runnable {
 
     private void internalPrepare() {
         internalRelease();
-        mEgl = new EGLBase(mShardContext, false);
 
+        mEgl = new EGLEnvironment(mSharedContext, false);
         mInputSurface = mEgl.createFromSurface(mSurface);
-
         mInputSurface.makeCurrent();
+
         mRecordRender = new SimpleRender();
         mSurface = null;
         mSync.notifyAll();

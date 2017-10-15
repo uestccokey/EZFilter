@@ -1,4 +1,4 @@
-package cn.ezandroid.ezfilter.camera.record.utils;
+package cn.ezandroid.ezfilter.environment;
 
 import android.annotation.TargetApi;
 import android.graphics.SurfaceTexture;
@@ -13,10 +13,13 @@ import android.view.Surface;
 import android.view.SurfaceHolder;
 import android.view.SurfaceView;
 
+/**
+ * EGL环境
+ */
 @TargetApi(Build.VERSION_CODES.JELLY_BEAN_MR1)
-public class EGLBase {
+public class EGLEnvironment {
 
-    private static final String TAG = "EGLBase";
+    private static final String TAG = "EGLEnvironment";
 
     private static final int EGL_RECORDABLE_ANDROID = 0x3142;
 
@@ -26,11 +29,11 @@ public class EGLBase {
     private EGLContext mDefaultContext = EGL14.EGL_NO_CONTEXT;
 
     public static class EglSurface {
-        private final EGLBase mEgl;
+        private final EGLEnvironment mEgl;
         private EGLSurface mEglSurface = EGL14.EGL_NO_SURFACE;
         private final int mWidth, mHeight;
 
-        EglSurface(final EGLBase egl, final Object surface) {
+        EglSurface(final EGLEnvironment egl, final Object surface) {
             if (!(surface instanceof SurfaceView)
                     && !(surface instanceof Surface)
                     && !(surface instanceof SurfaceHolder)
@@ -42,7 +45,7 @@ public class EGLBase {
             mHeight = mEgl.querySurface(mEglSurface, EGL14.EGL_HEIGHT);
         }
 
-        EglSurface(final EGLBase egl, final int width, final int height) {
+        EglSurface(final EGLEnvironment egl, final int width, final int height) {
             mEgl = egl;
             mEglSurface = mEgl.createOffscreenSurface(width, height);
             mWidth = width;
@@ -76,7 +79,7 @@ public class EGLBase {
         }
     }
 
-    public EGLBase(final EGLContext sharedContext, final boolean withDepthBuffer) {
+    public EGLEnvironment(final EGLContext sharedContext, final boolean withDepthBuffer) {
         init(sharedContext, withDepthBuffer);
     }
 
@@ -262,11 +265,7 @@ public class EGLBase {
                 EGL14.EGL_NONE
         };
         int offset = 10;
-//        if (false) {                // ステンシルバッファ(常時未使用)
-//            attribList[offset++] = EGL14.EGL_STENCIL_SIZE;
-//            attribList[offset++] = 8;
-//        }
-        if (withDepthBuffer) {    // デプスバッファ
+        if (withDepthBuffer) {
             attribList[offset++] = EGL14.EGL_DEPTH_SIZE;
             attribList[offset++] = 16;
         }

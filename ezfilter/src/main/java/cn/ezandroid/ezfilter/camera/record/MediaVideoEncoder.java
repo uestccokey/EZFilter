@@ -12,8 +12,6 @@ import android.view.Surface;
 
 import java.io.IOException;
 
-import cn.ezandroid.ezfilter.camera.record.utils.RenderHandler;
-
 /**
  * 视频编码器
  */
@@ -93,7 +91,7 @@ public class MediaVideoEncoder extends MediaEncoder {
      * @param texId
      */
     public void setInputTextureId(final int texId) {
-        mRenderHandler.setEglContext(EGL14.eglGetCurrentContext(), texId, mSurface);
+        mRenderHandler.setInputTextureId(EGL14.eglGetCurrentContext(), mSurface, texId);
     }
 
     @Override
