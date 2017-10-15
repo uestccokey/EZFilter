@@ -14,6 +14,9 @@ import android.util.Log;
 import java.io.IOException;
 import java.nio.ByteBuffer;
 
+/**
+ * 音频编码器
+ */
 @TargetApi(Build.VERSION_CODES.JELLY_BEAN)
 public class MediaAudioEncoder extends MediaEncoder {
 
@@ -21,9 +24,9 @@ public class MediaAudioEncoder extends MediaEncoder {
 
     private static final String MIME_TYPE = "audio/mp4a-latm";
     private static final int SAMPLE_RATE = 44100;    // 44.1[KHz] is only setting guaranteed to be available on all devices.
-    private static final int BIT_RATE = 96000;
-    public static final int SAMPLES_PER_FRAME = 1024;    // AAC, bytes/frame/channel
-    public static final int FRAMES_PER_BUFFER = 25;    // AAC, frame/buffer/sec
+    private static final int AUDIO_BIT_RATE = 96000;
+    private static final int SAMPLES_PER_FRAME = 1024;    // AAC, bytes/frame/channel
+    private static final int FRAMES_PER_BUFFER = 20;    // AAC, frame/buffer/sec
 
     private AudioThread mAudioThread = null;
 
@@ -46,10 +49,10 @@ public class MediaAudioEncoder extends MediaEncoder {
         final MediaFormat audioFormat = MediaFormat.createAudioFormat(MIME_TYPE, SAMPLE_RATE, 1);
         audioFormat.setInteger(MediaFormat.KEY_AAC_PROFILE, MediaCodecInfo.CodecProfileLevel.AACObjectLC);
         audioFormat.setInteger(MediaFormat.KEY_CHANNEL_MASK, AudioFormat.CHANNEL_IN_MONO);
-        // 声道
+        // 使用单声道录制，兼容性更佳
         audioFormat.setInteger(MediaFormat.KEY_CHANNEL_COUNT, 1);
         // 音频bit率
-        audioFormat.setInteger(MediaFormat.KEY_BIT_RATE, BIT_RATE);
+        audioFormat.setInteger(MediaFormat.KEY_BIT_RATE, AUDIO_BIT_RATE);
 
         mMediaCodec = MediaCodec.createEncoderByType(MIME_TYPE);
         mMediaCodec.configure(audioFormat, null, null, MediaCodec.CONFIGURE_FLAG_ENCODE);

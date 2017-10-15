@@ -10,11 +10,15 @@ import java.io.IOException;
 import java.lang.ref.WeakReference;
 import java.nio.ByteBuffer;
 
+/**
+ * 编码器抽象类
+ */
 @TargetApi(Build.VERSION_CODES.JELLY_BEAN)
 public abstract class MediaEncoder implements Runnable {
 
     private static final String TAG = "MediaEncoder";
 
+    // 超时时间
     private static final int TIMEOUT_USEC = 10000;    // 10[msec]
 
     public interface MediaEncoderListener {
@@ -32,9 +36,9 @@ public abstract class MediaEncoder implements Runnable {
     protected boolean mIsEOS;
     protected boolean mMuxerStarted;
     protected int mTrackIndex;
-    protected MediaCodec mMediaCodec;                // API >= 16(Android4.1.2)
+    protected MediaCodec mMediaCodec;
     protected final WeakReference<MediaMuxerWrapper> mWeakMuxer;
-    private MediaCodec.BufferInfo mBufferInfo;        // API >= 16(Android4.1.2)
+    private MediaCodec.BufferInfo mBufferInfo;
 
     protected final MediaEncoderListener mListener;
 

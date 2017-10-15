@@ -13,7 +13,7 @@ import java.nio.ByteBuffer;
 public class MediaMuxerWrapper {
 
     private String mOutputPath;
-    private final MediaMuxer mMediaMuxer;    // API >= 18
+    private final MediaMuxer mMediaMuxer;
     private int mEncoderCount, mStartedCount;
     private boolean mIsStarted;
     private MediaEncoder mVideoEncoder, mAudioEncoder;

@@ -14,7 +14,7 @@ import android.view.SurfaceHolder;
 import android.view.SurfaceView;
 
 @TargetApi(Build.VERSION_CODES.JELLY_BEAN_MR1)
-public class EGLBase {    // API >= 17
+public class EGLBase {
 
     private static final String TAG = "EGLBase";
 
@@ -76,8 +76,8 @@ public class EGLBase {    // API >= 17
         }
     }
 
-    public EGLBase(final EGLContext shared_context, final boolean with_depth_buffer, final boolean isRecordable) {
-        init(shared_context, with_depth_buffer, isRecordable);
+    public EGLBase(final EGLContext sharedContext, final boolean withDepthBuffer) {
+        init(sharedContext, withDepthBuffer);
     }
 
     public void release() {
@@ -112,7 +112,7 @@ public class EGLBase {    // API >= 17
         return value[0];
     }
 
-    private void init(EGLContext shared_context, final boolean with_depth_buffer, final boolean isRecordable) {
+    private void init(EGLContext sharedContext, final boolean withDepthBuffer) {
         if (mEglDisplay != EGL14.EGL_NO_DISPLAY) {
             throw new RuntimeException("EGL already set up");
         }
@@ -128,14 +128,14 @@ public class EGLBase {    // API >= 17
             throw new RuntimeException("eglInitialize failed");
         }
 
-        shared_context = shared_context != null ? shared_context : EGL14.EGL_NO_CONTEXT;
+        sharedContext = sharedContext != null ? sharedContext : EGL14.EGL_NO_CONTEXT;
         if (mEglContext == EGL14.EGL_NO_CONTEXT) {
-            mEglConfig = getConfig(with_depth_buffer, isRecordable);
+            mEglConfig = getConfig(withDepthBuffer);
             if (mEglConfig == null) {
                 throw new RuntimeException("chooseConfig failed");
             }
             // create EGL rendering context
-            mEglContext = createContext(shared_context);
+            mEglContext = createContext(sharedContext);
         }
         // confirm whether the EGL rendering context is successfully created
         final int[] values = new int[1];
@@ -143,11 +143,6 @@ public class EGLBase {    // API >= 17
         makeDefault();    // makeCurrent(EGL14.EGL_NO_SURFACE);
     }
 
-    /**
-     * change context to draw this window surface
-     *
-     * @return
-     */
     private boolean makeCurrent(final EGLSurface surface) {
         if (surface == null || surface == EGL14.EGL_NO_SURFACE) {
             final int error = EGL14.eglGetError();
@@ -178,12 +173,12 @@ public class EGLBase {    // API >= 17
         return EGL14.EGL_SUCCESS;
     }
 
-    private EGLContext createContext(final EGLContext shared_context) {
+    private EGLContext createContext(final EGLContext sharedContext) {
         final int[] attrib_list = {
                 EGL14.EGL_CONTEXT_CLIENT_VERSION, 2,
                 EGL14.EGL_NONE
         };
-        final EGLContext context = EGL14.eglCreateContext(mEglDisplay, mEglConfig, shared_context, attrib_list, 0);
+        final EGLContext context = EGL14.eglCreateContext(mEglDisplay, mEglConfig, sharedContext, attrib_list, 0);
         checkEglError("eglCreateContext");
         return context;
     }
@@ -216,9 +211,6 @@ public class EGLBase {    // API >= 17
         return result;
     }
 
-    /**
-     * Creates an EGL surface associated with an offscreen buffer.
-     */
     private EGLSurface createOffscreenSurface(final int width, final int height) {
         final int[] surfaceAttribs = {
                 EGL14.EGL_WIDTH, width,
@@ -256,8 +248,7 @@ public class EGLBase {    // API >= 17
         }
     }
 
-    @SuppressWarnings("unused")
-    private EGLConfig getConfig(final boolean with_depth_buffer, final boolean isRecordable) {
+    private EGLConfig getConfig(final boolean withDepthBuffer) {
         final int[] attribList = {
                 EGL14.EGL_RENDERABLE_TYPE, EGL14.EGL_OPENGL_ES2_BIT,
                 EGL14.EGL_RED_SIZE, 8,
@@ -271,15 +262,15 @@ public class EGLBase {    // API >= 17
                 EGL14.EGL_NONE
         };
         int offset = 10;
-        if (false) {                // ステンシルバッファ(常時未使用)
-            attribList[offset++] = EGL14.EGL_STENCIL_SIZE;
-            attribList[offset++] = 8;
-        }
-        if (with_depth_buffer) {    // デプスバッファ
+//        if (false) {                // ステンシルバッファ(常時未使用)
+//            attribList[offset++] = EGL14.EGL_STENCIL_SIZE;
+//            attribList[offset++] = 8;
+//        }
+        if (withDepthBuffer) {    // デプスバッファ
             attribList[offset++] = EGL14.EGL_DEPTH_SIZE;
             attribList[offset++] = 16;
         }
-        if (isRecordable && (Build.VERSION.SDK_INT >= 18)) {// MediaCodecの入力用Surfaceの場合
+        if (Build.VERSION.SDK_INT >= 18) {// MediaCodecの入力用Surfaceの場合
             attribList[offset++] = EGL_RECORDABLE_ANDROID;
             attribList[offset++] = 1;
         }

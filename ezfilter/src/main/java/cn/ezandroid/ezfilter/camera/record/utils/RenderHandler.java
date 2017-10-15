@@ -2,26 +2,28 @@ package cn.ezandroid.ezfilter.camera.record.utils;
 
 import android.graphics.SurfaceTexture;
 import android.opengl.EGLContext;
-import android.opengl.GLES20;
-import android.opengl.Matrix;
 import android.text.TextUtils;
 import android.view.Surface;
 import android.view.SurfaceHolder;
+
+import cn.ezandroid.ezfilter.core.AbstractRender;
 
 public final class RenderHandler implements Runnable {
 
     private static final String TAG = "RenderHandler";
 
     private final Object mSync = new Object();
-    private EGLContext mShard_context;
-    private boolean mIsRecordable;
+    private EGLContext mShardContext;
     private Object mSurface;
     private int mTexId = -1;
-    private float[] mMatrix = new float[32];
 
     private boolean mRequestSetEglContext;
     private boolean mRequestRelease;
     private int mRequestDraw;
+
+    private EGLBase mEgl;
+    private EGLBase.EglSurface mInputSurface;
+    private SimpleRender mRecordRender;
 
     public static RenderHandler createHandler(final String name) {
         final RenderHandler handler = new RenderHandler();
@@ -35,20 +37,18 @@ public final class RenderHandler implements Runnable {
         return handler;
     }
 
-    public final void setEglContext(final EGLContext shared_context, final int tex_id,
-                                    final Object surface, final boolean isRecordable) {
-        if (!(surface instanceof Surface) && !(surface instanceof SurfaceTexture) && !(surface instanceof SurfaceHolder)) {
+    public final void setEglContext(final EGLContext shared_context, final int texId, final Object surface) {
+        if (!(surface instanceof Surface)
+                && !(surface instanceof SurfaceTexture)
+                && !(surface instanceof SurfaceHolder)) {
             throw new RuntimeException("unsupported window type:" + surface);
         }
         synchronized (mSync) {
             if (mRequestRelease) return;
-            mShard_context = shared_context;
-            mTexId = tex_id;
+            mShardContext = shared_context;
+            mTexId = texId;
             mSurface = surface;
-            mIsRecordable = isRecordable;
             mRequestSetEglContext = true;
-            Matrix.setIdentityM(mMatrix, 0);
-            Matrix.setIdentityM(mMatrix, 16);
             mSync.notifyAll();
             try {
                 mSync.wait();
@@ -58,51 +58,10 @@ public final class RenderHandler implements Runnable {
     }
 
     public final void draw() {
-        draw(mTexId, mMatrix, null);
-    }
-
-    public final void draw(final int tex_id) {
-        draw(tex_id, mMatrix, null);
-    }
-
-    public final void draw(final float[] tex_matrix) {
-        draw(mTexId, tex_matrix, null);
-    }
-
-    public final void draw(final float[] tex_matrix, final float[] mvp_matrix) {
-        draw(mTexId, tex_matrix, mvp_matrix);
-    }
-
-    public final void draw(final int tex_id, final float[] tex_matrix) {
-        draw(tex_id, tex_matrix, null);
-    }
-
-    public final void draw(final int tex_id, final float[] tex_matrix, final float[] mvp_matrix) {
         synchronized (mSync) {
             if (mRequestRelease) return;
-            mTexId = tex_id;
-            if ((tex_matrix != null) && (tex_matrix.length >= 16)) {
-                System.arraycopy(tex_matrix, 0, mMatrix, 0, 16);
-            } else {
-                Matrix.setIdentityM(mMatrix, 0);
-            }
-            if ((mvp_matrix != null) && (mvp_matrix.length >= 16)) {
-                System.arraycopy(mvp_matrix, 0, mMatrix, 16, 16);
-            } else {
-                Matrix.setIdentityM(mMatrix, 16);
-            }
             mRequestDraw++;
             mSync.notifyAll();
-/*			try {
-                mSync.wait();
-			} catch (final InterruptedException e) {
-			} */
-        }
-    }
-
-    public boolean isValid() {
-        synchronized (mSync) {
-            return !(mSurface instanceof Surface) || ((Surface) mSurface).isValid();
         }
     }
 
@@ -117,10 +76,6 @@ public final class RenderHandler implements Runnable {
             }
         }
     }
-
-    private EGLBase mEgl;
-    private EGLBase.EglSurface mInputSurface;
-    private GLDrawer2D mDrawer;
 
     @Override
     public final void run() {
@@ -140,17 +95,12 @@ public final class RenderHandler implements Runnable {
                 localRequestDraw = mRequestDraw > 0;
                 if (localRequestDraw) {
                     mRequestDraw--;
-//					mSync.notifyAll();
                 }
             }
             if (localRequestDraw) {
                 if ((mEgl != null) && mTexId >= 0) {
                     mInputSurface.makeCurrent();
-                    // clear screen with yellow color so that you can see rendering rectangle
-                    GLES20.glClearColor(1.0f, 1.0f, 0.0f, 1.0f);
-                    GLES20.glClear(GLES20.GL_COLOR_BUFFER_BIT);
-                    mDrawer.setMatrix(mMatrix, 16);
-                    mDrawer.draw(mTexId, mMatrix);
+                    mRecordRender.draw(mTexId);
                     mInputSurface.swap();
                 }
             } else {
@@ -172,12 +122,12 @@ public final class RenderHandler implements Runnable {
 
     private void internalPrepare() {
         internalRelease();
-        mEgl = new EGLBase(mShard_context, false, mIsRecordable);
+        mEgl = new EGLBase(mShardContext, false);
 
         mInputSurface = mEgl.createFromSurface(mSurface);
 
         mInputSurface.makeCurrent();
-        mDrawer = new GLDrawer2D();
+        mRecordRender = new SimpleRender();
         mSurface = null;
         mSync.notifyAll();
     }
@@ -187,13 +137,21 @@ public final class RenderHandler implements Runnable {
             mInputSurface.release();
             mInputSurface = null;
         }
-        if (mDrawer != null) {
-            mDrawer.release();
-            mDrawer = null;
+        if (mRecordRender != null) {
+            mRecordRender.destroy();
+            mRecordRender = null;
         }
         if (mEgl != null) {
             mEgl.release();
             mEgl = null;
+        }
+    }
+
+    class SimpleRender extends AbstractRender {
+
+        public void draw(int textureIn) {
+            mTextureIn = textureIn;
+            onDrawFrame();
         }
     }
 }

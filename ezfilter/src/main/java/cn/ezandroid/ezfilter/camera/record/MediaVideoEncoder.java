@@ -36,27 +36,11 @@ public class MediaVideoEncoder extends MediaEncoder {
         mRenderHandler = RenderHandler.createHandler(TAG);
     }
 
-    public boolean frameAvailableSoon(final float[] texMatrix, final float[] mvpMatrix) {
-        boolean result;
-        if (result = super.frameAvailableSoon()) {
-            mRenderHandler.draw(texMatrix, mvpMatrix);
-        }
-        return result;
-    }
-
-    public boolean frameAvailableSoon(final float[] texMatrix) {
-        boolean result;
-        if (result = super.frameAvailableSoon()) {
-            mRenderHandler.draw(texMatrix);
-        }
-        return result;
-    }
-
     @Override
     public boolean frameAvailableSoon() {
         boolean result;
         if (result = super.frameAvailableSoon()) {
-            mRenderHandler.draw(null);
+            mRenderHandler.draw();
         }
         return result;
     }
@@ -75,7 +59,7 @@ public class MediaVideoEncoder extends MediaEncoder {
         final MediaFormat format = MediaFormat.createVideoFormat(MIME_TYPE, mWidth, mHeight);
         // 数据来源
         format.setInteger(MediaFormat.KEY_COLOR_FORMAT,
-                MediaCodecInfo.CodecCapabilities.COLOR_FormatSurface);    // API >= 18
+                MediaCodecInfo.CodecCapabilities.COLOR_FormatSurface);
         // 视频bit率
         format.setInteger(MediaFormat.KEY_BIT_RATE, (int) (0.2 * FRAME_RATE * mWidth * mHeight));
         // 帧率
@@ -87,7 +71,7 @@ public class MediaVideoEncoder extends MediaEncoder {
         mMediaCodec.configure(format, null, null, MediaCodec.CONFIGURE_FLAG_ENCODE);
         // get Surface for encoder input
         // this method only can call between #configure and #start
-        mSurface = mMediaCodec.createInputSurface();    // API >= 18
+        mSurface = mMediaCodec.createInputSurface();
         mMediaCodec.start();
         if (mListener != null) {
             try {
@@ -106,7 +90,7 @@ public class MediaVideoEncoder extends MediaEncoder {
      * @param texId
      */
     public void setInputTextureId(final int texId) {
-        mRenderHandler.setEglContext(EGL14.eglGetCurrentContext(), texId, mSurface, true);
+        mRenderHandler.setEglContext(EGL14.eglGetCurrentContext(), texId, mSurface);
     }
 
     @Override
@@ -181,7 +165,7 @@ public class MediaVideoEncoder extends MediaEncoder {
 
     @Override
     protected void signalEndOfInputStream() {
-        mMediaCodec.signalEndOfInputStream();    // API >= 18
+        mMediaCodec.signalEndOfInputStream();
         mIsEOS = true;
     }
 }
