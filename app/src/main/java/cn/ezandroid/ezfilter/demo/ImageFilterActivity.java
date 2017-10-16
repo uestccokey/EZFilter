@@ -53,6 +53,11 @@ public class ImageFilterActivity extends BaseActivity {
         $(R.id.capture).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
+//                Bitmap bitmap = EZFilter.input(mCurrentBitmap)
+//                        .addFilter(new LookupRender(ImageFilterActivity.this, R.drawable.langman))
+//                        .output();
+//                mPreviewImage.setImageBitmap(bitmap);
+
                 mRenderPipeline.output(new BitmapOutput.BitmapOutputCallback() {
                     @Override
                     public void bitmapOutput(final Bitmap bitmap) {
