@@ -37,8 +37,11 @@ public class OffscreenImage {
         mWidth = bitmap.getWidth();
         mHeight = bitmap.getHeight();
 
+        // 初始化EGL环境
         mEgl = new EGLEnvironment(EGL14.eglGetCurrentContext(), false);
+        // 创建离屏缓冲
         mInputSurface = mEgl.createOffscreen(mWidth, mHeight);
+        // 设置渲染环境可用
         mInputSurface.makeCurrent();
 
         BitmapInput bitmapInput = new BitmapInput(bitmap);
@@ -71,6 +74,7 @@ public class OffscreenImage {
 
         mPipeline.onSurfaceDestroyed();
 
+        // 释放EGL环境
         mInputSurface.release();
         mEgl.release();
         return bitmap;
