@@ -77,19 +77,28 @@ public class BitmapOutput extends BufferOutput<IntBuffer> {
             return;
         }
 
-        int[] pixels = buffer.array();
-
-        for (int i = 0; i < pixels.length; i++) {
-            pixels[i] = (pixels[i] & (0xFF00FF00))
-                    | ((pixels[i] >> 16) & 0x000000FF)
-                    | ((pixels[i] << 16) & 0x00FF0000);
-            // swap red and blue to translate back to bitmap rgb style
-        }
-
         try {
-            Bitmap image = Bitmap.createBitmap(pixels, width, height, mConfig);
+            int[] pixels = buffer.array();
+
+            // 方案一，使用copyPixelsFromBuffer，是方案二速度的2倍以上
+            int[] iat = new int[width * height];
+            for (int i = 0; i < height; i++) {
+                System.arraycopy(pixels, i * width, iat, (height - i - 1) * width, width);
+            }
+            Bitmap bitmap = Bitmap.createBitmap(width, height, Bitmap.Config.ARGB_8888);
+            bitmap.copyPixelsFromBuffer(IntBuffer.wrap(iat));
+
+            // 方案二，手动转换像素数组
+//            for (int i = 0; i < pixels.length; i++) {
+//                // glReadPixels设置GLES20.GL_RGBA时，读取出来格式为ABGR，要转换为Bitmap需要的ARGB，同时设置Alpha值为1
+//                pixels[i] = (0xFF000000)
+//                        | ((pixels[i] << 16) & 0x00FF0000)
+//                        | (pixels[i] & (0xFF00FF00))
+//                        | ((pixels[i] >> 16) & 0x000000FF);
+//            }
+//            Bitmap bitmap = Bitmap.createBitmap(pixels, width, height, mConfig);
             if (mCallback != null) {
-                mCallback.bitmapOutput(image);
+                mCallback.bitmapOutput(bitmap);
             }
         } catch (OutOfMemoryError e) {
             e.printStackTrace();

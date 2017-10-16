@@ -27,6 +27,6 @@ publish {
     groupId = 'cn.ezandroid' // jcenter上的路径
     artifactId = 'EZFilter' // 项目名称
     publishVersion = rootProject.ext.sdkVersionName // 版本号
-    desc = '一个轻量级，易扩展的Android滤镜框架，支持拍照，视频，图片添加滤镜，支持离屏渲染' // 描述
+    desc = '一款轻量级，易扩展的Android图像处理框架，支持拍照，视频，图片等添加滤镜，支持离屏渲染' // 描述
     website = 'https://github.com/uestccokey/EZFilter'// 网站
 }

@@ -17,7 +17,7 @@ import android.view.Surface;
  * @author like
  * @date 2017-09-23
  */
-@TargetApi(Build.VERSION_CODES.JELLY_BEAN_MR1)
+@TargetApi(Build.VERSION_CODES.JELLY_BEAN_MR2)
 class InputSurface {
 
     private static final int EGL_RECORDABLE_ANDROID = 0x3142;

@@ -1,6 +1,6 @@
 # ![Logo](https://raw.githubusercontent.com/uestccokey/EZFilter/master/logo.png)
 # EZFilter
-一个轻量级，易扩展的Android滤镜框架，支持拍照，视频，图片添加滤镜，支持离屏渲染
+一款轻量级，易扩展的Android图像处理框架，支持拍照，视频，图片添加滤镜，支持离屏渲染
 
 [ ![Download](https://api.bintray.com/packages/uestccokey/maven/EZFilter/images/download.svg) ](https://bintray.com/uestccokey/maven/EZFilter/_latestVersion)
 
@@ -28,9 +28,9 @@
 
 ``` gradle
 dependencies {
-    compile 'cn.ezandroid:EZFilter:1.5.0' // Gradle 3.0以下
+    compile 'cn.ezandroid:EZFilter:1.5.1' // Gradle 3.0以下
     // 或者
-    implementation 'cn.ezandroid:EZFilter:1.5.0' // Gradle3.0及以上
+    implementation 'cn.ezandroid:EZFilter:1.5.1' // Gradle3.0及以上
 }
 ```
 
