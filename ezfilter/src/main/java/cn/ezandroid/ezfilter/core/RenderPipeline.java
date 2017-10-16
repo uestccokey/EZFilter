@@ -59,7 +59,7 @@ public class RenderPipeline implements Renderer {
         }
         this.mWidth = width;
         this.mHeight = height;
-        updateRenderSize();
+        updateRendersSize();
 
         for (OnSurfaceListener listener : mOnSurfaceListeners) {
             listener.onSurfaceChanged(gl10, width, height);
@@ -163,15 +163,21 @@ public class RenderPipeline implements Renderer {
         setRendering(isRenders);
     }
 
-    private void updateRenderSize() {
+    private void updateRendersSize() {
+        // 设置起点渲染器的大小
         if (mStartPointRender != null) {
             mStartPointRender.setRenderSize(mWidth, mHeight);
         }
+
+        // 设置所有滤镜的大小
         for (FilterRender filterRender : mFilterRenders) {
             filterRender.setRenderSize(mWidth, mHeight);
         }
-        mEndPointRender.setRenderSize(mWidth, mHeight);
 
+        // 不直接设置终点渲染器的大小，可以在外部手动设置，或者在onTextureAcceptable内自动设置
+//        mEndPointRender.setRenderSize(mWidth, mHeight);
+
+        // 设置所有缓冲输出的大小
         for (BufferOutput bufferOutput : mOutputs) {
             bufferOutput.setRenderSize(mWidth, mHeight);
         }
@@ -229,7 +235,7 @@ public class RenderPipeline implements Renderer {
     public void setRenderSize(int width, int height) {
         mWidth = width;
         mHeight = height;
-        updateRenderSize();
+        updateRendersSize();
     }
 
     /**
@@ -310,7 +316,7 @@ public class RenderPipeline implements Renderer {
             mStartPointRender.setHeight(mHeight);
             mStartPointRender.addTarget(mEndPointRender);
         }
-        updateRenderSize();
+        updateRendersSize();
     }
 
     /**
@@ -330,7 +336,7 @@ public class RenderPipeline implements Renderer {
         addRenderToDestroy(mEndPointRender);
         mEndPointRender = endPointRender;
 
-        updateRenderSize();
+        updateRendersSize();
     }
 
     public synchronized void addOutput(FBORender filterRender, BufferOutput bufferOutput) {
