@@ -19,8 +19,8 @@ import cn.ezandroid.ezfilter.video.player.IMediaPlayer;
 public class VideoBuilder extends EZFilter.Builder {
 
     private Uri mVideo;
-    private boolean mVideoLoop;
-    private float mVideoVolume;
+    private boolean mVideoLoop = true;
+    private float mVideoVolume = 1.0f;
     private IMediaPlayer.OnPreparedListener mPreparedListener;
     private IMediaPlayer.OnCompletionListener mCompletionListener;
 
