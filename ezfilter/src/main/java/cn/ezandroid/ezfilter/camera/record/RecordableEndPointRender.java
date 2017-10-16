@@ -3,6 +3,7 @@ package cn.ezandroid.ezfilter.camera.record;
 import java.io.IOException;
 
 import cn.ezandroid.ezfilter.core.EndPointRender;
+import cn.ezandroid.ezfilter.core.FBORender;
 
 /**
  * 支持视频录制的终点渲染器
@@ -44,24 +45,28 @@ public class RecordableEndPointRender extends EndPointRender {
         mRecordAudio = recordAudio;
     }
 
+    @Override
+    public void onTextureAcceptable(int texture, FBORender source) {
+        super.onTextureAcceptable(texture, source);
+        synchronized (this) {
+            if (mVideoEncoder != null) {
+                int oldTexture = mVideoEncoder.getInputTextureId();
+                if (texture != oldTexture) {
+                    mVideoEncoder.setInputTextureId(texture);
+                }
+            }
+        }
+    }
+
     /**
      * 设置视频编码器
      *
      * @param encoder
      */
     public void setVideoEncoder(final MediaVideoEncoder encoder) {
-        // 在GL线程绑定输入纹理
-        runOnDraw(new Runnable() {
-            @Override
-            public void run() {
-                synchronized (this) {
-                    if (encoder != null) {
-                        encoder.setInputTextureId(mTextureIn);
-                    }
-                    mVideoEncoder = encoder;
-                }
-            }
-        });
+        synchronized (this) {
+            mVideoEncoder = encoder;
+        }
     }
 
     /**
