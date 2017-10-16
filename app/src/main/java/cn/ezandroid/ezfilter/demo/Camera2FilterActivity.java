@@ -3,6 +3,7 @@ package cn.ezandroid.ezfilter.demo;
 import android.annotation.SuppressLint;
 import android.annotation.TargetApi;
 import android.content.Context;
+import android.graphics.Bitmap;
 import android.graphics.Point;
 import android.graphics.SurfaceTexture;
 import android.hardware.camera2.CameraAccessException;
@@ -30,6 +31,7 @@ import java.util.List;
 import cn.ezandroid.ezfilter.EZFilter;
 import cn.ezandroid.ezfilter.core.FilterRender;
 import cn.ezandroid.ezfilter.core.RenderPipeline;
+import cn.ezandroid.ezfilter.core.output.BitmapOutput;
 import cn.ezandroid.ezfilter.demo.render.BWRender;
 import cn.ezandroid.ezfilter.demo.render.WobbleRender;
 import cn.ezandroid.ezfilter.environment.FitViewHelper;
@@ -98,6 +100,23 @@ public class Camera2FilterActivity extends BaseActivity {
         $(R.id.capture).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
+                mRenderPipeline.output(new BitmapOutput.BitmapOutputCallback() {
+                    @Override
+                    public void bitmapOutput(final Bitmap bitmap) {
+                        runOnUiThread(new Runnable() {
+                            @Override
+                            public void run() {
+                                mPreviewImage.setImageBitmap(bitmap);
+                            }
+                        });
+                    }
+                }, true);
+            }
+        });
+
+        $(R.id.change_filter).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
                 if (mCurrentRender == mBWRender) {
                     mCurrentRender = mWobbleRender;
                     mRenderPipeline.removeFilterRender(mBWRender);
@@ -107,18 +126,6 @@ public class Camera2FilterActivity extends BaseActivity {
                     mRenderPipeline.removeFilterRender(mWobbleRender);
                     mRenderPipeline.addFilterRender(mBWRender);
                 }
-
-//                mRenderPipeline.output(new BitmapOutput.BitmapOutputCallback() {
-//                    @Override
-//                    public void bitmapOutput(final Bitmap bitmap) {
-//                        runOnUiThread(new Runnable() {
-//                            @Override
-//                            public void run() {
-//                                mPreviewImage.setImageBitmap(bitmap);
-//                            }
-//                        });
-//                    }
-//                }, true);
             }
         });
 

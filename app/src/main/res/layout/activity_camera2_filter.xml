@@ -13,7 +13,7 @@
         android:id="@+id/switch_camera"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="切换" />
+        android:text="切换摄像头" />
 
     <Button
         android:id="@+id/capture"
@@ -21,6 +21,13 @@
         android:layout_height="wrap_content"
         android:layout_toRightOf="@id/switch_camera"
         android:text="截图" />
+
+    <Button
+        android:id="@+id/change_filter"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_toRightOf="@id/switch_camera"
+        android:text="切换滤镜" />
 
     <Button
         android:id="@+id/record"

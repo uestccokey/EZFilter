@@ -16,7 +16,7 @@ public final class RenderHandler implements Runnable {
     private final Object mSync = new Object();
     private EGLContext mSharedContext;
     private Object mSurface;
-    private int mTexId = -1;
+    private int mTextureId = -1;
 
     private boolean mRequestSetEglContext;
     private boolean mRequestRelease;
@@ -38,6 +38,10 @@ public final class RenderHandler implements Runnable {
         return handler;
     }
 
+    public final int getInputTextureId() {
+        return mTextureId;
+    }
+
     public final void setInputTextureId(final EGLContext shared_context, final Object surface, final int texId) {
         if (!(surface instanceof Surface)
                 && !(surface instanceof SurfaceTexture)
@@ -47,7 +51,7 @@ public final class RenderHandler implements Runnable {
         synchronized (mSync) {
             if (mRequestRelease) return;
             mSharedContext = shared_context;
-            mTexId = texId;
+            mTextureId = texId;
             mSurface = surface;
             mRequestSetEglContext = true;
             mSync.notifyAll();
@@ -99,9 +103,9 @@ public final class RenderHandler implements Runnable {
                 }
             }
             if (localRequestDraw) {
-                if ((mEgl != null) && mTexId >= 0) {
+                if ((mEgl != null) && mTextureId >= 0) {
                     mInputSurface.makeCurrent();
-                    mRecordRender.draw(mTexId);
+                    mRecordRender.draw(mTextureId);
                     mInputSurface.swap();
                 }
             } else {

@@ -113,6 +113,15 @@ public class MediaVideoEncoder extends MediaEncoder {
         mRenderHandler.setInputTextureId(EGL14.eglGetCurrentContext(), mSurface, texId);
     }
 
+    /**
+     * 获取输入纹理
+     *
+     * @return
+     */
+    public int getInputTextureId() {
+        return mRenderHandler.getInputTextureId();
+    }
+
     @Override
     protected void release() {
         if (mSurface != null) {
