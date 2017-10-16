@@ -3,7 +3,6 @@ package cn.ezandroid.ezfilter.demo;
 import android.annotation.SuppressLint;
 import android.annotation.TargetApi;
 import android.content.Context;
-import android.graphics.Bitmap;
 import android.graphics.Point;
 import android.graphics.SurfaceTexture;
 import android.hardware.camera2.CameraAccessException;
@@ -18,6 +17,7 @@ import android.os.Looper;
 import android.util.Size;
 import android.view.Surface;
 import android.view.View;
+import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.Toast;
 
@@ -28,9 +28,10 @@ import java.util.Comparator;
 import java.util.List;
 
 import cn.ezandroid.ezfilter.EZFilter;
+import cn.ezandroid.ezfilter.core.FilterRender;
 import cn.ezandroid.ezfilter.core.RenderPipeline;
-import cn.ezandroid.ezfilter.core.output.BitmapOutput;
 import cn.ezandroid.ezfilter.demo.render.BWRender;
+import cn.ezandroid.ezfilter.demo.render.WobbleRender;
 import cn.ezandroid.ezfilter.environment.FitViewHelper;
 import cn.ezandroid.ezfilter.environment.SurfaceFitView;
 
@@ -51,6 +52,7 @@ public class Camera2FilterActivity extends BaseActivity {
 
     private SurfaceFitView mRenderView;
     private ImageView mPreviewImage;
+    private Button mRecordButton;
 
     private CameraManager mCameraManager;
 
@@ -63,14 +65,25 @@ public class Camera2FilterActivity extends BaseActivity {
 
     private RenderPipeline mRenderPipeline;
 
+    private FilterRender mBWRender;
+    private FilterRender mWobbleRender;
+
+    private FilterRender mCurrentRender;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_camera2_filter);
         mRenderView = findViewById(R.id.render_view);
         mPreviewImage = $(R.id.preview_image);
+        mRecordButton = $(R.id.record);
 
         mRenderView.setScaleType(FitViewHelper.ScaleType.CENTER_CROP);
+
+        mBWRender = new BWRender(this);
+        mWobbleRender = new WobbleRender();
+
+        mCurrentRender = mBWRender;
 
         mCameraManager = (CameraManager) getSystemService(Context.CAMERA_SERVICE);
         openCamera(mCurrentCameraId);
@@ -85,19 +98,50 @@ public class Camera2FilterActivity extends BaseActivity {
         $(R.id.capture).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                mRenderPipeline.output(new BitmapOutput.BitmapOutputCallback() {
-                    @Override
-                    public void bitmapOutput(final Bitmap bitmap) {
-                        runOnUiThread(new Runnable() {
-                            @Override
-                            public void run() {
-                                mPreviewImage.setImageBitmap(bitmap);
-                            }
-                        });
-                    }
-                }, true);
+                if (mCurrentRender == mBWRender) {
+                    mCurrentRender = mWobbleRender;
+                    mRenderPipeline.removeFilterRender(mBWRender);
+                    mRenderPipeline.addFilterRender(mWobbleRender);
+                } else {
+                    mCurrentRender = mBWRender;
+                    mRenderPipeline.removeFilterRender(mWobbleRender);
+                    mRenderPipeline.addFilterRender(mBWRender);
+                }
+
+//                mRenderPipeline.output(new BitmapOutput.BitmapOutputCallback() {
+//                    @Override
+//                    public void bitmapOutput(final Bitmap bitmap) {
+//                        runOnUiThread(new Runnable() {
+//                            @Override
+//                            public void run() {
+//                                mPreviewImage.setImageBitmap(bitmap);
+//                            }
+//                        });
+//                    }
+//                }, true);
             }
         });
+
+        mRecordButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if (mRenderPipeline.isRecording()) {
+                    stopRecording();
+                } else {
+                    startRecording();
+                }
+            }
+        });
+    }
+
+    private void startRecording() {
+        mRecordButton.setText("停止");
+        mRenderPipeline.startRecording();
+    }
+
+    private void stopRecording() {
+        mRecordButton.setText("录制");
+        mRenderPipeline.stopRecording();
     }
 
     @SuppressLint("MissingPermission")
@@ -222,8 +266,12 @@ public class Camera2FilterActivity extends BaseActivity {
         public void onOpened(CameraDevice camera) { // 打开摄像头
             mCameraDevice = camera;
             mRenderPipeline = EZFilter.input(mCameraDevice, mPreviewSize)
-                    .addFilter(new BWRender(Camera2FilterActivity.this))
+                    .addFilter(mCurrentRender)
+                    .enableRecord("/sdcard/recordCamera2.mp4", true, true) // 支持录制为视频
                     .into(mRenderView);
+
+//            mRenderPipeline.getEndPointRender()
+//                    .setRenderSize(mPreviewSize.getHeight(), mPreviewSize.getWidth());
         }
 
         @Override

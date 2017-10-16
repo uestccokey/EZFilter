@@ -49,7 +49,7 @@ dependencies {
 
     implementation 'me.weyye.hipermission:library:1.0.7'
 
-//    implementation 'cn.ezandroid:EZFilter:1.4.7'
+//    implementation 'cn.ezandroid:EZPermission:1.0.1'
 
     implementation project(':ezfilter')
 }

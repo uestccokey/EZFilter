@@ -46,6 +46,24 @@ public class MediaVideoEncoder extends MediaEncoder {
         return result;
     }
 
+    /**
+     * 进行整除16对齐
+     * <p>
+     * MediaCodec这个API在设计的时候，过于贴近HAL层，这在很多Soc的实现上，是直接把传入MediaCodec的buffer，
+     * 在不经过任何前置处理的情况下就直接送入了Soc中。 而在编码h264视频流的时候，由于h264的编码块大小一般是16x16，
+     * 于是乎在一开始设置视频的宽高的时候，如果设置了一个没有对齐16的大小，例如960x540， 在某些cpu上，
+     * 最终编码出来的视频就会直接花屏。
+     *
+     * @param size
+     * @return
+     */
+    private static int align16(int size) {
+        if (size % 16 > 0) {
+            size = (size / 16) * 16 + 16;
+        }
+        return size;
+    }
+
     @Override
     protected void prepare() throws IOException {
         mTrackIndex = -1;
@@ -57,7 +75,8 @@ public class MediaVideoEncoder extends MediaEncoder {
             return;
         }
 
-        final MediaFormat format = MediaFormat.createVideoFormat(MIME_TYPE, mWidth, mHeight);
+        // FIXME 对齐后可能有几个像素的拉伸，暂时没有更好的方案
+        final MediaFormat format = MediaFormat.createVideoFormat(MIME_TYPE, align16(mWidth), align16(mHeight));
         // 数据来源
         format.setInteger(MediaFormat.KEY_COLOR_FORMAT,
                 MediaCodecInfo.CodecCapabilities.COLOR_FormatSurface);
