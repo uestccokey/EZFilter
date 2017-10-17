@@ -1,4 +1,4 @@
-package cn.ezandroid.ezfilter.video.offscreen.media;
+package cn.ezandroid.ezfilter.media.transcode;
 
 import android.annotation.TargetApi;
 import android.opengl.EGL14;

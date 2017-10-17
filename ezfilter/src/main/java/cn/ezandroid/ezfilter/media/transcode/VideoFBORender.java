@@ -1,4 +1,4 @@
-package cn.ezandroid.ezfilter.video.offscreen.media;
+package cn.ezandroid.ezfilter.media.transcode;
 
 import android.graphics.SurfaceTexture;
 import android.opengl.GLES11Ext;

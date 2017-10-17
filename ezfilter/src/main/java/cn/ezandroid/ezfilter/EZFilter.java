@@ -11,7 +11,6 @@ import java.util.List;
 
 import cn.ezandroid.ezfilter.camera.Camera2Builder;
 import cn.ezandroid.ezfilter.camera.CameraBuilder;
-import cn.ezandroid.ezfilter.camera.record.RecordableEndPointRender;
 import cn.ezandroid.ezfilter.core.FBORender;
 import cn.ezandroid.ezfilter.core.FilterRender;
 import cn.ezandroid.ezfilter.core.RenderPipeline;
@@ -20,6 +19,7 @@ import cn.ezandroid.ezfilter.core.cache.LruBitmapCache;
 import cn.ezandroid.ezfilter.environment.IFitView;
 import cn.ezandroid.ezfilter.extra.IAdjustable;
 import cn.ezandroid.ezfilter.image.BitmapBuilder;
+import cn.ezandroid.ezfilter.media.record.RecordableEndPointRender;
 import cn.ezandroid.ezfilter.video.VideoBuilder;
 import cn.ezandroid.ezfilter.view.ViewBuilder;
 import cn.ezandroid.ezfilter.view.glview.IGLView;

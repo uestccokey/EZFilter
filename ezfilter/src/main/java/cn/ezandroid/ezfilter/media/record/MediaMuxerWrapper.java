@@ -1,4 +1,4 @@
-package cn.ezandroid.ezfilter.camera.record;
+package cn.ezandroid.ezfilter.media.record;
 
 import android.annotation.TargetApi;
 import android.media.MediaCodec;

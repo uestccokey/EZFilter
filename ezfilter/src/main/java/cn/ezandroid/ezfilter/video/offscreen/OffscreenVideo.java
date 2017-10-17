@@ -11,11 +11,11 @@ import java.io.IOException;
 
 import cn.ezandroid.ezfilter.core.FilterRender;
 import cn.ezandroid.ezfilter.core.RenderPipeline;
-import cn.ezandroid.ezfilter.video.offscreen.media.AudioTrackTranscoder;
-import cn.ezandroid.ezfilter.video.offscreen.media.MediaUtil;
-import cn.ezandroid.ezfilter.video.offscreen.media.QueuedMuxer;
-import cn.ezandroid.ezfilter.video.offscreen.media.VideoFBORender;
-import cn.ezandroid.ezfilter.video.offscreen.media.VideoTrackTranscoder;
+import cn.ezandroid.ezfilter.media.transcode.AudioTrackTranscoder;
+import cn.ezandroid.ezfilter.media.transcode.MediaUtil;
+import cn.ezandroid.ezfilter.media.transcode.QueuedMuxer;
+import cn.ezandroid.ezfilter.media.transcode.VideoFBORender;
+import cn.ezandroid.ezfilter.media.transcode.VideoTrackTranscoder;
 
 /**
  * 离屏渲染视频

@@ -5,7 +5,7 @@ import android.support.v7.app.AppCompatActivity;
 import android.view.View;
 
 /**
- * BaseActivity
+ * Activity基类
  *
  * @author like
  * @date 2017-09-15
