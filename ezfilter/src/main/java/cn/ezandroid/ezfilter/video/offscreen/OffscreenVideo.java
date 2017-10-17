@@ -1,6 +1,7 @@
 package cn.ezandroid.ezfilter.video.offscreen;
 
 import android.annotation.TargetApi;
+import android.media.AudioFormat;
 import android.media.MediaExtractor;
 import android.media.MediaFormat;
 import android.media.MediaMetadataRetriever;
@@ -12,10 +13,10 @@ import java.io.IOException;
 import cn.ezandroid.ezfilter.core.FilterRender;
 import cn.ezandroid.ezfilter.core.RenderPipeline;
 import cn.ezandroid.ezfilter.media.transcode.AudioTrackTranscoder;
-import cn.ezandroid.ezfilter.media.transcode.MediaUtil;
 import cn.ezandroid.ezfilter.media.transcode.QueuedMuxer;
 import cn.ezandroid.ezfilter.media.transcode.VideoFBORender;
 import cn.ezandroid.ezfilter.media.transcode.VideoTrackTranscoder;
+import cn.ezandroid.ezfilter.media.util.MediaUtil;
 
 /**
  * 离屏渲染视频
@@ -99,6 +100,14 @@ public class OffscreenVideo {
         save(output, mWidth, mHeight);
     }
 
+    private int getInteger(String name, int defaultValue) {
+        try {
+            return mTrack.audioTrackFormat.getInteger(name);
+        } catch (Exception e) {
+            return defaultValue;
+        }
+    }
+
     public void save(String output, int width, int height) throws IOException {
         if (null == mTrack || null == mTrack.videoTrackFormat) {
             return;
@@ -114,11 +123,12 @@ public class OffscreenVideo {
         QueuedMuxer queuedMuxer = new QueuedMuxer(muxer);
 
         if (null != mTrack.audioTrackFormat) {
-            int sampleRate = mTrack.audioTrackFormat.getInteger(MediaFormat.KEY_SAMPLE_RATE);
-            int channel = mTrack.audioTrackFormat.getInteger(MediaFormat.KEY_CHANNEL_COUNT);
+            int sampleRate = getInteger(MediaFormat.KEY_SAMPLE_RATE, 44100);
+            int channelMask = getInteger(MediaFormat.KEY_CHANNEL_MASK, AudioFormat.CHANNEL_IN_STEREO);
+            int channelCount = getInteger(MediaFormat.KEY_CHANNEL_COUNT, 2);
 
             // 音频Format
-            MediaFormat audioFormat = MediaUtil.createAudioFormat(sampleRate, channel);
+            MediaFormat audioFormat = MediaUtil.createAudioFormat(sampleRate, channelMask, channelCount);
 
             // 音视频轨道都需要
             queuedMuxer.setTrackCount(QueuedMuxer.TRACK_VIDEO & QueuedMuxer.TRACK_AUDIO);

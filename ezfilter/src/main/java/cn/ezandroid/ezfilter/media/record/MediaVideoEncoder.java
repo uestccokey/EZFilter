@@ -1,28 +1,25 @@
 package cn.ezandroid.ezfilter.media.record;
 
-import android.annotation.TargetApi;
 import android.media.MediaCodec;
 import android.media.MediaCodecInfo;
 import android.media.MediaCodecList;
 import android.media.MediaFormat;
 import android.opengl.EGL14;
-import android.os.Build;
 import android.util.Log;
 import android.view.Surface;
 
 import java.io.IOException;
 
+import cn.ezandroid.ezfilter.media.util.MediaUtil;
+
 /**
  * 视频编码器
  */
-@TargetApi(Build.VERSION_CODES.JELLY_BEAN_MR2)
 public class MediaVideoEncoder extends MediaEncoder {
 
     private static final String TAG = "MediaVideoEncoder";
 
     private static final String MIME_TYPE = "video/avc";
-    private static final int FRAME_RATE = 20;
-    private static final int FRAME_INTERVAL = 1;
 
     private final int mWidth;
     private final int mHeight;
@@ -46,24 +43,6 @@ public class MediaVideoEncoder extends MediaEncoder {
         return result;
     }
 
-    /**
-     * 进行整除16对齐
-     * <p>
-     * MediaCodec这个API在设计的时候，过于贴近HAL层，这在很多Soc的实现上，是直接把传入MediaCodec的buffer，
-     * 在不经过任何前置处理的情况下就直接送入了Soc中。 而在编码h264视频流的时候，由于h264的编码块大小一般是16x16，
-     * 于是乎在一开始设置视频的宽高的时候，如果设置了一个没有对齐16的大小，例如960x540， 在某些cpu上，
-     * 最终编码出来的视频就会直接花屏。
-     *
-     * @param size
-     * @return
-     */
-    private static int align16(int size) {
-        if (size % 16 > 0) {
-            size = (size / 16) * 16 + 16;
-        }
-        return size;
-    }
-
     @Override
     protected void prepare() throws IOException {
         mTrackIndex = -1;
@@ -75,20 +54,11 @@ public class MediaVideoEncoder extends MediaEncoder {
             return;
         }
 
-        // FIXME 对齐后可能有几个像素的拉伸，暂时没有更好的方案
-        final MediaFormat format = MediaFormat.createVideoFormat(MIME_TYPE, align16(mWidth), align16(mHeight));
-        // 数据来源
-        format.setInteger(MediaFormat.KEY_COLOR_FORMAT,
-                MediaCodecInfo.CodecCapabilities.COLOR_FormatSurface);
-        // 视频bit率
-        format.setInteger(MediaFormat.KEY_BIT_RATE, (int) (0.2 * FRAME_RATE * mWidth * mHeight));
-        // 帧率
-        format.setInteger(MediaFormat.KEY_FRAME_RATE, FRAME_RATE);
-        // 设置关键帧时间间隔（单位为秒）表示：每隔多长时间有一个关键帧
-        format.setInteger(MediaFormat.KEY_I_FRAME_INTERVAL, FRAME_INTERVAL);
+        // 视频Format
+        final MediaFormat videoFormat = MediaUtil.createVideoFormat(mWidth, mHeight);
 
         mMediaCodec = MediaCodec.createEncoderByType(MIME_TYPE);
-        mMediaCodec.configure(format, null, null, MediaCodec.CONFIGURE_FLAG_ENCODE);
+        mMediaCodec.configure(videoFormat, null, null, MediaCodec.CONFIGURE_FLAG_ENCODE);
         // get Surface for encoder input
         // this method only can call between #configure and #start
         mSurface = mMediaCodec.createInputSurface();

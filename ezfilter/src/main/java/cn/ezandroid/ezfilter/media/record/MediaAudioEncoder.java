@@ -1,6 +1,5 @@
 package cn.ezandroid.ezfilter.media.record;
 
-import android.annotation.TargetApi;
 import android.media.AudioFormat;
 import android.media.AudioRecord;
 import android.media.MediaCodec;
@@ -8,23 +7,22 @@ import android.media.MediaCodecInfo;
 import android.media.MediaCodecList;
 import android.media.MediaFormat;
 import android.media.MediaRecorder;
-import android.os.Build;
 import android.util.Log;
 
 import java.io.IOException;
 import java.nio.ByteBuffer;
 
+import cn.ezandroid.ezfilter.media.util.MediaUtil;
+
 /**
  * 音频编码器
  */
-@TargetApi(Build.VERSION_CODES.JELLY_BEAN)
 public class MediaAudioEncoder extends MediaEncoder {
 
     private static final String TAG = "MediaAudioEncoder";
 
     private static final String MIME_TYPE = "audio/mp4a-latm";
     private static final int SAMPLE_RATE = 44100;    // 44.1[KHz] is only setting guaranteed to be available on all devices.
-    private static final int AUDIO_BIT_RATE = 96000;
     private static final int SAMPLES_PER_FRAME = 1024;    // AAC, bytes/frame/channel
 
     private AudioThread mAudioThread = null;
@@ -38,19 +36,14 @@ public class MediaAudioEncoder extends MediaEncoder {
         mTrackIndex = -1;
         mMuxerStarted = mIsEOS = false;
 
-        // prepare MediaCodec for AAC encoding of audio data from inernal mic.
         final MediaCodecInfo audioCodecInfo = selectAudioCodec(MIME_TYPE);
         if (audioCodecInfo == null) {
             Log.e(TAG, "Unable to find an appropriate codec for " + MIME_TYPE);
             return;
         }
 
-        final MediaFormat audioFormat = MediaFormat.createAudioFormat(MIME_TYPE, SAMPLE_RATE, 1);
-        audioFormat.setInteger(MediaFormat.KEY_AAC_PROFILE, MediaCodecInfo.CodecProfileLevel.AACObjectLC);
-        audioFormat.setInteger(MediaFormat.KEY_CHANNEL_MASK, AudioFormat.CHANNEL_IN_STEREO);
-        audioFormat.setInteger(MediaFormat.KEY_CHANNEL_COUNT, 2);
-        // 音频bit率
-        audioFormat.setInteger(MediaFormat.KEY_BIT_RATE, AUDIO_BIT_RATE);
+        // 音频Format
+        MediaFormat audioFormat = MediaUtil.createAudioFormat(SAMPLE_RATE, AudioFormat.CHANNEL_IN_STEREO, 2);
 
         mMediaCodec = MediaCodec.createEncoderByType(MIME_TYPE);
         mMediaCodec.configure(audioFormat, null, null, MediaCodec.CONFIGURE_FLAG_ENCODE);

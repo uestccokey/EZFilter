@@ -1,13 +1,11 @@
 package cn.ezandroid.ezfilter.media.transcode;
 
-import android.annotation.TargetApi;
 import android.opengl.EGL14;
 import android.opengl.EGLConfig;
 import android.opengl.EGLContext;
 import android.opengl.EGLDisplay;
 import android.opengl.EGLExt;
 import android.opengl.EGLSurface;
-import android.os.Build;
 import android.view.Surface;
 
 /**
@@ -17,7 +15,6 @@ import android.view.Surface;
  * @author like
  * @date 2017-09-23
  */
-@TargetApi(Build.VERSION_CODES.JELLY_BEAN_MR2)
 class InputSurface {
 
     private static final int EGL_RECORDABLE_ANDROID = 0x3142;

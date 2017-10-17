@@ -1,9 +1,7 @@
 package cn.ezandroid.ezfilter.media.record;
 
-import android.annotation.TargetApi;
 import android.media.MediaCodec;
 import android.media.MediaFormat;
-import android.os.Build;
 import android.util.Log;
 
 import java.io.IOException;
@@ -13,7 +11,6 @@ import java.nio.ByteBuffer;
 /**
  * 编码器抽象类
  */
-@TargetApi(Build.VERSION_CODES.JELLY_BEAN)
 public abstract class MediaEncoder implements Runnable {
 
     private static final String TAG = "MediaEncoder";

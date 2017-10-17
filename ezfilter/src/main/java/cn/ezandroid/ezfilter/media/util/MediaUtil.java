@@ -1,7 +1,5 @@
-package cn.ezandroid.ezfilter.media.transcode;
+package cn.ezandroid.ezfilter.media.util;
 
-import android.annotation.TargetApi;
-import android.media.AudioFormat;
 import android.media.MediaCodec;
 import android.media.MediaCodecInfo;
 import android.media.MediaExtractor;
@@ -17,7 +15,6 @@ import java.nio.ByteBuffer;
  * @author like
  * @date 2017-09-23
  */
-@TargetApi(Build.VERSION_CODES.JELLY_BEAN)
 public class MediaUtil {
 
     // 兼容低版本
@@ -31,6 +28,24 @@ public class MediaUtil {
     public static final int AUDIO_BIT_RATE = 96000;
 
     /**
+     * 进行整除16对齐
+     * <p>
+     * MediaCodec这个API在设计的时候，过于贴近HAL层，这在很多Soc的实现上，是直接把传入MediaCodec的buffer，
+     * 在不经过任何前置处理的情况下就直接送入了Soc中。 而在编码h264视频流的时候，由于h264的编码块大小一般是16x16，
+     * 于是乎在一开始设置视频的宽高的时候，如果设置了一个没有对齐16的大小，例如960x540， 在某些cpu上，
+     * 最终编码出来的视频就会直接花屏。
+     *
+     * @param size
+     * @return
+     */
+    private static int align16(int size) {
+        if (size % 16 > 0) {
+            size = (size / 16) * 16 + 16;
+        }
+        return size;
+    }
+
+    /**
      * 创建视频MediaFormat[mp4]
      *
      * @param w 视频宽度
@@ -38,7 +53,8 @@ public class MediaUtil {
      * @return
      */
     public static MediaFormat createVideoFormat(int w, int h) {
-        MediaFormat format = MediaFormat.createVideoFormat(MIME_TYPE_MP4, w, h);
+        // FIXME 对齐后可能有几个像素的拉伸，暂时没有更好的方案
+        MediaFormat format = MediaFormat.createVideoFormat(MIME_TYPE_MP4, align16(w), align16(h));
         // 数据来源
         format.setInteger(MediaFormat.KEY_COLOR_FORMAT,
                 MediaCodecInfo.CodecCapabilities.COLOR_FormatSurface);
@@ -54,23 +70,25 @@ public class MediaUtil {
     /**
      * 创建音频MediaFormat[aac]
      *
-     * @param sampleRate 采样率
-     * @param channel    声道
+     * @param sampleRate   采样率
+     * @param channelMask  声道
+     * @param channelCount 声道数
      * @return
      */
-    public static MediaFormat createAudioFormat(int sampleRate, int channel) {
-        MediaFormat format = MediaFormat.createAudioFormat(MIME_TYPE_AAC, sampleRate, channel);
+    public static MediaFormat createAudioFormat(int sampleRate, int channelMask, int channelCount) {
+        MediaFormat format = MediaFormat.createAudioFormat(MIME_TYPE_AAC, sampleRate, channelCount);
         format.setInteger(MediaFormat.KEY_AAC_PROFILE, MediaCodecInfo.CodecProfileLevel.AACObjectLC);
-        format.setInteger(MediaFormat.KEY_CHANNEL_MASK, AudioFormat.CHANNEL_IN_STEREO);
         // 声道
-        format.setInteger(MediaFormat.KEY_CHANNEL_COUNT, channel);
+        format.setInteger(MediaFormat.KEY_CHANNEL_MASK, channelMask);
+        // 声道数
+        format.setInteger(MediaFormat.KEY_CHANNEL_COUNT, channelCount);
         // 音频bit率
         format.setInteger(MediaFormat.KEY_BIT_RATE, AUDIO_BIT_RATE);
         return format;
     }
 
     /**
-     * 读取多媒体第一个视频Track和音频Track
+     * 读取多媒体第一个视频轨和音频轨
      *
      * @param extractor
      * @return null, if has no video track and audio track.
@@ -134,6 +152,9 @@ public class MediaUtil {
         }
     }
 
+    /**
+     * 音轨和视频轨
+     */
     public static class Track {
 
         private Track() {

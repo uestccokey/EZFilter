@@ -1,17 +1,14 @@
 package cn.ezandroid.ezfilter.media.transcode;
 
-import android.annotation.TargetApi;
 import android.media.MediaCodec;
 import android.media.MediaFormat;
 import android.media.MediaMuxer;
-import android.os.Build;
 import android.util.Log;
 
 import java.nio.ByteBuffer;
 import java.util.ArrayList;
 import java.util.List;
 
-@TargetApi(Build.VERSION_CODES.JELLY_BEAN_MR2)
 public class QueuedMuxer {
 
     public static final int BUFFER_SIZE = 256 * 1024;
