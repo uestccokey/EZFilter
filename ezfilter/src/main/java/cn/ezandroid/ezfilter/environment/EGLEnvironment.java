@@ -1,6 +1,5 @@
 package cn.ezandroid.ezfilter.environment;
 
-import android.annotation.TargetApi;
 import android.graphics.SurfaceTexture;
 import android.opengl.EGL14;
 import android.opengl.EGLConfig;
@@ -16,7 +15,6 @@ import android.view.SurfaceView;
 /**
  * EGL环境
  */
-@TargetApi(Build.VERSION_CODES.JELLY_BEAN_MR1)
 public class EGLEnvironment {
 
     private static final String TAG = "EGLEnvironment";
@@ -83,16 +81,6 @@ public class EGLEnvironment {
         init(sharedContext, withDepthBuffer);
     }
 
-    public void release() {
-        if (mEglDisplay != EGL14.EGL_NO_DISPLAY) {
-            destroyContext();
-            EGL14.eglTerminate(mEglDisplay);
-            EGL14.eglReleaseThread();
-        }
-        mEglDisplay = EGL14.EGL_NO_DISPLAY;
-        mEglContext = EGL14.EGL_NO_CONTEXT;
-    }
-
     public EglSurface createFromSurface(final Object surface) {
         final EglSurface eglSurface = new EglSurface(this, surface);
         eglSurface.makeCurrent();
@@ -143,7 +131,7 @@ public class EGLEnvironment {
         // confirm whether the EGL rendering context is successfully created
         final int[] values = new int[1];
         EGL14.eglQueryContext(mEglDisplay, mEglContext, EGL14.EGL_CONTEXT_CLIENT_VERSION, values, 0);
-        makeDefault();    // makeCurrent(EGL14.EGL_NO_SURFACE);
+        makeDefault();
     }
 
     private boolean makeCurrent(final EGLSurface surface) {
@@ -177,11 +165,11 @@ public class EGLEnvironment {
     }
 
     private EGLContext createContext(final EGLContext sharedContext) {
-        final int[] attrib_list = {
+        final int[] attributes = {
                 EGL14.EGL_CONTEXT_CLIENT_VERSION, 2,
                 EGL14.EGL_NONE
         };
-        final EGLContext context = EGL14.eglCreateContext(mEglDisplay, mEglConfig, sharedContext, attrib_list, 0);
+        final EGLContext context = EGL14.eglCreateContext(mEglDisplay, mEglConfig, sharedContext, attributes, 0);
         checkEglError("eglCreateContext");
         return context;
     }
@@ -202,12 +190,12 @@ public class EGLEnvironment {
     }
 
     private EGLSurface createWindowSurface(final Object nativeWindow) {
-        final int[] surfaceAttribs = {
+        final int[] surfaceAttributes = {
                 EGL14.EGL_NONE
         };
         EGLSurface result = null;
         try {
-            result = EGL14.eglCreateWindowSurface(mEglDisplay, mEglConfig, nativeWindow, surfaceAttribs, 0);
+            result = EGL14.eglCreateWindowSurface(mEglDisplay, mEglConfig, nativeWindow, surfaceAttributes, 0);
         } catch (final IllegalArgumentException e) {
             Log.e(TAG, "eglCreateWindowSurface", e);
         }
@@ -215,18 +203,14 @@ public class EGLEnvironment {
     }
 
     private EGLSurface createOffscreenSurface(final int width, final int height) {
-        final int[] surfaceAttribs = {
+        final int[] surfaceAttributes = {
                 EGL14.EGL_WIDTH, width,
                 EGL14.EGL_HEIGHT, height,
                 EGL14.EGL_NONE
         };
         EGLSurface result = null;
         try {
-            result = EGL14.eglCreatePbufferSurface(mEglDisplay, mEglConfig, surfaceAttribs, 0);
-            checkEglError("eglCreatePbufferSurface");
-            if (result == null) {
-                throw new RuntimeException("surface was null");
-            }
+            result = EGL14.eglCreatePbufferSurface(mEglDisplay, mEglConfig, surfaceAttributes, 0);
         } catch (final IllegalArgumentException e) {
             Log.e(TAG, "createOffscreenSurface", e);
         } catch (final RuntimeException e) {
@@ -252,37 +236,44 @@ public class EGLEnvironment {
     }
 
     private EGLConfig getConfig(final boolean withDepthBuffer) {
-        final int[] attribList = {
+        final int[] attributes = {
                 EGL14.EGL_RENDERABLE_TYPE, EGL14.EGL_OPENGL_ES2_BIT,
                 EGL14.EGL_RED_SIZE, 8,
                 EGL14.EGL_GREEN_SIZE, 8,
                 EGL14.EGL_BLUE_SIZE, 8,
                 EGL14.EGL_ALPHA_SIZE, 8,
-                EGL14.EGL_NONE, EGL14.EGL_NONE,    //EGL14.EGL_STENCIL_SIZE, 8,
-                EGL14.EGL_NONE, EGL14.EGL_NONE,    //EGL_RECORDABLE_ANDROID, 1,	// this flag need to recording of MediaCodec
-                EGL14.EGL_NONE, EGL14.EGL_NONE,    //	with_depth_buffer ? EGL14.EGL_DEPTH_SIZE : EGL14.EGL_NONE,
-                // with_depth_buffer ? 16 : 0,
+                EGL14.EGL_NONE, EGL14.EGL_NONE, // EGL_DEPTH_SIZE占位，下面再进行设置
+                EGL14.EGL_NONE, EGL14.EGL_NONE, // EGL_RECORDABLE_ANDROID占位，下面再进行设置
                 EGL14.EGL_NONE
         };
         int offset = 10;
         if (withDepthBuffer) {
-            attribList[offset++] = EGL14.EGL_DEPTH_SIZE;
-            attribList[offset++] = 16;
+            attributes[offset++] = EGL14.EGL_DEPTH_SIZE;
+            attributes[offset++] = 16;
         }
-        if (Build.VERSION.SDK_INT >= 18) {// MediaCodecの入力用Surfaceの場合
-            attribList[offset++] = EGL_RECORDABLE_ANDROID;
-            attribList[offset++] = 1;
+        if (Build.VERSION.SDK_INT >= 18) {
+            attributes[offset++] = EGL_RECORDABLE_ANDROID;
+            attributes[offset++] = 1;
         }
-        for (int i = attribList.length - 1; i >= offset; i--) {
-            attribList[i] = EGL14.EGL_NONE;
+        for (int i = attributes.length - 1; i >= offset; i--) {
+            attributes[i] = EGL14.EGL_NONE;
         }
         final EGLConfig[] configs = new EGLConfig[1];
         final int[] numConfigs = new int[1];
-        if (!EGL14.eglChooseConfig(mEglDisplay, attribList, 0, configs, 0, configs.length, numConfigs, 0)) {
-            // XXX it will be better to fallback to RGB565
-            Log.w(TAG, "unable to find RGBA8888 / " + " EGLConfig");
+        if (!EGL14.eglChooseConfig(mEglDisplay, attributes, 0,
+                configs, 0, configs.length, numConfigs, 0)) {
             return null;
         }
         return configs[0];
+    }
+
+    public void release() {
+        if (mEglDisplay != EGL14.EGL_NO_DISPLAY) {
+            destroyContext();
+            EGL14.eglTerminate(mEglDisplay);
+            EGL14.eglReleaseThread();
+        }
+        mEglDisplay = EGL14.EGL_NO_DISPLAY;
+        mEglContext = EGL14.EGL_NO_CONTEXT;
     }
 }

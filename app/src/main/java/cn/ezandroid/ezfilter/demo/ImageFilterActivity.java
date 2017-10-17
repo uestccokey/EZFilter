@@ -53,11 +53,13 @@ public class ImageFilterActivity extends BaseActivity {
         $(R.id.capture).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
+                // 截图方式一：不需要渲染在到View上便可以滤镜处理输出图像，图像默认宽高为输入图像的宽高
 //                Bitmap bitmap = EZFilter.input(mCurrentBitmap)
 //                        .addFilter(new LookupRender(ImageFilterActivity.this, R.drawable.langman))
 //                        .output();
 //                mPreviewImage.setImageBitmap(bitmap);
 
+                // 截图方式二：需要渲染到View上后才能进行截图，图像默认宽高为View显示的宽高
                 mRenderPipeline.output(new BitmapOutput.BitmapOutputCallback() {
                     @Override
                     public void bitmapOutput(final Bitmap bitmap) {
