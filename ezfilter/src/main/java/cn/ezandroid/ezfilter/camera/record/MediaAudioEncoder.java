@@ -26,11 +26,10 @@ public class MediaAudioEncoder extends MediaEncoder {
     private static final int SAMPLE_RATE = 44100;    // 44.1[KHz] is only setting guaranteed to be available on all devices.
     private static final int AUDIO_BIT_RATE = 96000;
     private static final int SAMPLES_PER_FRAME = 1024;    // AAC, bytes/frame/channel
-    private static final int FRAMES_PER_BUFFER = 25;    // AAC, frame/buffer/sec
 
     private AudioThread mAudioThread = null;
 
-    public MediaAudioEncoder(final MediaMuxerWrapper muxer, final MediaEncoderListener listener) {
+    public MediaAudioEncoder(MediaMuxerWrapper muxer, MediaEncoderListener listener) {
         super(muxer, listener);
     }
 
@@ -48,9 +47,8 @@ public class MediaAudioEncoder extends MediaEncoder {
 
         final MediaFormat audioFormat = MediaFormat.createAudioFormat(MIME_TYPE, SAMPLE_RATE, 1);
         audioFormat.setInteger(MediaFormat.KEY_AAC_PROFILE, MediaCodecInfo.CodecProfileLevel.AACObjectLC);
-        audioFormat.setInteger(MediaFormat.KEY_CHANNEL_MASK, AudioFormat.CHANNEL_IN_MONO);
-        // 使用单声道录制，兼容性更佳
-        audioFormat.setInteger(MediaFormat.KEY_CHANNEL_COUNT, 1);
+        audioFormat.setInteger(MediaFormat.KEY_CHANNEL_MASK, AudioFormat.CHANNEL_IN_STEREO);
+        audioFormat.setInteger(MediaFormat.KEY_CHANNEL_COUNT, 2);
         // 音频bit率
         audioFormat.setInteger(MediaFormat.KEY_BIT_RATE, AUDIO_BIT_RATE);
 
@@ -91,30 +89,48 @@ public class MediaAudioEncoder extends MediaEncoder {
     };
 
     private class AudioThread extends Thread {
+
+        /**
+         * 查找可用的音频录制器
+         *
+         * @return
+         */
+        private AudioRecord findAudioRecord() {
+            int[] samplingRates = new int[]{44100, 22050, 11025, 8000};
+            int[] audioFormats = new int[]{
+                    AudioFormat.ENCODING_PCM_16BIT,
+                    AudioFormat.ENCODING_PCM_8BIT};
+            int[] channelConfigs = new int[]{
+                    AudioFormat.CHANNEL_IN_STEREO,
+                    AudioFormat.CHANNEL_IN_MONO};
+
+            for (int rate : samplingRates) {
+                for (int format : audioFormats) {
+                    for (int config : channelConfigs) {
+                        try {
+                            int bufferSize = AudioRecord.getMinBufferSize(rate, config, format);
+                            if (bufferSize != AudioRecord.ERROR_BAD_VALUE) {
+                                for (int source : AUDIO_SOURCES) {
+                                    AudioRecord recorder = new AudioRecord(source, rate, config, format, bufferSize * 4);
+                                    if (recorder.getState() == AudioRecord.STATE_INITIALIZED) {
+                                        return recorder;
+                                    }
+                                }
+                            }
+                        } catch (Exception e) {
+                            Log.e(TAG, "Init AudioRecord Error." + Log.getStackTraceString(e));
+                        }
+                    }
+                }
+            }
+            return null;
+        }
+
         @Override
         public void run() {
             android.os.Process.setThreadPriority(android.os.Process.THREAD_PRIORITY_URGENT_AUDIO);
             try {
-                final int min_buffer_size = AudioRecord.getMinBufferSize(
-                        SAMPLE_RATE, AudioFormat.CHANNEL_IN_MONO,
-                        AudioFormat.ENCODING_PCM_16BIT);
-                int buffer_size = SAMPLES_PER_FRAME * FRAMES_PER_BUFFER;
-                if (buffer_size < min_buffer_size)
-                    buffer_size = ((min_buffer_size / SAMPLES_PER_FRAME) + 1) * SAMPLES_PER_FRAME * 2;
-
-                AudioRecord audioRecord = null;
-                for (final int source : AUDIO_SOURCES) {
-                    try {
-                        audioRecord = new AudioRecord(
-                                source, SAMPLE_RATE,
-                                AudioFormat.CHANNEL_IN_MONO, AudioFormat.ENCODING_PCM_16BIT, buffer_size);
-                        if (audioRecord.getState() != AudioRecord.STATE_INITIALIZED)
-                            audioRecord = null;
-                    } catch (final Exception e) {
-                        audioRecord = null;
-                    }
-                    if (audioRecord != null) break;
-                }
+                AudioRecord audioRecord = findAudioRecord();
                 if (audioRecord != null) {
                     try {
                         if (mIsCapturing) {

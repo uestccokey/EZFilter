@@ -200,8 +200,10 @@ public class EZFilter {
             pipeline = view.getRenderPipeline();
             if (pipeline != null) {
                 if (mEnableRecordVideo || mEnableRecordAudio) {
-                    pipeline.setEndPointRender(new RecordableEndPointRender(mOutputPath,
-                            mEnableRecordVideo, mEnableRecordAudio));
+                    if (!(pipeline.getEndPointRender() instanceof RecordableEndPointRender)) {
+                        pipeline.setEndPointRender(new RecordableEndPointRender(mOutputPath,
+                                mEnableRecordVideo, mEnableRecordAudio));
+                    }
                 }
 
                 for (FilterRender filterRender : mFilterRenders) {
