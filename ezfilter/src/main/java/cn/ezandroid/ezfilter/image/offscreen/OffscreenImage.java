@@ -45,6 +45,7 @@ public class OffscreenImage {
         mInputSurface.makeCurrent();
 
         BitmapInput bitmapInput = new BitmapInput(bitmap);
+        bitmapInput.setRotate90Degrees(2); // 否则得到的图是倒立的
 
         mPipeline = new RenderPipeline();
         mPipeline.onSurfaceCreated(null, null);
@@ -60,17 +61,12 @@ public class OffscreenImage {
         mPipeline.startRender();
         mPipeline.onDrawFrame(null);
 
-        int[] iat = new int[width * height];
         IntBuffer ib = IntBuffer.allocate(width * height);
         GLES20.glReadPixels(0, 0, width, height, GL_RGBA, GL_UNSIGNED_BYTE, ib);
 
         int[] ia = ib.array();
-        // Convert upside down mirror -reversed image to right - side up normal image.
-        for (int i = 0; i < height; i++) {
-            System.arraycopy(ia, i * width, iat, (height - i - 1) * width, width);
-        }
         Bitmap bitmap = Bitmap.createBitmap(width, height, Bitmap.Config.ARGB_8888);
-        bitmap.copyPixelsFromBuffer(IntBuffer.wrap(iat));
+        bitmap.copyPixelsFromBuffer(IntBuffer.wrap(ia));
 
         mPipeline.onSurfaceDestroyed();
 

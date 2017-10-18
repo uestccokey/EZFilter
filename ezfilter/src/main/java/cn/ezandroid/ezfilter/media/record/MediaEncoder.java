@@ -1,9 +1,7 @@
-package cn.ezandroid.ezfilter.camera.record;
+package cn.ezandroid.ezfilter.media.record;
 
-import android.annotation.TargetApi;
 import android.media.MediaCodec;
 import android.media.MediaFormat;
-import android.os.Build;
 import android.util.Log;
 
 import java.io.IOException;
@@ -13,7 +11,6 @@ import java.nio.ByteBuffer;
 /**
  * 编码器抽象类
  */
-@TargetApi(Build.VERSION_CODES.JELLY_BEAN)
 public abstract class MediaEncoder implements Runnable {
 
     private static final String TAG = "MediaEncoder";
@@ -90,8 +87,9 @@ public abstract class MediaEncoder implements Runnable {
             synchronized (mSync) {
                 localRequestStop = mRequestStop;
                 localRequestDrain = (mRequestDrain > 0);
-                if (localRequestDrain)
+                if (localRequestDrain) {
                     mRequestDrain--;
+                }
             }
             if (localRequestStop) {
                 drain();
@@ -226,8 +224,9 @@ public abstract class MediaEncoder implements Runnable {
             if (encoderStatus == MediaCodec.INFO_TRY_AGAIN_LATER) {
                 // wait 3 counts(=TIMEOUT_USEC x 3 = 30msec) until data/EOS come
                 if (!mIsEOS) {
-                    if (++count > 3)
-                        break LOOP;        // out of while
+                    if (++count > 3) {
+                        break;        // out of while
+                    }
                 }
             } else if (encoderStatus == MediaCodec.INFO_OUTPUT_BUFFERS_CHANGED) {
                 // this shoud not come when encoding

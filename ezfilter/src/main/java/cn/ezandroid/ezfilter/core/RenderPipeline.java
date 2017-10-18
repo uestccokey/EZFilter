@@ -9,11 +9,11 @@ import java.util.List;
 import javax.microedition.khronos.egl.EGLConfig;
 import javax.microedition.khronos.opengles.GL10;
 
-import cn.ezandroid.ezfilter.camera.record.RecordableEndPointRender;
 import cn.ezandroid.ezfilter.core.output.BitmapOutput;
 import cn.ezandroid.ezfilter.core.output.BufferOutput;
 import cn.ezandroid.ezfilter.core.util.L;
 import cn.ezandroid.ezfilter.environment.Renderer;
+import cn.ezandroid.ezfilter.media.record.RecordableEndPointRender;
 
 /**
  * 渲染管道

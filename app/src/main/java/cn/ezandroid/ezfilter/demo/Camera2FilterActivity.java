@@ -276,9 +276,6 @@ public class Camera2FilterActivity extends BaseActivity {
                     .addFilter(mCurrentRender)
                     .enableRecord("/sdcard/recordCamera2.mp4", true, true) // 支持录制为视频
                     .into(mRenderView);
-
-//            mRenderPipeline.getEndPointRender()
-//                    .setRenderSize(mPreviewSize.getHeight(), mPreviewSize.getWidth());
         }
 
         @Override

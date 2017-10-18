@@ -1,15 +1,17 @@
-package cn.ezandroid.ezfilter.camera.record;
+package cn.ezandroid.ezfilter.media.record;
 
-import android.annotation.TargetApi;
 import android.media.MediaCodec;
 import android.media.MediaFormat;
 import android.media.MediaMuxer;
-import android.os.Build;
 
 import java.io.IOException;
 import java.nio.ByteBuffer;
 
-@TargetApi(Build.VERSION_CODES.JELLY_BEAN_MR2)
+/**
+ * 音视频复用器
+ * <p>
+ * 将音频和视频合成mp4
+ */
 public class MediaMuxerWrapper {
 
     private String mOutputPath;

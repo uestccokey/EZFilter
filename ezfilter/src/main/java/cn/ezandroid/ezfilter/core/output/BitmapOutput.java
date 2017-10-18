@@ -81,12 +81,8 @@ public class BitmapOutput extends BufferOutput<IntBuffer> {
             int[] pixels = buffer.array();
 
             // 方案一，使用copyPixelsFromBuffer，是方案二速度的2倍以上
-            int[] iat = new int[width * height];
-            for (int i = 0; i < height; i++) {
-                System.arraycopy(pixels, i * width, iat, (height - i - 1) * width, width);
-            }
             Bitmap bitmap = Bitmap.createBitmap(width, height, Bitmap.Config.ARGB_8888);
-            bitmap.copyPixelsFromBuffer(IntBuffer.wrap(iat));
+            bitmap.copyPixelsFromBuffer(IntBuffer.wrap(pixels));
 
             // 方案二，手动转换像素数组
 //            for (int i = 0; i < pixels.length; i++) {

@@ -1,9 +1,7 @@
-package cn.ezandroid.ezfilter.video.offscreen.media;
+package cn.ezandroid.ezfilter.media.transcode;
 
-import android.annotation.TargetApi;
 import android.media.MediaCodec;
 import android.media.MediaFormat;
-import android.os.Build;
 
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
@@ -11,13 +9,14 @@ import java.nio.ShortBuffer;
 import java.util.ArrayDeque;
 import java.util.Queue;
 
+import cn.ezandroid.ezfilter.media.util.MediaUtil;
+
 /**
  * 编码器到解码器的声道转换
  * <p>
  * 支持从单声道到立体声的上混音 和 从立体声到单声道的下混音，
  * 不支持采样率的转换
  */
-@TargetApi(Build.VERSION_CODES.JELLY_BEAN)
 class AudioChannel {
 
     private static class AudioBuffer {
