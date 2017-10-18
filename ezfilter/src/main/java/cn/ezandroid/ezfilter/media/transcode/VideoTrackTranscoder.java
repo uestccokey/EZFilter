@@ -65,8 +65,6 @@ public class VideoTrackTranscoder implements TrackTranscoder {
         mEncoder = MediaCodec.createEncoderByType(mOutputFormat.getString(MediaFormat.KEY_MIME));
         mEncoder.configure(mOutputFormat, null, null, MediaCodec.CONFIGURE_FLAG_ENCODE);
         mEncoderInputSurfaceWrapper = new InputSurface(mEncoder.createInputSurface());
-        // makeCurrent为当前线程开启OpenGL环境
-        mEncoderInputSurfaceWrapper.makeCurrent();
         mEncoder.start();
         mEncoderStarted = true;
         mEncoderOutputBuffers = mEncoder.getOutputBuffers();

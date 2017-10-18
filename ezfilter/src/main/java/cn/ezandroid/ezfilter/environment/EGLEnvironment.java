@@ -5,6 +5,7 @@ import android.opengl.EGL14;
 import android.opengl.EGLConfig;
 import android.opengl.EGLContext;
 import android.opengl.EGLDisplay;
+import android.opengl.EGLExt;
 import android.opengl.EGLSurface;
 import android.os.Build;
 import android.util.Log;
@@ -58,6 +59,10 @@ public class EGLEnvironment {
             mEgl.swap(mEglSurface);
         }
 
+        public EGLSurface geSurface() {
+            return mEglSurface;
+        }
+
         public EGLContext getContext() {
             return mEgl.getContext();
         }
@@ -79,6 +84,10 @@ public class EGLEnvironment {
 
     public EGLEnvironment(final EGLContext sharedContext, final boolean withDepthBuffer) {
         init(sharedContext, withDepthBuffer);
+    }
+
+    public void setPresentationTime(long nsecs, EglSurface eglSurface) {
+        EGLExt.eglPresentationTimeANDROID(mEglDisplay, eglSurface.geSurface(), nsecs);
     }
 
     public EglSurface createFromSurface(final Object surface) {

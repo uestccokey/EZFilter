@@ -4,7 +4,6 @@ import android.media.MediaCodec;
 import android.media.MediaCodecInfo;
 import android.media.MediaCodecList;
 import android.media.MediaFormat;
-import android.opengl.EGL14;
 import android.util.Log;
 import android.view.Surface;
 
@@ -80,11 +79,11 @@ public class MediaVideoEncoder extends MediaEncoder {
      * @param texId
      */
     public void setInputTextureId(final int texId) {
-        mRenderHandler.setInputTextureId(EGL14.eglGetCurrentContext(), mSurface, texId);
+        mRenderHandler.setInputTextureId( mSurface, texId);
     }
 
     /**
-     * 获取输入纹理
+     * 获取输入的纹理
      *
      * @return
      */

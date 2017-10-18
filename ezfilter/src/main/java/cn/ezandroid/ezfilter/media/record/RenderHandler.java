@@ -1,6 +1,7 @@
 package cn.ezandroid.ezfilter.media.record;
 
 import android.graphics.SurfaceTexture;
+import android.opengl.EGL14;
 import android.opengl.EGLContext;
 import android.text.TextUtils;
 import android.view.Surface;
@@ -38,11 +39,24 @@ public final class RenderHandler implements Runnable {
         return handler;
     }
 
+    /**
+     * 获取输入的纹理
+     *
+     * @return
+     */
     public final int getInputTextureId() {
         return mTextureId;
     }
 
-    public final void setInputTextureId(final EGLContext shared_context, final Object surface, final int texId) {
+    /**
+     * 设置输入纹理
+     * <p>
+     * 必须在GL线程调用
+     *
+     * @param surface
+     * @param texId
+     */
+    public final void setInputTextureId(final Object surface, final int texId) {
         if (!(surface instanceof Surface)
                 && !(surface instanceof SurfaceTexture)
                 && !(surface instanceof SurfaceHolder)) {
@@ -50,7 +64,7 @@ public final class RenderHandler implements Runnable {
         }
         synchronized (mSync) {
             if (mRequestRelease) return;
-            mSharedContext = shared_context;
+            mSharedContext = EGL14.eglGetCurrentContext();
             mTextureId = texId;
             mSurface = surface;
             mRequestSetEglContext = true;
