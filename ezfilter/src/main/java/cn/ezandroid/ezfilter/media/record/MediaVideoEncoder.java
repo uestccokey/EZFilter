@@ -79,7 +79,7 @@ public class MediaVideoEncoder extends MediaEncoder {
      * @param texId
      */
     public void setInputTextureId(final int texId) {
-        mRenderHandler.setInputTextureId( mSurface, texId);
+        mRenderHandler.setInputTextureId(mSurface, texId);
     }
 
     /**
