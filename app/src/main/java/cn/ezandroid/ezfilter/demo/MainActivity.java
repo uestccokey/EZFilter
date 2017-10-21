@@ -1,15 +1,11 @@
 package cn.ezandroid.ezfilter.demo;
 
-import android.Manifest;
 import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
 
-import java.util.ArrayList;
-import java.util.List;
-
-import me.weyye.hipermission.HiPermission;
-import me.weyye.hipermission.PermissionItem;
+import cn.ezandroid.ezpermission.EZPermission;
+import cn.ezandroid.ezpermission.Permission;
 
 public class MainActivity extends BaseActivity {
 
@@ -20,15 +16,9 @@ public class MainActivity extends BaseActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        List<PermissionItem> permissionItems = new ArrayList<PermissionItem>();
-        permissionItems.add(new PermissionItem(Manifest.permission.CAMERA,
-                "CAMERA", R.drawable.permission_ic_camera));
-        permissionItems.add(new PermissionItem(Manifest.permission.RECORD_AUDIO,
-                "RECORD_AUDIO", R.drawable.permission_ic_micro_phone));
-        permissionItems.add(new PermissionItem(Manifest.permission.WRITE_EXTERNAL_STORAGE,
-                "WRITE_EXTERNAL_STORAGE", R.drawable.permission_ic_storage));
-        HiPermission.create(MainActivity.this)
-                .permissions(permissionItems).checkMutiPermission(null);
+        // 申请权限
+        EZPermission.permissions(Permission.CAMERA, Permission.STORAGE, Permission.MICROPHONE)
+                .apply(this, null);
 
         $(R.id.image_filter).setOnClickListener(new View.OnClickListener() {
             @Override
