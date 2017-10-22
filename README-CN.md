@@ -1,42 +1,43 @@
 # ![Logo](https://raw.githubusercontent.com/uestccokey/EZFilter/master/logo.png)
 # EZFilter
 
-A lightweight, extensible Android filter framework that supports Camera, Camera2, Video, Bitmap and View.
+一个轻量级、易扩展的Android滤镜框架，支持拍照、视频、图片和视图添加滤镜。
 
 [ ![Download](https://api.bintray.com/packages/uestccokey/maven/EZFilter/images/download.svg) ](https://bintray.com/uestccokey/maven/EZFilter/_latestVersion)
 
 ### Demo
 
-[Download](https://raw.githubusercontent.com/uestccokey/EZFilter/master/demo.apk)
+[下载地址](https://raw.githubusercontent.com/uestccokey/EZFilter/master/demo.apk)
 
-### Screenshot
+### 截图
 
 ![View加滤镜](https://raw.githubusercontent.com/uestccokey/EZFilter/develop/view-filter.gif)
 
-### Features
+### 功能
 
-1.Support Camera, Camera2, Video, Bitmap, View
+1.支持Camera、Camera2、Video、Bitmap和View加滤镜
 
-2.Support recording video
+2.支持录制视频
 
-3.Support screenshot
+3.支持截图
 
-4.Support offscreen rendering
+4.支持离屏渲染
 
-### Usage
+### 使用
 
 #### Gradle
+
 ``` gradle
 dependencies {
-    compile 'cn.ezandroid:EZFilter:1.5.3' // Gradle version < 3.0
-    // or
-    implementation 'cn.ezandroid:EZFilter:1.5.3' // Gradle version >= 3.0
+    compile 'cn.ezandroid:EZFilter:1.5.3' // Gradle 3.0以下
+    // 或者
+    implementation 'cn.ezandroid:EZFilter:1.5.3' // Gradle3.0及以上
 }
 ```
 
-#### Sample
+#### 示例
 
-you can use ` EZFilter.input(xxx).addFilter(filter).into(view)` to add filter and display.
+使用 ` EZFilter.input(xxx).addFilter(filter).into(view)` 添加滤镜并显示
 
 ``` java
 EZFilter.input(bitmap)
@@ -70,16 +71,16 @@ EZFilter.input(glview)
         .into(view);
 ```
 
-After calling the `into` method, you will get a `RenderPipeline` object, then you can use it for screenshots.
+在调用`into`方法后，你会得到一个`RenderPipeline`对象，可以使用它来进行截图
 
 ``` java
 mPipeline.output(new BitmapOutput.BitmapOutputCallback() {
         @Override
         public void bitmapOutput(Bitmap bitmap){
         }
-    }, true);
+    },true);
 view.requestRender();
-    // or
+    // 或者
 mPipeline.output(new BitmapOutput.BitmapOutputCallback() {
         @Override
         public void bitmapOutput(Bitmap bitmap){
@@ -88,7 +89,7 @@ mPipeline.output(new BitmapOutput.BitmapOutputCallback() {
 view.requestRender();
 ```
 
-in addition, if `enableRecord` is called, you can record a video by the `RenderPipeline` object.
+另外，假如`enableRecord`被调用过，那么你也可以使用该对象可以进行视频录制
 
 ``` java
 mPipeline = EZFilter.input(camera)
@@ -96,10 +97,9 @@ mPipeline = EZFilter.input(camera)
                 .enableRecord(path, true, true)
                 .into(view);
 
-// start recording
+// 开始录制
 mPipeline.startRecording()
-
-// stop recording
+// 结束录制
 mPipeline.stopRecording()
 ```
 
