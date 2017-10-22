@@ -3,7 +3,7 @@
 
 A lightweight, extensible Android filter framework that supports Camera, Camera2, Video, Bitmap and View.
 
-[中文](https://raw.githubusercontent.com/uestccokey/EZFilter/develop/README-CN.md)
+[中文](README-CN.md)
 
 [ ![Download](https://api.bintray.com/packages/uestccokey/maven/EZFilter/images/download.svg) ](https://bintray.com/uestccokey/maven/EZFilter/_latestVersion)
 
