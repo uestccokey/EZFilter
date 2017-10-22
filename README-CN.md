@@ -1,15 +1,15 @@
-# ![Logo](https://raw.githubusercontent.com/uestccokey/EZFilter/master/logo.png)
+# ![Logo](https://raw.githubusercontent.com/uestccokey/EZFilter/develop/logo.png)
 # EZFilter
 
 一个轻量级、易扩展的Android滤镜框架，支持拍照、视频、图片和视图添加滤镜。
 
-[English](https://raw.githubusercontent.com/uestccokey/EZFilter/master/README.md)
+[English](https://raw.githubusercontent.com/uestccokey/EZFilter/develop/README.md)
 
 [ ![Download](https://api.bintray.com/packages/uestccokey/maven/EZFilter/images/download.svg) ](https://bintray.com/uestccokey/maven/EZFilter/_latestVersion)
 
 ### Demo
 
-[下载地址](https://raw.githubusercontent.com/uestccokey/EZFilter/master/demo.apk)
+[下载地址](https://raw.githubusercontent.com/uestccokey/EZFilter/develop/demo.apk)
 
 ### 截图
 

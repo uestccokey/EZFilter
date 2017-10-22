@@ -1,15 +1,15 @@
-# ![Logo](https://raw.githubusercontent.com/uestccokey/EZFilter/master/logo.png)
+# ![Logo](https://raw.githubusercontent.com/uestccokey/EZFilter/develop/logo.png)
 # EZFilter
 
 A lightweight, extensible Android filter framework that supports Camera, Camera2, Video, Bitmap and View.
 
-[中文](https://raw.githubusercontent.com/uestccokey/EZFilter/master/README-CN.md)
+[中文](https://raw.githubusercontent.com/uestccokey/EZFilter/develop/README-CN.md)
 
 [ ![Download](https://api.bintray.com/packages/uestccokey/maven/EZFilter/images/download.svg) ](https://bintray.com/uestccokey/maven/EZFilter/_latestVersion)
 
 ### Demo
 
-[Download](https://raw.githubusercontent.com/uestccokey/EZFilter/master/demo.apk)
+[Download](https://raw.githubusercontent.com/uestccokey/EZFilter/develop/demo.apk)
 
 ### Screenshot
 
