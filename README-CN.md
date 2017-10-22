@@ -3,7 +3,7 @@
 
 一个轻量级、易扩展的Android滤镜框架，支持拍照、视频、图片和视图添加滤镜。
 
-[English](https://raw.githubusercontent.com/uestccokey/EZFilter/develop/README.md)
+[English](README.md)
 
 [ ![Download](https://api.bintray.com/packages/uestccokey/maven/EZFilter/images/download.svg) ](https://bintray.com/uestccokey/maven/EZFilter/_latestVersion)
 
