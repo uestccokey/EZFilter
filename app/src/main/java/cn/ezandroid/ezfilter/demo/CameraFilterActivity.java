@@ -208,6 +208,12 @@ public class CameraFilterActivity extends BaseActivity {
         parameters.setPictureSize(1920, 1080);
         parameters.setJpegQuality(100);
 
+        // 设置自动闪光灯
+        parameters.setFlashMode(Camera.Parameters.FLASH_MODE_AUTO);
+
+        // 设置自动对焦
+        parameters.setFocusMode(Camera.Parameters.FOCUS_MODE_CONTINUOUS_PICTURE);
+
         mCamera.setParameters(parameters);
         mPictureJpeg.setCameraId(mCurrentCameraId);
     }
