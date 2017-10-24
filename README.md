@@ -1,7 +1,7 @@
 # ![Logo](https://raw.githubusercontent.com/uestccokey/EZFilter/develop/logo.png)
 # EZFilter
 
-A lightweight, extensible Android filter framework that supports Camera, Camera2, Video, Bitmap and View.
+A lightweight(<180KB) and extensible Android filter framework that supports Camera, Camera2, Video, Bitmap and View.
 
 [中文](README-CN.md)
 
@@ -30,9 +30,9 @@ A lightweight, extensible Android filter framework that supports Camera, Camera2
 #### Gradle
 ``` gradle
 dependencies {
-    compile 'cn.ezandroid:EZFilter:1.5.3' // Gradle version < 3.0
+    compile 'cn.ezandroid:EZFilter:1.5.4' // Gradle version < 3.0
     // or
-    implementation 'cn.ezandroid:EZFilter:1.5.3' // Gradle version >= 3.0
+    implementation 'cn.ezandroid:EZFilter:1.5.4' // Gradle version >= 3.0
 }
 ```
 
