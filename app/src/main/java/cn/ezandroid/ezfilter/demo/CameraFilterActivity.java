@@ -1,18 +1,29 @@
 package cn.ezandroid.ezfilter.demo;
 
+import android.content.Context;
 import android.content.res.Configuration;
 import android.graphics.Bitmap;
 import android.hardware.Camera;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
+import android.util.Log;
+import android.view.OrientationEventListener;
 import android.view.View;
 import android.widget.Button;
 import android.widget.ImageView;
+
+import java.io.ByteArrayOutputStream;
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
+import java.io.IOException;
 
 import cn.ezandroid.ezfilter.EZFilter;
 import cn.ezandroid.ezfilter.core.RenderPipeline;
 import cn.ezandroid.ezfilter.core.output.BitmapOutput;
 import cn.ezandroid.ezfilter.demo.render.BWRender;
+import cn.ezandroid.ezfilter.demo.render.WobbleRender;
+import cn.ezandroid.ezfilter.demo.util.PictureJpeg;
 import cn.ezandroid.ezfilter.environment.FitViewHelper;
 import cn.ezandroid.ezfilter.environment.TextureFitView;
 
@@ -34,6 +45,23 @@ public class CameraFilterActivity extends BaseActivity {
 
     private RenderPipeline mRenderPipeline;
 
+    private PictureJpeg mPictureJpeg;
+
+    private MyOrientationEventListener mOrientationEventListener;
+
+    private class MyOrientationEventListener extends OrientationEventListener {
+
+        MyOrientationEventListener(Context context) {
+            super(context);
+        }
+
+        @Override
+        public void onOrientationChanged(int orientation) {
+            if (orientation == ORIENTATION_UNKNOWN) return;
+            mPictureJpeg.setOrientation(orientation);
+        }
+    }
+
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -44,12 +72,40 @@ public class CameraFilterActivity extends BaseActivity {
 
         mRenderView.setScaleType(FitViewHelper.ScaleType.CENTER_CROP);
 
-        openCamera(mCurrentCameraId);
+        mPictureJpeg = new PictureJpeg(new PictureJpeg.PictureTakenCallback() {
+            @Override
+            public void onPictureTaken(final Bitmap bitmap) {
+                // onPictureTaken在异步线程执行
+                long time = System.currentTimeMillis();
+                final Bitmap bitmap2 = EZFilter.input(bitmap)
+                        .addFilter(new BWRender(CameraFilterActivity.this), 0.5f)
+                        .addFilter(new WobbleRender())
+                        .output(); // 添加滤镜
+                Log.e("CameraFilterActivity", "滤镜渲染:" + (System.currentTimeMillis() - time));
+                time = System.currentTimeMillis();
+
+                saveBitmap(bitmap2);  // 保存滤镜后的图
+                Log.e("CameraFilterActivity", "保存滤镜后的图:" + (System.currentTimeMillis() - time));
+            }
+        });
+        mOrientationEventListener = new MyOrientationEventListener(this);
 
         $(R.id.switch_camera).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 switchCamera();
+            }
+        });
+
+        $(R.id.take_photo).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                mCamera.takePicture(new Camera.ShutterCallback() {
+                    @Override
+                    public void onShutter() {
+                        // ShutterCallback传入不为空时，会有快门声
+                    }
+                }, null, mPictureJpeg);
             }
         });
 
@@ -82,6 +138,41 @@ public class CameraFilterActivity extends BaseActivity {
         });
     }
 
+    private void saveBitmap(Bitmap bitmap) {
+        ByteArrayOutputStream output = null;
+        FileOutputStream fos = null;
+        try {
+            File file = new File("/sdcard/" + System.currentTimeMillis() + ".jpg");
+            if (!file.exists()) {
+                file.createNewFile();
+            }
+            output = new ByteArrayOutputStream();
+            bitmap.compress(Bitmap.CompressFormat.JPEG, 100, output);
+
+            fos = new FileOutputStream(file);
+            fos.write(output.toByteArray());
+        } catch (FileNotFoundException e) {
+            e.printStackTrace();
+        } catch (IOException e) {
+            e.printStackTrace();
+        } finally {
+            if (fos != null) {
+                try {
+                    fos.close();
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+            }
+            if (output != null) {
+                try {
+                    output.close();
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+            }
+        }
+    }
+
     private void startRecording() {
         mRecordButton.setText("停止");
         mRenderPipeline.startRecording();
@@ -99,12 +190,12 @@ public class CameraFilterActivity extends BaseActivity {
             Camera.getCameraInfo(mCurrentCameraId, cameraInfo);
 
             parameters.set("orientation", "portrait");
-            parameters.set("rotation", 90);
-            // Front camera will display mirrored on the preview
-            int orientation = 0;
-            if (mCurrentCameraId == Camera.CameraInfo.CAMERA_FACING_FRONT)
+            int orientation;
+            if (mCurrentCameraId == Camera.CameraInfo.CAMERA_FACING_FRONT) {
+                parameters.set("rotation", 270);
                 orientation = 360 - cameraInfo.orientation;
-            else {
+            } else {
+                parameters.set("rotation", 90);
                 orientation = cameraInfo.orientation;
             }
             mCamera.setDisplayOrientation(orientation);
@@ -112,6 +203,13 @@ public class CameraFilterActivity extends BaseActivity {
             parameters.set("orientation", "landscape");
             mCamera.setDisplayOrientation(0);
         }
+
+        // 输出分辨率设置为1920*1080，质量100%
+        parameters.setPictureSize(1920, 1080);
+        parameters.setJpegQuality(100);
+
+        mCamera.setParameters(parameters);
+        mPictureJpeg.setCameraId(mCurrentCameraId);
     }
 
     private void switchCamera() {
@@ -126,6 +224,7 @@ public class CameraFilterActivity extends BaseActivity {
 
         mRenderPipeline = EZFilter.input(mCamera)
                 .addFilter(new BWRender(this), 0.5f)
+                .addFilter(new WobbleRender())
                 .enableRecord("/sdcard/recordCamera.mp4", true, true) // 支持录制为视频
                 .into(mRenderView);
     }
@@ -141,16 +240,19 @@ public class CameraFilterActivity extends BaseActivity {
     @Override
     protected void onResume() {
         super.onResume();
+        mOrientationEventListener.enable();
+        openCamera(mCurrentCameraId);
     }
 
     @Override
     protected void onPause() {
         super.onPause();
+        mOrientationEventListener.disable();
+        releaseCamera();
     }
 
     @Override
     protected void onDestroy() {
         super.onDestroy();
-        releaseCamera();
     }
 }
