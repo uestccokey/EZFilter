@@ -1,7 +1,7 @@
 # ![Logo](https://raw.githubusercontent.com/uestccokey/EZFilter/develop/logo.png)
 # EZFilter
 
-一个轻量级、易扩展的Android滤镜框架，支持拍照、视频、图片和视图添加滤镜。
+一个轻量级（<180KB）、易扩展的Android滤镜框架，支持拍照、视频、图片和视图添加滤镜。
 
 [English](README.md)
 
