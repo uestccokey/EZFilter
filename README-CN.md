@@ -31,9 +31,9 @@
 
 ``` gradle
 dependencies {
-    compile 'cn.ezandroid:EZFilter:1.5.3' // Gradle 3.0以下
+    compile 'cn.ezandroid:EZFilter:1.5.4' // Gradle 3.0以下
     // 或者
-    implementation 'cn.ezandroid:EZFilter:1.5.3' // Gradle3.0及以上
+    implementation 'cn.ezandroid:EZFilter:1.5.4' // Gradle3.0及以上
 }
 ```
 
