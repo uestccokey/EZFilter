@@ -1,7 +1,7 @@
 # ![Logo](https://raw.githubusercontent.com/uestccokey/EZFilter/develop/logo.png)
 # EZFilter
 
-A lightweight（<180KB）and extensible Android filter framework that supports Camera, Camera2, Video, Bitmap and View.
+A lightweight(<180KB) and extensible Android filter framework that supports Camera, Camera2, Video, Bitmap and View.
 
 [中文](README-CN.md)
 
