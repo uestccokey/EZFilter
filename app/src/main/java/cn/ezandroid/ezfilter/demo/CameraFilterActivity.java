@@ -86,6 +86,10 @@ public class CameraFilterActivity extends BaseActivity {
 
                 saveBitmap(bitmap2);  // 保存滤镜后的图
                 Log.e("CameraFilterActivity", "保存滤镜后的图:" + (System.currentTimeMillis() - time));
+
+                // 重新开启摄像头
+                releaseCamera();
+                openCamera(mCurrentCameraId);
             }
         });
         mOrientationEventListener = new MyOrientationEventListener(this);
