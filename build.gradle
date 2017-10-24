@@ -7,7 +7,7 @@ buildscript {
     }
 
     dependencies {
-        classpath 'com.android.tools.build:gradle:3.0.0-rc1'
+        classpath 'com.android.tools.build:gradle:3.0.0-rc2'
         classpath 'com.novoda:bintray-release:0.5.0'
     }
 }
@@ -43,6 +43,6 @@ ext {
     supportLibraryVersion = '26.1.0'
 
     // Sdk version
-    sdkVersionCode = 153
-    sdkVersionName = '1.5.3'
+    sdkVersionCode = 154
+    sdkVersionName = '1.5.4'
 }

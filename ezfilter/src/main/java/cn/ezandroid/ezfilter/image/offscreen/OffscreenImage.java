@@ -45,7 +45,6 @@ public class OffscreenImage {
         mInputSurface.makeCurrent();
 
         BitmapInput bitmapInput = new BitmapInput(bitmap);
-        bitmapInput.setRotate90Degrees(2); // 否则得到的图是倒立的
 
         mPipeline = new RenderPipeline();
         mPipeline.onSurfaceCreated(null, null);
@@ -61,12 +60,16 @@ public class OffscreenImage {
         mPipeline.startRender();
         mPipeline.onDrawFrame(null);
 
+        int[] iat = new int[mWidth * mHeight];
         IntBuffer ib = IntBuffer.allocate(width * height);
         GLES20.glReadPixels(0, 0, width, height, GL_RGBA, GL_UNSIGNED_BYTE, ib);
 
         int[] ia = ib.array();
+        for (int i = 0; i < mHeight; i++) {
+            System.arraycopy(ia, i * mWidth, iat, (mHeight - i - 1) * mWidth, mWidth);
+        }
         Bitmap bitmap = Bitmap.createBitmap(width, height, Bitmap.Config.ARGB_8888);
-        bitmap.copyPixelsFromBuffer(IntBuffer.wrap(ia));
+        bitmap.copyPixelsFromBuffer(IntBuffer.wrap(iat));
 
         mPipeline.onSurfaceDestroyed();
 

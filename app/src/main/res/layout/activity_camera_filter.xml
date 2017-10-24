@@ -16,6 +16,13 @@
         android:text="切换摄像头" />
 
     <Button
+        android:id="@+id/take_photo"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/switch_camera"
+        android:text="拍照" />
+
+    <Button
         android:id="@+id/capture"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
