@@ -1,5 +1,8 @@
 package cn.ezandroid.ezfilter.camera;
 
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
+import android.graphics.Matrix;
 import android.graphics.SurfaceTexture;
 import android.hardware.Camera;
 import android.opengl.GLES11Ext;
@@ -8,6 +11,8 @@ import android.opengl.GLES20;
 import javax.microedition.khronos.opengles.GL10;
 
 import cn.ezandroid.ezfilter.core.FBORender;
+import cn.ezandroid.ezfilter.core.ISupportTakePhoto;
+import cn.ezandroid.ezfilter.core.PhotoTakenCallback;
 import cn.ezandroid.ezfilter.environment.IGLEnvironment;
 
 /**
@@ -16,7 +21,7 @@ import cn.ezandroid.ezfilter.environment.IGLEnvironment;
  * @author like
  * @date 2017-09-16
  */
-public class CameraInput extends FBORender implements SurfaceTexture.OnFrameAvailableListener {
+public class CameraInput extends FBORender implements SurfaceTexture.OnFrameAvailableListener, ISupportTakePhoto {
 
     private static final String UNIFORM_CAM_MATRIX = "u_Matrix";
 
@@ -156,5 +161,43 @@ public class CameraInput extends FBORender implements SurfaceTexture.OnFrameAvai
             GLES20.glDeleteTextures(1, tex, 0);
             mTextureIn = 0;
         }
+    }
+
+    @Override
+    public void takePhoto(final int cameraId, final int orientation, final PhotoTakenCallback callback) {
+        mCamera.takePicture(new Camera.ShutterCallback() {
+            @Override
+            public void onShutter() {
+                // ShutterCallback传入不为空时，会有快门声
+            }
+        }, null, new Camera.PictureCallback() {
+            @Override
+            public void onPictureTaken(final byte[] data, Camera camera) {
+                new Thread() {
+                    public void run() {
+                        // 1.读取原始图片
+                        Bitmap bitmap0 = BitmapFactory.decodeByteArray(data, 0, data.length);
+
+                        // 2.旋转及镜像原始图片
+                        Matrix matrix = new Matrix();
+                        if (cameraId == Camera.CameraInfo.CAMERA_FACING_FRONT) {
+                            matrix.postScale(-1, 1);
+                        }
+                        matrix.postRotate(orientation);
+                        Bitmap bitmap1 = Bitmap.createBitmap(bitmap0, 0, 0,
+                                bitmap0.getWidth(), bitmap0.getHeight(), matrix, true);
+
+                        // 由于bitmap1可能与bitmap0是同一个对象，这里进行判断
+                        if (bitmap1 != bitmap0) {
+                            bitmap0.recycle();
+                        }
+
+                        if (callback != null) {
+                            callback.onPhotoTaken(bitmap1);
+                        }
+                    }
+                }.start();
+            }
+        });
     }
 }

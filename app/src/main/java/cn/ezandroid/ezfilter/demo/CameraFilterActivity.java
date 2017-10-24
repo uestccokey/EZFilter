@@ -6,7 +6,6 @@ import android.graphics.Bitmap;
 import android.hardware.Camera;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
-import android.util.Log;
 import android.view.OrientationEventListener;
 import android.view.View;
 import android.widget.Button;
@@ -19,11 +18,11 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 
 import cn.ezandroid.ezfilter.EZFilter;
+import cn.ezandroid.ezfilter.core.PhotoTakenCallback;
 import cn.ezandroid.ezfilter.core.RenderPipeline;
 import cn.ezandroid.ezfilter.core.output.BitmapOutput;
 import cn.ezandroid.ezfilter.demo.render.BWRender;
 import cn.ezandroid.ezfilter.demo.render.WobbleRender;
-import cn.ezandroid.ezfilter.demo.util.PictureJpeg;
 import cn.ezandroid.ezfilter.environment.FitViewHelper;
 import cn.ezandroid.ezfilter.environment.TextureFitView;
 
@@ -35,6 +34,9 @@ import cn.ezandroid.ezfilter.environment.TextureFitView;
  */
 public class CameraFilterActivity extends BaseActivity {
 
+    // Orientation hysteresis amount used in rounding, in degrees
+    private static final int ORIENTATION_HYSTERESIS = 5;
+
     private TextureFitView mRenderView;
     private ImageView mPreviewImage;
     private Button mRecordButton;
@@ -45,9 +47,9 @@ public class CameraFilterActivity extends BaseActivity {
 
     private RenderPipeline mRenderPipeline;
 
-    private PictureJpeg mPictureJpeg;
-
     private MyOrientationEventListener mOrientationEventListener;
+
+    private int mOrientation;
 
     private class MyOrientationEventListener extends OrientationEventListener {
 
@@ -58,8 +60,23 @@ public class CameraFilterActivity extends BaseActivity {
         @Override
         public void onOrientationChanged(int orientation) {
             if (orientation == ORIENTATION_UNKNOWN) return;
-            mPictureJpeg.setOrientation(orientation);
+            mOrientation = roundOrientation(orientation, mOrientation);
         }
+    }
+
+    private int roundOrientation(int orientation, int orientationHistory) {
+        boolean changeOrientation;
+        if (orientationHistory == OrientationEventListener.ORIENTATION_UNKNOWN) {
+            changeOrientation = true;
+        } else {
+            int dist = Math.abs(orientation - orientationHistory);
+            dist = Math.min(dist, 360 - dist);
+            changeOrientation = (dist >= 45 + ORIENTATION_HYSTERESIS);
+        }
+        if (changeOrientation) {
+            return ((orientation + 45) / 90 * 90) % 360;
+        }
+        return orientationHistory;
     }
 
     @Override
@@ -72,26 +89,6 @@ public class CameraFilterActivity extends BaseActivity {
 
         mRenderView.setScaleType(FitViewHelper.ScaleType.CENTER_CROP);
 
-        mPictureJpeg = new PictureJpeg(new PictureJpeg.PictureTakenCallback() {
-            @Override
-            public void onPictureTaken(final Bitmap bitmap) {
-                // onPictureTaken在异步线程执行
-                long time = System.currentTimeMillis();
-                final Bitmap bitmap2 = EZFilter.input(bitmap)
-                        .addFilter(new BWRender(CameraFilterActivity.this), 0.5f)
-                        .addFilter(new WobbleRender())
-                        .output(); // 添加滤镜
-                Log.e("CameraFilterActivity", "滤镜渲染:" + (System.currentTimeMillis() - time));
-                time = System.currentTimeMillis();
-
-                saveBitmap(bitmap2);  // 保存滤镜后的图
-                Log.e("CameraFilterActivity", "保存滤镜后的图:" + (System.currentTimeMillis() - time));
-
-                // 重新开启摄像头
-                releaseCamera();
-                openCamera(mCurrentCameraId);
-            }
-        });
         mOrientationEventListener = new MyOrientationEventListener(this);
 
         $(R.id.switch_camera).setOnClickListener(new View.OnClickListener() {
@@ -104,12 +101,23 @@ public class CameraFilterActivity extends BaseActivity {
         $(R.id.take_photo).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                mCamera.takePicture(new Camera.ShutterCallback() {
-                    @Override
-                    public void onShutter() {
-                        // ShutterCallback传入不为空时，会有快门声
-                    }
-                }, null, mPictureJpeg);
+                mRenderPipeline.takePhoto(mCurrentCameraId, mOrientation,
+                        new PhotoTakenCallback() {
+                            @Override
+                            public void onPhotoTaken(Bitmap bitmap) {
+                                saveBitmap(bitmap);
+
+                                final Bitmap bitmap2 = EZFilter.input(bitmap)
+                                        .addFilter(new BWRender(CameraFilterActivity.this), 0.5f)
+                                        .addFilter(new WobbleRender())
+                                        .output(); // 添加滤镜
+
+                                saveBitmap(bitmap2);  // 保存滤镜后的图
+
+                                releaseCamera();
+                                openCamera(mCurrentCameraId);
+                            }
+                        });
             }
         });
 
@@ -219,7 +227,6 @@ public class CameraFilterActivity extends BaseActivity {
         parameters.setFocusMode(Camera.Parameters.FOCUS_MODE_CONTINUOUS_PICTURE);
 
         mCamera.setParameters(parameters);
-        mPictureJpeg.setCameraId(mCurrentCameraId);
     }
 
     private void switchCamera() {

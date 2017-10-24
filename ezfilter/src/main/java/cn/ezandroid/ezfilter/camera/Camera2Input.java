@@ -1,11 +1,18 @@
 package cn.ezandroid.ezfilter.camera;
 
 import android.annotation.TargetApi;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
+import android.graphics.ImageFormat;
+import android.graphics.Matrix;
 import android.graphics.SurfaceTexture;
 import android.hardware.camera2.CameraAccessException;
 import android.hardware.camera2.CameraCaptureSession;
+import android.hardware.camera2.CameraCharacteristics;
 import android.hardware.camera2.CameraDevice;
 import android.hardware.camera2.CaptureRequest;
+import android.media.Image;
+import android.media.ImageReader;
 import android.opengl.GLES11Ext;
 import android.opengl.GLES20;
 import android.os.Build;
@@ -14,11 +21,14 @@ import android.os.HandlerThread;
 import android.util.Size;
 import android.view.Surface;
 
-import java.util.Collections;
+import java.nio.ByteBuffer;
+import java.util.Arrays;
 
 import javax.microedition.khronos.opengles.GL10;
 
 import cn.ezandroid.ezfilter.core.FBORender;
+import cn.ezandroid.ezfilter.core.ISupportTakePhoto;
+import cn.ezandroid.ezfilter.core.PhotoTakenCallback;
 import cn.ezandroid.ezfilter.environment.IGLEnvironment;
 
 /**
@@ -30,7 +40,7 @@ import cn.ezandroid.ezfilter.environment.IGLEnvironment;
  * @date 2017-09-19
  */
 @TargetApi(Build.VERSION_CODES.LOLLIPOP)
-public class Camera2Input extends FBORender implements SurfaceTexture.OnFrameAvailableListener {
+public class Camera2Input extends FBORender implements SurfaceTexture.OnFrameAvailableListener, ISupportTakePhoto {
 
     private static final String UNIFORM_CAM_MATRIX = "u_Matrix";
 
@@ -46,11 +56,54 @@ public class Camera2Input extends FBORender implements SurfaceTexture.OnFrameAva
     private Handler mPreviewHandler;
     private CaptureRequest.Builder mPreviewRequestBuilder;
 
+    private CameraCaptureSession mCameraCaptureSession;
+    private ImageReader mImageReader;
+
+    private int mCameraId;
+    private int mOrientation;
+    private PhotoTakenCallback mPhotoTakenCallback;
+
     public Camera2Input(IGLEnvironment render, CameraDevice camera, Size previewSize) {
         super();
         this.mRender = render;
         this.mCamera = camera;
         this.mPreviewSize = previewSize;
+
+        mImageReader = ImageReader.newInstance(1080, 1920, ImageFormat.JPEG, 1);
+        mImageReader.setOnImageAvailableListener(new ImageReader.OnImageAvailableListener() {
+            @Override
+            public void onImageAvailable(final ImageReader reader) {
+                new Thread() {
+                    public void run() {
+                        // 1.读取原始图片
+                        Image image = reader.acquireNextImage();
+                        ByteBuffer buffer = image.getPlanes()[0].getBuffer();
+                        byte[] bytes = new byte[buffer.remaining()];
+                        buffer.get(bytes);// 由缓冲区存入字节数组
+                        final Bitmap bitmap0 = BitmapFactory.decodeByteArray(bytes, 0, bytes.length);
+
+                        // 2.旋转及镜像原始图片
+                        Matrix matrix = new Matrix();
+                        // LENS_FACING_BACK 为前置摄像头
+                        if (mCameraId == CameraCharacteristics.LENS_FACING_BACK) {
+                            matrix.postScale(-1, 1);
+                        }
+                        matrix.postRotate(mOrientation);
+                        final Bitmap bitmap1 = Bitmap.createBitmap(bitmap0, 0, 0,
+                                bitmap0.getWidth(), bitmap0.getHeight(), matrix, true);
+
+                        // 由于bitmap1可能与bitmap0是同一个对象，这里进行判断
+                        if (bitmap1 != bitmap0) {
+                            bitmap0.recycle();
+                        }
+
+                        if (mPhotoTakenCallback != null) {
+                            mPhotoTakenCallback.onPhotoTaken(bitmap1);
+                        }
+                    }
+                }.start();
+            }
+        }, mPreviewHandler);
     }
 
     @Override
@@ -133,7 +186,7 @@ public class Camera2Input extends FBORender implements SurfaceTexture.OnFrameAva
             Surface surface = new Surface(mSurfaceTexture);
             mPreviewRequestBuilder = mCamera.createCaptureRequest(CameraDevice.TEMPLATE_PREVIEW);
             mPreviewRequestBuilder.addTarget(surface);
-            mCamera.createCaptureSession(Collections.singletonList(surface), mSessionPreviewStateCallback, mPreviewHandler);
+            mCamera.createCaptureSession(Arrays.asList(surface, mImageReader.getSurface()), mSessionPreviewStateCallback, mPreviewHandler);
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -146,6 +199,7 @@ public class Camera2Input extends FBORender implements SurfaceTexture.OnFrameAva
 
                 @Override
                 public void onConfigured(CameraCaptureSession session) {
+                    mCameraCaptureSession = session;
                     try {
                         // 自动对焦
                         mPreviewRequestBuilder.set(CaptureRequest.CONTROL_AF_MODE, CaptureRequest.CONTROL_AF_MODE_CONTINUOUS_PICTURE);
@@ -199,6 +253,35 @@ public class Camera2Input extends FBORender implements SurfaceTexture.OnFrameAva
             tex[0] = mTextureIn;
             GLES20.glDeleteTextures(1, tex, 0);
             mTextureIn = 0;
+        }
+    }
+
+    @Override
+    public void takePhoto(int cameraId, int orientation, PhotoTakenCallback callback) {
+        mCameraId = cameraId;
+        mOrientation = orientation;
+        mPhotoTakenCallback = callback;
+
+        CaptureRequest.Builder captureRequestBuilder;
+        try {
+            captureRequestBuilder = mCamera.createCaptureRequest(CameraDevice.TEMPLATE_STILL_CAPTURE);
+            // 将ImageReader的surface作为CaptureRequest.Builder的目标
+            captureRequestBuilder.addTarget(mImageReader.getSurface());
+            // 自动对焦
+            captureRequestBuilder.set(CaptureRequest.CONTROL_AF_MODE, CaptureRequest.CONTROL_AF_MODE_CONTINUOUS_PICTURE);
+            // 自动曝光
+            captureRequestBuilder.set(CaptureRequest.CONTROL_AE_MODE, CaptureRequest.CONTROL_AE_MODE_ON_AUTO_FLASH);
+            // 设置照片方向 LENS_FACING_BACK为前置摄像头
+            if (cameraId == CameraCharacteristics.LENS_FACING_BACK) {
+                captureRequestBuilder.set(CaptureRequest.JPEG_ORIENTATION, 270);
+            } else {
+                captureRequestBuilder.set(CaptureRequest.JPEG_ORIENTATION, 90);
+            }
+            // 拍照
+            CaptureRequest captureRequest = captureRequestBuilder.build();
+            mCameraCaptureSession.capture(captureRequest, null, mPreviewHandler);
+        } catch (CameraAccessException e) {
+            e.printStackTrace();
         }
     }
 }

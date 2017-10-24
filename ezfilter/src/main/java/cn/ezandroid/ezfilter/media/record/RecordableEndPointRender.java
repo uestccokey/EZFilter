@@ -4,6 +4,7 @@ import java.io.IOException;
 
 import cn.ezandroid.ezfilter.core.EndPointRender;
 import cn.ezandroid.ezfilter.core.FBORender;
+import cn.ezandroid.ezfilter.core.ISupportRecord;
 
 /**
  * 支持视频录制的终点渲染器
@@ -11,7 +12,7 @@ import cn.ezandroid.ezfilter.core.FBORender;
  * @author like
  * @date 2017-10-13
  */
-public class RecordableEndPointRender extends EndPointRender {
+public class RecordableEndPointRender extends EndPointRender implements ISupportRecord {
 
     private MediaVideoEncoder mVideoEncoder;
     private MediaMuxerWrapper mMuxerWrapper;

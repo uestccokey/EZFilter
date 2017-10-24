@@ -19,8 +19,16 @@
         android:id="@+id/capture"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_toRightOf="@id/switch_camera"
+        android:layout_below="@id/switch_camera"
         android:text="截图" />
+
+    <Button
+        android:id="@+id/take_photo"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/switch_camera"
+        android:layout_toRightOf="@id/capture"
+        android:text="拍照" />
 
     <Button
         android:id="@+id/change_filter"
@@ -33,7 +41,7 @@
         android:id="@+id/record"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_toRightOf="@id/capture"
+        android:layout_toRightOf="@id/change_filter"
         android:text="录制" />
 
     <ImageView

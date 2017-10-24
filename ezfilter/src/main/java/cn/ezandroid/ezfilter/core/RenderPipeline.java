@@ -13,7 +13,6 @@ import cn.ezandroid.ezfilter.core.output.BitmapOutput;
 import cn.ezandroid.ezfilter.core.output.BufferOutput;
 import cn.ezandroid.ezfilter.core.util.L;
 import cn.ezandroid.ezfilter.environment.Renderer;
-import cn.ezandroid.ezfilter.media.record.RecordableEndPointRender;
 
 /**
  * 渲染管道
@@ -541,15 +540,15 @@ public class RenderPipeline implements Renderer {
      * @return
      */
     public boolean isRecording() {
-        return mEndPointRender instanceof RecordableEndPointRender && ((RecordableEndPointRender) mEndPointRender).isRecording();
+        return mEndPointRender instanceof ISupportRecord && ((ISupportRecord) mEndPointRender).isRecording();
     }
 
     /**
      * 开始录制
      */
     public void startRecording() {
-        if (mEndPointRender instanceof RecordableEndPointRender) {
-            ((RecordableEndPointRender) mEndPointRender).startRecording();
+        if (mEndPointRender instanceof ISupportRecord) {
+            ((ISupportRecord) mEndPointRender).startRecording();
         } else {
             throw new UnsupportedOperationException("unsupported record");
         }
@@ -559,10 +558,25 @@ public class RenderPipeline implements Renderer {
      * 结束录制
      */
     public void stopRecording() {
-        if (mEndPointRender instanceof RecordableEndPointRender) {
-            ((RecordableEndPointRender) mEndPointRender).stopRecording();
+        if (mEndPointRender instanceof ISupportRecord) {
+            ((ISupportRecord) mEndPointRender).stopRecording();
         } else {
             throw new UnsupportedOperationException("unsupported record");
+        }
+    }
+
+    /**
+     * 拍照
+     *
+     * @param cameraId    摄像头ID
+     * @param orientation 手机旋转方向，0,1,2,3表示0度，90第，180度，270度
+     * @param callback    回调
+     */
+    public void takePhoto(int cameraId, int orientation, PhotoTakenCallback callback) {
+        if (mStartPointRender instanceof ISupportTakePhoto) {
+            ((ISupportTakePhoto) mStartPointRender).takePhoto(cameraId, orientation, callback);
+        } else {
+            throw new UnsupportedOperationException("unsupported take photo");
         }
     }
 }

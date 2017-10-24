@@ -16,12 +16,18 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
 import android.util.Size;
+import android.view.OrientationEventListener;
 import android.view.Surface;
 import android.view.View;
 import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.Toast;
 
+import java.io.ByteArrayOutputStream;
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
@@ -30,6 +36,7 @@ import java.util.List;
 
 import cn.ezandroid.ezfilter.EZFilter;
 import cn.ezandroid.ezfilter.core.FilterRender;
+import cn.ezandroid.ezfilter.core.PhotoTakenCallback;
 import cn.ezandroid.ezfilter.core.RenderPipeline;
 import cn.ezandroid.ezfilter.core.output.BitmapOutput;
 import cn.ezandroid.ezfilter.demo.render.BWRender;
@@ -45,6 +52,9 @@ import cn.ezandroid.ezfilter.environment.SurfaceFitView;
  */
 @TargetApi(Build.VERSION_CODES.LOLLIPOP)
 public class Camera2FilterActivity extends BaseActivity {
+
+    // Orientation hysteresis amount used in rounding, in degrees
+    private static final int ORIENTATION_HYSTERESIS = 5;
 
     private static final int MIN_PREVIEW_WIDTH = 1280;
     private static final int MIN_PREVIEW_HEIGHT = 720;
@@ -72,6 +82,38 @@ public class Camera2FilterActivity extends BaseActivity {
 
     private FilterRender mCurrentRender;
 
+    private MyOrientationEventListener mOrientationEventListener;
+
+    private int mOrientation;
+
+    private class MyOrientationEventListener extends OrientationEventListener {
+
+        MyOrientationEventListener(Context context) {
+            super(context);
+        }
+
+        @Override
+        public void onOrientationChanged(int orientation) {
+            if (orientation == ORIENTATION_UNKNOWN) return;
+            mOrientation = roundOrientation(orientation, mOrientation);
+        }
+    }
+
+    private int roundOrientation(int orientation, int orientationHistory) {
+        boolean changeOrientation;
+        if (orientationHistory == OrientationEventListener.ORIENTATION_UNKNOWN) {
+            changeOrientation = true;
+        } else {
+            int dist = Math.abs(orientation - orientationHistory);
+            dist = Math.min(dist, 360 - dist);
+            changeOrientation = (dist >= 45 + ORIENTATION_HYSTERESIS);
+        }
+        if (changeOrientation) {
+            return ((orientation + 45) / 90 * 90) % 360;
+        }
+        return orientationHistory;
+    }
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -87,13 +129,37 @@ public class Camera2FilterActivity extends BaseActivity {
 
         mCurrentRender = mBWRender;
 
+        mOrientationEventListener = new MyOrientationEventListener(this);
+
         mCameraManager = (CameraManager) getSystemService(Context.CAMERA_SERVICE);
-        openCamera(mCurrentCameraId);
 
         $(R.id.switch_camera).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 switchCamera();
+            }
+        });
+
+        $(R.id.take_photo).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                mRenderPipeline.takePhoto(mCurrentCameraId, mOrientation,
+                        new PhotoTakenCallback() {
+
+                            @Override
+                            public void onPhotoTaken(Bitmap bitmap) {
+                                saveBitmap(bitmap);
+
+                                final Bitmap bitmap2 = EZFilter.input(bitmap)
+                                        .addFilter(new BWRender(Camera2FilterActivity.this))
+                                        .output(); // 添加滤镜
+
+                                saveBitmap(bitmap2);  // 保存滤镜后的图
+
+                                releaseCamera();
+                                openCamera(mCurrentCameraId);
+                            }
+                        });
             }
         });
 
@@ -139,6 +205,41 @@ public class Camera2FilterActivity extends BaseActivity {
                 }
             }
         });
+    }
+
+    private void saveBitmap(Bitmap bitmap) {
+        ByteArrayOutputStream output = null;
+        FileOutputStream fos = null;
+        try {
+            File file = new File("/sdcard/" + System.currentTimeMillis() + ".jpg");
+            if (!file.exists()) {
+                file.createNewFile();
+            }
+            output = new ByteArrayOutputStream();
+            bitmap.compress(Bitmap.CompressFormat.JPEG, 100, output);
+
+            fos = new FileOutputStream(file);
+            fos.write(output.toByteArray());
+        } catch (FileNotFoundException e) {
+            e.printStackTrace();
+        } catch (IOException e) {
+            e.printStackTrace();
+        } finally {
+            if (fos != null) {
+                try {
+                    fos.close();
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+            }
+            if (output != null) {
+                try {
+                    output.close();
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+            }
+        }
     }
 
     private void startRecording() {
@@ -301,16 +402,19 @@ public class Camera2FilterActivity extends BaseActivity {
     @Override
     protected void onResume() {
         super.onResume();
+        mOrientationEventListener.enable();
+        openCamera(mCurrentCameraId);
     }
 
     @Override
     protected void onPause() {
         super.onPause();
+        mOrientationEventListener.disable();
+        releaseCamera();
     }
 
     @Override
     protected void onDestroy() {
         super.onDestroy();
-        releaseCamera();
     }
 }
