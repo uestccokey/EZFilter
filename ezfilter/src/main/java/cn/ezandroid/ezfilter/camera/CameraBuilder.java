@@ -14,20 +14,21 @@ import cn.ezandroid.ezfilter.extra.IAdjustable;
 public class CameraBuilder extends EZFilter.Builder {
 
     private Camera mCamera;
+    private Camera.Size mPreviewSize;
 
-    public CameraBuilder(Camera camera) {
+    public CameraBuilder(Camera camera, Camera.Size size) {
         mCamera = camera;
+        mPreviewSize = size;
     }
 
     @Override
     protected FBORender getStartPointRender(IFitView view) {
-        return new CameraInput(view, mCamera);
+        return new CameraInput(view, mCamera, mPreviewSize);
     }
 
     @Override
     protected float getAspectRatio(IFitView view) {
-        Camera.Size previewSize = mCamera.getParameters().getPreviewSize();
-        return previewSize.height * 1.0f / previewSize.width;
+        return mPreviewSize.height * 1.0f / mPreviewSize.width;
     }
 
     @Override

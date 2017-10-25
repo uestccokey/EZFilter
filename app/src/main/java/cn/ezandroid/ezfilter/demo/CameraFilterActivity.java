@@ -239,7 +239,7 @@ public class CameraFilterActivity extends BaseActivity {
         mCamera = Camera.open(id);
         setCameraParameters();
 
-        mRenderPipeline = EZFilter.input(mCamera)
+        mRenderPipeline = EZFilter.input(mCamera, mCamera.getParameters().getPreviewSize())
                 .addFilter(new BWRender(this), 0.5f)
                 .addFilter(new WobbleRender())
                 .enableRecord("/sdcard/recordCamera.mp4", true, true) // 支持录制为视频

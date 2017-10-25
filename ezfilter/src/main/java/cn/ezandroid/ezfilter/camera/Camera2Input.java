@@ -80,6 +80,7 @@ public class Camera2Input extends FBORender implements SurfaceTexture.OnFrameAva
                         ByteBuffer buffer = image.getPlanes()[0].getBuffer();
                         byte[] data = new byte[buffer.remaining()];
                         buffer.get(data);
+                        image.close();
                         int originalDegree = CameraUtil.getExifDegree(data);
                         // 2.加载原始图片
                         final Bitmap bitmap0 = BitmapFactory.decodeByteArray(data, 0, data.length);

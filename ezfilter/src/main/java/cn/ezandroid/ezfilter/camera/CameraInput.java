@@ -36,12 +36,11 @@ public class CameraInput extends FBORender implements SurfaceTexture.OnFrameAvai
 
     private Camera.Size mPreviewSize;
 
-    public CameraInput(IGLEnvironment render, Camera camera) {
+    public CameraInput(IGLEnvironment render, Camera camera, Camera.Size previewSize) {
         super();
         this.mRender = render;
         this.mCamera = camera;
-        Camera.Parameters params = mCamera.getParameters();
-        this.mPreviewSize = params.getPreviewSize();
+        this.mPreviewSize = previewSize;
     }
 
     @Override
