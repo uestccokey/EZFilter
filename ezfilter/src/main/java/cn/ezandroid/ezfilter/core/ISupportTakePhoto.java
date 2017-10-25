@@ -11,9 +11,9 @@ public interface ISupportTakePhoto {
     /**
      * 拍照
      *
-     * @param cameraId    摄像头ID
-     * @param orientation 手机旋转方向，0,1,2,3表示0度，90第，180度，270度
-     * @param callback    回调
+     * @param isFront  是否前置摄像头
+     * @param degree   手机旋转角度（0~360度）
+     * @param callback 回调
      */
-    void takePhoto(int cameraId, int orientation, PhotoTakenCallback callback);
+    void takePhoto(boolean isFront, int degree, PhotoTakenCallback callback);
 }

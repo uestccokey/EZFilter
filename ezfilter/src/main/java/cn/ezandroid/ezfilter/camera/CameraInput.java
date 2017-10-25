@@ -10,6 +10,7 @@ import android.opengl.GLES20;
 
 import javax.microedition.khronos.opengles.GL10;
 
+import cn.ezandroid.ezfilter.camera.util.CameraUtil;
 import cn.ezandroid.ezfilter.core.FBORender;
 import cn.ezandroid.ezfilter.core.ISupportTakePhoto;
 import cn.ezandroid.ezfilter.core.PhotoTakenCallback;
@@ -164,7 +165,7 @@ public class CameraInput extends FBORender implements SurfaceTexture.OnFrameAvai
     }
 
     @Override
-    public void takePhoto(final int cameraId, final int orientation, final PhotoTakenCallback callback) {
+    public void takePhoto(final boolean isFront, final int degree, final PhotoTakenCallback callback) {
         mCamera.takePicture(new Camera.ShutterCallback() {
             @Override
             public void onShutter() {
@@ -175,15 +176,16 @@ public class CameraInput extends FBORender implements SurfaceTexture.OnFrameAvai
             public void onPictureTaken(final byte[] data, Camera camera) {
                 new Thread() {
                     public void run() {
-                        // 1.读取原始图片
+                        // 1.读取原始图片旋转信息
+                        int originalDegree = CameraUtil.getExifDegree(data);
+                        // 2.加载原始图片
                         Bitmap bitmap0 = BitmapFactory.decodeByteArray(data, 0, data.length);
-
-                        // 2.旋转及镜像原始图片
+                        // 3.旋转及镜像原始图片
                         Matrix matrix = new Matrix();
-                        if (cameraId == Camera.CameraInfo.CAMERA_FACING_FRONT) {
+                        if (isFront) {
                             matrix.postScale(-1, 1);
                         }
-                        matrix.postRotate(orientation);
+                        matrix.postRotate(degree - originalDegree);
                         Bitmap bitmap1 = Bitmap.createBitmap(bitmap0, 0, 0,
                                 bitmap0.getWidth(), bitmap0.getHeight(), matrix, true);
 

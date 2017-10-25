@@ -101,7 +101,7 @@ public class CameraFilterActivity extends BaseActivity {
         $(R.id.take_photo).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                mRenderPipeline.takePhoto(mCurrentCameraId, mOrientation,
+                mRenderPipeline.takePhoto(mCurrentCameraId == Camera.CameraInfo.CAMERA_FACING_FRONT, mOrientation,
                         new PhotoTakenCallback() {
                             @Override
                             public void onPhotoTaken(Bitmap bitmap) {
