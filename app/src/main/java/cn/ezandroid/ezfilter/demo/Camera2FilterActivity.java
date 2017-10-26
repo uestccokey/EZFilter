@@ -69,7 +69,7 @@ public class Camera2FilterActivity extends BaseActivity {
     private CameraManager mCameraManager;
 
     private Handler mMainHandler = new Handler(Looper.getMainLooper());
-    private int mCurrentCameraId = CameraCharacteristics.LENS_FACING_BACK; // 前置摄像头
+    private int mCurrentCameraId = 1; // 前置摄像头一般为1
 
     private CameraDevice mCameraDevice;
 
@@ -143,7 +143,15 @@ public class Camera2FilterActivity extends BaseActivity {
         $(R.id.take_photo).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                mRenderPipeline.takePhoto(mCurrentCameraId, mOrientation,
+                boolean isFront = false;
+                try {
+                    CameraCharacteristics characteristics = mCameraManager.getCameraCharacteristics(String.valueOf(mCurrentCameraId));
+                    Integer facing = characteristics.get(CameraCharacteristics.LENS_FACING);
+                    isFront = facing != null && CameraCharacteristics.LENS_FACING_FRONT == facing;
+                } catch (CameraAccessException e) {
+                    e.printStackTrace();
+                }
+                mRenderPipeline.takePhoto(isFront, mOrientation,
                         new PhotoTakenCallback() {
 
                             @Override

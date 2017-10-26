@@ -8,7 +8,6 @@ import android.graphics.Matrix;
 import android.graphics.SurfaceTexture;
 import android.hardware.camera2.CameraAccessException;
 import android.hardware.camera2.CameraCaptureSession;
-import android.hardware.camera2.CameraCharacteristics;
 import android.hardware.camera2.CameraDevice;
 import android.hardware.camera2.CaptureRequest;
 import android.media.Image;
@@ -26,6 +25,7 @@ import java.util.Arrays;
 
 import javax.microedition.khronos.opengles.GL10;
 
+import cn.ezandroid.ezfilter.camera.util.CameraUtil;
 import cn.ezandroid.ezfilter.core.FBORender;
 import cn.ezandroid.ezfilter.core.ISupportTakePhoto;
 import cn.ezandroid.ezfilter.core.PhotoTakenCallback;
@@ -59,8 +59,8 @@ public class Camera2Input extends FBORender implements SurfaceTexture.OnFrameAva
     private CameraCaptureSession mCameraCaptureSession;
     private ImageReader mImageReader;
 
-    private int mCameraId;
-    private int mOrientation;
+    private boolean mIsFront;
+    private int mDegree;
     private PhotoTakenCallback mPhotoTakenCallback;
 
     public Camera2Input(IGLEnvironment render, CameraDevice camera, Size previewSize) {
@@ -69,26 +69,27 @@ public class Camera2Input extends FBORender implements SurfaceTexture.OnFrameAva
         this.mCamera = camera;
         this.mPreviewSize = previewSize;
 
-        mImageReader = ImageReader.newInstance(1080, 1920, ImageFormat.JPEG, 1);
+        mImageReader = ImageReader.newInstance(previewSize.getHeight(), previewSize.getWidth(), ImageFormat.JPEG, 1);
         mImageReader.setOnImageAvailableListener(new ImageReader.OnImageAvailableListener() {
             @Override
             public void onImageAvailable(final ImageReader reader) {
                 new Thread() {
                     public void run() {
-                        // 1.读取原始图片
+                        // 1.读取原始图片旋转信息
                         Image image = reader.acquireNextImage();
                         ByteBuffer buffer = image.getPlanes()[0].getBuffer();
-                        byte[] bytes = new byte[buffer.remaining()];
-                        buffer.get(bytes);// 由缓冲区存入字节数组
-                        final Bitmap bitmap0 = BitmapFactory.decodeByteArray(bytes, 0, bytes.length);
-
-                        // 2.旋转及镜像原始图片
+                        byte[] data = new byte[buffer.remaining()];
+                        buffer.get(data);
+                        image.close();
+                        int originalDegree = CameraUtil.getExifDegree(data);
+                        // 2.加载原始图片
+                        final Bitmap bitmap0 = BitmapFactory.decodeByteArray(data, 0, data.length);
+                        // 3.旋转及镜像原始图片
                         Matrix matrix = new Matrix();
-                        // LENS_FACING_BACK 为前置摄像头
-                        if (mCameraId == CameraCharacteristics.LENS_FACING_BACK) {
+                        if (mIsFront) {
                             matrix.postScale(-1, 1);
                         }
-                        matrix.postRotate(mOrientation);
+                        matrix.postRotate(mDegree - originalDegree);
                         final Bitmap bitmap1 = Bitmap.createBitmap(bitmap0, 0, 0,
                                 bitmap0.getWidth(), bitmap0.getHeight(), matrix, true);
 
@@ -257,9 +258,9 @@ public class Camera2Input extends FBORender implements SurfaceTexture.OnFrameAva
     }
 
     @Override
-    public void takePhoto(int cameraId, int orientation, PhotoTakenCallback callback) {
-        mCameraId = cameraId;
-        mOrientation = orientation;
+    public void takePhoto(boolean isFront, int degree, PhotoTakenCallback callback) {
+        mIsFront = isFront;
+        mDegree = degree;
         mPhotoTakenCallback = callback;
 
         CaptureRequest.Builder captureRequestBuilder;
@@ -271,8 +272,8 @@ public class Camera2Input extends FBORender implements SurfaceTexture.OnFrameAva
             captureRequestBuilder.set(CaptureRequest.CONTROL_AF_MODE, CaptureRequest.CONTROL_AF_MODE_CONTINUOUS_PICTURE);
             // 自动曝光
             captureRequestBuilder.set(CaptureRequest.CONTROL_AE_MODE, CaptureRequest.CONTROL_AE_MODE_ON_AUTO_FLASH);
-            // 设置照片方向 LENS_FACING_BACK为前置摄像头
-            if (cameraId == CameraCharacteristics.LENS_FACING_BACK) {
+            // 设置照片方向
+            if (mIsFront) {
                 captureRequestBuilder.set(CaptureRequest.JPEG_ORIENTATION, 270);
             } else {
                 captureRequestBuilder.set(CaptureRequest.JPEG_ORIENTATION, 90);

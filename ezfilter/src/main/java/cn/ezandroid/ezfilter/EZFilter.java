@@ -82,10 +82,11 @@ public class EZFilter {
      * 设置Camera输入
      *
      * @param camera 摄像头
+     * @param size   预览尺寸
      * @return
      */
-    public static CameraBuilder input(Camera camera) {
-        return new CameraBuilder(camera);
+    public static CameraBuilder input(Camera camera, Camera.Size size) {
+        return new CameraBuilder(camera, size);
     }
 
     /**
@@ -188,6 +189,12 @@ public class EZFilter {
             return this;
         }
 
+        /**
+         * 渲染到View中
+         *
+         * @param view 要渲染到的View
+         * @return 渲染管道
+         */
         public RenderPipeline into(IFitView view) {
             RenderPipeline pipeline = view.getRenderPipeline();
             // 如果渲染管道不为空，确保渲染管道是干净的
