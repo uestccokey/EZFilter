@@ -47,7 +47,10 @@ dependencies {
     implementation 'com.zhihu.android:matisse:0.5.0-alpha4'
     implementation 'com.squareup.picasso:picasso:2.5.2'
 
-    implementation 'cn.ezandroid:EZPermission:1.0.1'
+    implementation 'cn.ezandroid:EZPermission:1.0.3'
+
+    debugImplementation 'com.squareup.leakcanary:leakcanary-android:1.5.1'
+    releaseImplementation 'com.squareup.leakcanary:leakcanary-android-no-op:1.5.1'
 
     implementation project(':ezfilter')
 }
