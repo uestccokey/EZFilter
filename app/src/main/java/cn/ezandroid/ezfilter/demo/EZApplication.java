@@ -4,6 +4,8 @@ import android.app.Application;
 import android.content.Context;
 import android.support.multidex.MultiDex;
 
+import com.squareup.leakcanary.LeakCanary;
+
 /**
  * EZApplication
  *
@@ -19,5 +21,11 @@ public class EZApplication extends Application {
         super.attachBaseContext(base);
         MultiDex.install(this);
         gContext = this;
+    }
+
+    @Override
+    public void onCreate() {
+        super.onCreate();
+        LeakCanary.install(this);
     }
 }

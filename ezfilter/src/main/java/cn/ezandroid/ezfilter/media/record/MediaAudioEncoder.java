@@ -25,7 +25,7 @@ public class MediaAudioEncoder extends MediaEncoder {
     private static final int SAMPLE_RATE = 44100;    // 44.1[KHz] is only setting guaranteed to be available on all devices.
     private static final int SAMPLES_PER_FRAME = 1024;    // AAC, bytes/frame/channel
 
-    private AudioThread mAudioThread = null;
+    private AudioThread mAudioThread;
 
     public MediaAudioEncoder(MediaMuxerWrapper muxer, MediaEncoderListener listener) {
         super(muxer, listener);

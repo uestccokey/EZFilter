@@ -30,9 +30,9 @@ A lightweight(<180KB) and extensible Android filter framework that supports Came
 #### Gradle
 ``` gradle
 dependencies {
-    compile 'cn.ezandroid:EZFilter:1.5.5' // Gradle version < 3.0
+    compile 'cn.ezandroid:EZFilter:1.5.6' // Gradle version < 3.0
     // or
-    implementation 'cn.ezandroid:EZFilter:1.5.5' // Gradle version >= 3.0
+    implementation 'cn.ezandroid:EZFilter:1.5.6' // Gradle version >= 3.0
 }
 ```
 
@@ -103,5 +103,12 @@ mPipeline.startRecording()
 
 // stop recording
 mPipeline.stopRecording()
+
+mPipeline.enableRecordVideo(enable);
+
+mPipeline.enableRecordAudio(enable);
+
+// set output path
+mPipeline.setRecordOutputPath(path);
 ```
 

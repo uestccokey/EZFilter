@@ -147,14 +147,14 @@ public class MediaVideoEncoder extends MediaEncoder {
         return result;
     }
 
-    private static int[] recognizedFormats = new int[]{
+    private static int[] sRecognizedFormats = new int[]{
             MediaCodecInfo.CodecCapabilities.COLOR_FormatSurface,
     };
 
     private static boolean isRecognizedVideoFormat(final int colorFormat) {
-        final int n = recognizedFormats != null ? recognizedFormats.length : 0;
+        final int n = sRecognizedFormats != null ? sRecognizedFormats.length : 0;
         for (int i = 0; i < n; i++) {
-            if (recognizedFormats[i] == colorFormat) {
+            if (sRecognizedFormats[i] == colorFormat) {
                 return true;
             }
         }

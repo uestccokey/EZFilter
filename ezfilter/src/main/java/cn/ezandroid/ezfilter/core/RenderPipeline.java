@@ -535,6 +535,45 @@ public class RenderPipeline implements Renderer {
     }
 
     /**
+     * 设置录制输出路径
+     *
+     * @param outputPath
+     */
+    public void setRecordOutputPath(String outputPath) {
+        if (mEndPointRender instanceof ISupportRecord) {
+            ((ISupportRecord) mEndPointRender).setRecordOutputPath(outputPath);
+        } else {
+            throw new UnsupportedOperationException("unsupported record");
+        }
+    }
+
+    /**
+     * 音频录制开关
+     *
+     * @param enable
+     */
+    public void enableRecordAudio(boolean enable) {
+        if (mEndPointRender instanceof ISupportRecord) {
+            ((ISupportRecord) mEndPointRender).enableRecordAudio(enable);
+        } else {
+            throw new UnsupportedOperationException("unsupported record");
+        }
+    }
+
+    /**
+     * 影像录制开关
+     *
+     * @param enable
+     */
+    public void enableRecordVideo(boolean enable) {
+        if (mEndPointRender instanceof ISupportRecord) {
+            ((ISupportRecord) mEndPointRender).enableRecordVideo(enable);
+        } else {
+            throw new UnsupportedOperationException("unsupported record");
+        }
+    }
+
+    /**
      * 是否正在录制视频
      *
      * @return
@@ -564,7 +603,6 @@ public class RenderPipeline implements Renderer {
             throw new UnsupportedOperationException("unsupported record");
         }
     }
-
 
     /**
      * 拍照

@@ -71,6 +71,36 @@ public class RecordableEndPointRender extends EndPointRender implements ISupport
     }
 
     /**
+     * 设置输出路径
+     *
+     * @param outputPath
+     */
+    @Override
+    public void setRecordOutputPath(String outputPath) {
+        mOutputPath = outputPath;
+    }
+
+    /**
+     * 音频录制开关
+     *
+     * @param enable
+     */
+    @Override
+    public void enableRecordAudio(boolean enable) {
+        mRecordAudio = enable;
+    }
+
+    /**
+     * 影像录制开关
+     *
+     * @param enable
+     */
+    @Override
+    public void enableRecordVideo(boolean enable) {
+        mRecordVideo = enable;
+    }
+
+    /**
      * 是否正在录制视频
      *
      * @return

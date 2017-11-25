@@ -177,7 +177,7 @@ public class EZFilter {
          * 支持录制开关
          *
          * @param outputPath  输出路径
-         * @param recordVideo 录制视频
+         * @param recordVideo 录制影像
          * @param recordAudio 录制音频
          * @return
          */
