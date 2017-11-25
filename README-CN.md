@@ -31,9 +31,9 @@
 
 ``` gradle
 dependencies {
-    compile 'cn.ezandroid:EZFilter:1.5.5' // Gradle 3.0以下
+    compile 'cn.ezandroid:EZFilter:1.5.6' // Gradle 3.0以下
     // 或者
-    implementation 'cn.ezandroid:EZFilter:1.5.5' // Gradle3.0及以上
+    implementation 'cn.ezandroid:EZFilter:1.5.6' // Gradle3.0及以上
 }
 ```
 
@@ -101,7 +101,17 @@ mPipeline = EZFilter.input(camera)
 
 // 开始录制
 mPipeline.startRecording()
+
 // 结束录制
 mPipeline.stopRecording()
+
+// 修改影像录制开关
+mPipeline.enableRecordVideo(enable);
+
+// 修改音频录制开关
+mPipeline.enableRecordAudio(enable);
+
+// 修改录制输出路径
+mPipeline.setRecordOutputPath(path);
 ```
 

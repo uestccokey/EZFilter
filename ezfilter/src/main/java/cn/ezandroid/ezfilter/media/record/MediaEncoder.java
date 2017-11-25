@@ -281,7 +281,7 @@ public abstract class MediaEncoder implements Runnable {
                     // write encoded data to muxer(need to adjust presentationTimeUs.
                     mBufferInfo.presentationTimeUs = getPTSUs();
                     muxer.writeSampleData(mTrackIndex, encodedData, mBufferInfo);
-                    prevOutputPTSUs = mBufferInfo.presentationTimeUs;
+                    mPrevOutputPTSUs = mBufferInfo.presentationTimeUs;
                 }
                 // return buffer to encoder
                 mMediaCodec.releaseOutputBuffer(encoderStatus, false);
@@ -294,14 +294,14 @@ public abstract class MediaEncoder implements Runnable {
         }
     }
 
-    private long prevOutputPTSUs = 0;
+    private long mPrevOutputPTSUs = 0;
 
     protected long getPTSUs() {
         long result = System.nanoTime() / 1000L;
         // presentationTimeUs should be monotonic
         // otherwise muxer fail to write
-        if (result < prevOutputPTSUs)
-            result = (prevOutputPTSUs - result) + result;
+        if (result < mPrevOutputPTSUs)
+            result = (mPrevOutputPTSUs - result) + result;
         return result;
     }
 }
