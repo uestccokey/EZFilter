@@ -7,12 +7,14 @@ import android.view.View;
 import android.webkit.WebChromeClient;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
+import android.widget.Button;
 import android.widget.ImageView;
 
 import cn.ezandroid.ezfilter.EZFilter;
 import cn.ezandroid.ezfilter.core.RenderPipeline;
 import cn.ezandroid.ezfilter.core.output.BitmapOutput;
 import cn.ezandroid.ezfilter.demo.render.WobbleRender;
+import cn.ezandroid.ezfilter.environment.GLTextureView;
 import cn.ezandroid.ezfilter.environment.TextureFitView;
 import cn.ezandroid.ezfilter.view.glview.GLLinearLayout;
 
@@ -28,6 +30,7 @@ public class ViewFilterActivity extends BaseActivity {
     private ImageView mPreviewImage;
     private GLLinearLayout mLinearLayout;
     private WebView mWebView;
+    private Button mRecordButton;
 
     private RenderPipeline mRenderPipeline;
 
@@ -36,9 +39,12 @@ public class ViewFilterActivity extends BaseActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_view_filter);
         mRenderView = $(R.id.render_view);
+        mRenderView.setRenderMode(GLTextureView.RENDERMODE_CONTINUOUSLY);
         mPreviewImage = $(R.id.preview_image);
         mLinearLayout = $(R.id.gl_layout);
         mWebView = $(R.id.web_view);
+
+        mRecordButton = $(R.id.record);
 
         mWebView.setWebViewClient(new WebViewClient());
         mWebView.setWebChromeClient(new WebChromeClient());
@@ -50,6 +56,7 @@ public class ViewFilterActivity extends BaseActivity {
             public void run() {
                 mRenderPipeline = EZFilter.input(mLinearLayout)
                         .addFilter(new WobbleRender())
+                        .enableRecord("/sdcard/recordView.mp4", true, false)
                         .into(mRenderView);
             }
         });
@@ -71,6 +78,27 @@ public class ViewFilterActivity extends BaseActivity {
                 mRenderView.requestRender();
             }
         });
+
+        mRecordButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if (mRenderPipeline.isRecording()) {
+                    stopRecording();
+                } else {
+                    startRecording();
+                }
+            }
+        });
+    }
+
+    private void startRecording() {
+        mRecordButton.setText("停止");
+        mRenderPipeline.startRecording();
+    }
+
+    private void stopRecording() {
+        mRecordButton.setText("录制");
+        mRenderPipeline.stopRecording();
     }
 
     @Override
