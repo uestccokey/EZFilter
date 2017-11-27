@@ -215,15 +215,13 @@ public class VideoInput extends FBORender implements SurfaceTexture.OnFrameAvail
         Surface surface = new Surface(mSurfaceTexture);
         mPlayer.setSurface(surface);
 
-        new Handler(Looper.getMainLooper()).post(new Runnable() {
-            @Override
-            public void run() {
-                // prepareAsync 不放在setVideoUri里是为了onPrepared中mPlayer.start()时已经设置了Surface，否则可能播放失败
-                try {
-                    mPlayer.prepareAsync();
-                } catch (Exception e) {
-                    e.printStackTrace();
-                }
+        // 在主线程执行prepareAsync，因为某些Player的实现在异步线程调用prepareAsync时可能崩溃
+        new Handler(Looper.getMainLooper()).post(() -> {
+            // prepareAsync 不放在setVideoUri里是为了确保onPrepared中mPlayer.start()时已经设置了Surface，否则可能播放失败
+            try {
+                mPlayer.prepareAsync();
+            } catch (Exception e) {
+                e.printStackTrace();
             }
         });
     }
