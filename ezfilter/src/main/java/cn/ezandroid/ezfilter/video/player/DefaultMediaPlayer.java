@@ -12,22 +12,13 @@ public class DefaultMediaPlayer extends MediaPlayer implements IMediaPlayer {
 
     @Override
     public void setOnPreparedListener(final IMediaPlayer.OnPreparedListener var1) {
-        setOnPreparedListener(new MediaPlayer.OnPreparedListener() {
-
-            @Override
-            public void onPrepared(MediaPlayer mediaPlayer) {
-                var1.onPrepared(DefaultMediaPlayer.this);
-            }
-        });
+        setOnPreparedListener((MediaPlayer.OnPreparedListener) mediaPlayer ->
+                var1.onPrepared(DefaultMediaPlayer.this));
     }
 
     @Override
     public void setOnCompletionListener(final IMediaPlayer.OnCompletionListener var1) {
-        setOnCompletionListener(new MediaPlayer.OnCompletionListener() {
-            @Override
-            public void onCompletion(MediaPlayer mediaPlayer) {
-                var1.onCompletion(DefaultMediaPlayer.this);
-            }
-        });
+        setOnCompletionListener((MediaPlayer.OnCompletionListener) mediaPlayer ->
+                var1.onCompletion(DefaultMediaPlayer.this));
     }
 }

@@ -3,7 +3,7 @@ package cn.ezandroid.ezfilter.core;
 import android.graphics.Bitmap;
 
 /**
- * PhotoTakenCallback
+ * 拍照回调
  *
  * @author like
  * @date 2017-10-24

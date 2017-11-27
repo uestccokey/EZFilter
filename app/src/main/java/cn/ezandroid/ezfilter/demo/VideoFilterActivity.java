@@ -42,9 +42,9 @@ public class VideoFilterActivity extends BaseActivity {
         mPreviewImage = $(R.id.preview_image);
 
 //        uri1 = Uri.parse("http://clips.vorwaerts-gmbh.de/big_buck_bunny.mp4");
-//        uri1 = Uri.parse("http://mirror.aarnet.edu.au/pub/TED-talks/911Mothers_2010W-480p.mp4");
+        uri2 = Uri.parse("http://mirror.aarnet.edu.au/pub/TED-talks/911Mothers_2010W-480p.mp4");
         uri1 = Uri.parse("android.resource://" + getPackageName() + "/" + R.raw.test);
-        uri2 = Uri.parse("android.resource://" + getPackageName() + "/" + R.raw.test2);
+//        uri2 = Uri.parse("android.resource://" + getPackageName() + "/" + R.raw.test2);
 
         changeVideo();
 
@@ -80,34 +80,42 @@ public class VideoFilterActivity extends BaseActivity {
             mCurrentUri = uri1;
         }
 
-        mRenderPipeline = EZFilter.input(mCurrentUri)
-                .setLoop(false)
-                .addFilter(new BWRender(this))
-                .setPreparedListener(new IMediaPlayer.OnPreparedListener() {
-                    @Override
-                    public void onPrepared(IMediaPlayer var1) {
-                        Log.e("VideoFilterActivity", "onPrepared");
-                    }
-                })
-                .setCompletionListener(new IMediaPlayer.OnCompletionListener() {
-                    @Override
-                    public void onCompletion(IMediaPlayer var1) {
-                        Log.e("VideoFilterActivity", "onCompletion");
-                    }
-                })
-                .into(mRenderView);
+        new Thread() {
+            public void run() {
+                mRenderPipeline = EZFilter.input(mCurrentUri)
+                        .setLoop(false)
+                        .addFilter(new BWRender(VideoFilterActivity.this))
+                        .setPreparedListener(new IMediaPlayer.OnPreparedListener() {
+                            @Override
+                            public void onPrepared(IMediaPlayer var1) {
+                                Log.e("VideoFilterActivity", "onPrepared");
+                            }
+                        })
+                        .setCompletionListener(new IMediaPlayer.OnCompletionListener() {
+                            @Override
+                            public void onCompletion(IMediaPlayer var1) {
+                                Log.e("VideoFilterActivity", "onCompletion");
+                            }
+                        })
+                        .into(mRenderView);
+            }
+        }.start();
     }
 
     @Override
     protected void onResume() {
         super.onResume();
-        ((VideoInput) mRenderPipeline.getStartPointRender()).start();
+        if (mRenderPipeline != null) {
+            ((VideoInput) mRenderPipeline.getStartPointRender()).start();
+        }
     }
 
     @Override
     protected void onPause() {
         super.onPause();
-        ((VideoInput) mRenderPipeline.getStartPointRender()).pause();
+        if (mRenderPipeline != null) {
+            ((VideoInput) mRenderPipeline.getStartPointRender()).pause();
+        }
     }
 
     @Override

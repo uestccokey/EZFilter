@@ -81,7 +81,7 @@ public class BitmapOutput extends BufferOutput<IntBuffer> {
             int[] pixels = buffer.array();
 
             // 方案一，使用copyPixelsFromBuffer，是方案二速度的2倍以上
-            Bitmap bitmap = Bitmap.createBitmap(width, height, Bitmap.Config.ARGB_8888);
+            Bitmap bitmap = Bitmap.createBitmap(width, height, mConfig);
             bitmap.copyPixelsFromBuffer(IntBuffer.wrap(pixels));
 
             // 方案二，手动转换像素数组
