@@ -52,11 +52,13 @@ public class VideoInput extends FBORender implements SurfaceTexture.OnFrameAvail
     public VideoInput(IGLEnvironment render) {
         super();
         this.mRender = render;
+        initShader();
     }
 
     public VideoInput(Context context, IGLEnvironment render, Uri uri) {
         super();
         this.mRender = render;
+        initShader();
         try {
             setVideoUri(context, uri);
         } catch (IOException e) {
@@ -67,11 +69,32 @@ public class VideoInput extends FBORender implements SurfaceTexture.OnFrameAvail
     public VideoInput(Context context, IGLEnvironment render, Uri uri, IMediaPlayer player) {
         super();
         this.mRender = render;
+        initShader();
         try {
             setVideoUri(context, uri, player);
         } catch (IOException e) {
             e.printStackTrace();
         }
+    }
+
+    private void initShader() {
+        setVertexShader("uniform mat4 " + UNIFORM_CAM_MATRIX + ";\n"
+                + "attribute vec4 " + ATTRIBUTE_POSITION + ";\n"
+                + "attribute vec2 " + ATTRIBUTE_TEXTURE_COORD + ";\n"
+                + "varying vec2 " + VARYING_TEXTURE_COORD + ";\n"
+                + "void main() {\n"
+                + "   vec4 texPos = " + UNIFORM_CAM_MATRIX + " * vec4(" + ATTRIBUTE_TEXTURE_COORD + "," + " 1, 1);\n"
+                + "   " + VARYING_TEXTURE_COORD + " = texPos.xy;\n"
+                + "   gl_Position = " + ATTRIBUTE_POSITION + ";\n"
+                + "}\n");
+        setFragmentShader("#extension GL_OES_EGL_image_external : require\n"
+                + "precision mediump float;\n"
+                + "uniform samplerExternalOES " + UNIFORM_TEXTURE_0 + ";\n"
+                + "varying vec2 " + VARYING_TEXTURE_COORD + ";\n"
+                + "void main() {\n"
+                + "   gl_FragColor = texture2D(" + UNIFORM_TEXTURE_0 + ", " + VARYING_TEXTURE_COORD +
+                ");\n"
+                + "}\n");
     }
 
     public void setOnPreparedListener(IMediaPlayer.OnPreparedListener listener) {
@@ -150,31 +173,6 @@ public class VideoInput extends FBORender implements SurfaceTexture.OnFrameAvail
             e.printStackTrace();
         }
         super.drawFrame();
-    }
-
-    @Override
-    protected String getFragmentShader() {
-        return "#extension GL_OES_EGL_image_external : require\n"
-                + "precision mediump float;\n"
-                + "uniform samplerExternalOES " + UNIFORM_TEXTURE_0 + ";\n"
-                + "varying vec2 " + VARYING_TEXTURE_COORD + ";\n"
-                + "void main() {\n"
-                + "   gl_FragColor = texture2D(" + UNIFORM_TEXTURE_0 + ", " + VARYING_TEXTURE_COORD +
-                ");\n"
-                + "}\n";
-    }
-
-    @Override
-    protected String getVertexShader() {
-        return "uniform mat4 " + UNIFORM_CAM_MATRIX + ";\n"
-                + "attribute vec4 " + ATTRIBUTE_POSITION + ";\n"
-                + "attribute vec2 " + ATTRIBUTE_TEXTURE_COORD + ";\n"
-                + "varying vec2 " + VARYING_TEXTURE_COORD + ";\n"
-                + "void main() {\n"
-                + "   vec4 texPos = " + UNIFORM_CAM_MATRIX + " * vec4(" + ATTRIBUTE_TEXTURE_COORD + "," + " 1, 1);\n"
-                + "   " + VARYING_TEXTURE_COORD + " = texPos.xy;\n"
-                + "   gl_Position = " + ATTRIBUTE_POSITION + ";\n"
-                + "}\n";
     }
 
     @Override
