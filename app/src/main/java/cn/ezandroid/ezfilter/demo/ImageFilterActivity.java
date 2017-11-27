@@ -5,12 +5,15 @@ import android.graphics.BitmapFactory;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.view.View;
+import android.widget.Button;
 import android.widget.ImageView;
 
 import cn.ezandroid.ezfilter.EZFilter;
 import cn.ezandroid.ezfilter.core.RenderPipeline;
 import cn.ezandroid.ezfilter.core.output.BitmapOutput;
 import cn.ezandroid.ezfilter.demo.render.LookupRender;
+import cn.ezandroid.ezfilter.demo.render.WobbleRender;
+import cn.ezandroid.ezfilter.environment.GLTextureView;
 import cn.ezandroid.ezfilter.environment.TextureFitView;
 
 /**
@@ -23,6 +26,7 @@ public class ImageFilterActivity extends BaseActivity {
 
     private TextureFitView mRenderView;
     private ImageView mPreviewImage;
+    private Button mRecordButton;
 
     private Bitmap mBitmap1;
     private Bitmap mBitmap2;
@@ -36,7 +40,10 @@ public class ImageFilterActivity extends BaseActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_image_filter);
         mRenderView = $(R.id.render_view);
+        mRenderView.setRenderMode(GLTextureView.RENDERMODE_CONTINUOUSLY);
         mPreviewImage = $(R.id.preview_image);
+
+        mRecordButton = $(R.id.record);
 
         mBitmap1 = BitmapFactory.decodeResource(getResources(), R.drawable.preview);
         mBitmap2 = BitmapFactory.decodeResource(getResources(), R.mipmap.ic_launcher);
@@ -74,6 +81,27 @@ public class ImageFilterActivity extends BaseActivity {
                 mRenderView.requestRender();
             }
         });
+
+        mRecordButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if (mRenderPipeline.isRecording()) {
+                    stopRecording();
+                } else {
+                    startRecording();
+                }
+            }
+        });
+    }
+
+    private void startRecording() {
+        mRecordButton.setText("停止");
+        mRenderPipeline.startRecording();
+    }
+
+    private void stopRecording() {
+        mRecordButton.setText("录制");
+        mRenderPipeline.stopRecording();
     }
 
     private void changeBitmap() {
@@ -85,6 +113,8 @@ public class ImageFilterActivity extends BaseActivity {
 
         mRenderPipeline = EZFilter.input(mCurrentBitmap)
                 .addFilter(new LookupRender(ImageFilterActivity.this, R.drawable.langman))
+                .addFilter(new WobbleRender())
+                .enableRecord("/sdcard/recordBitmap.mp4", true, false)
                 .into(mRenderView);
     }
 

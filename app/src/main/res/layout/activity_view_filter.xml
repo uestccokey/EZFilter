@@ -28,6 +28,13 @@
         android:layout_height="wrap_content"
         android:text="截图" />
 
+    <Button
+        android:id="@+id/record"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_toRightOf="@id/capture"
+        android:text="录制" />
+
     <ImageView
         android:id="@+id/preview_image"
         android:layout_width="100dp"
