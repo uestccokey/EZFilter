@@ -113,25 +113,19 @@ public class VideoInput extends FBORender implements SurfaceTexture.OnFrameAvail
             mPlayer.setDataSource(context, mVideoUri);
             mPlayer.setLooping(mIsLoop);
             mPlayer.setVolume(mVideoVolumeLeft, mVideoVolumeRight);
-            mPlayer.setOnPreparedListener(new IMediaPlayer.OnPreparedListener() {
-                @Override
-                public void onPrepared(IMediaPlayer var1) {
-                    mReady = true;
-                    if (mStartWhenReady) {
-                        mPlayer.start();
-                    }
+            mPlayer.setOnPreparedListener(var1 -> {
+                mReady = true;
+                if (mStartWhenReady) {
+                    mPlayer.start();
+                }
 
-                    if (mPreparedListener != null) {
-                        mPreparedListener.onPrepared(mPlayer);
-                    }
+                if (mPreparedListener != null) {
+                    mPreparedListener.onPrepared(mPlayer);
                 }
             });
-            mPlayer.setOnCompletionListener(new IMediaPlayer.OnCompletionListener() {
-                @Override
-                public void onCompletion(IMediaPlayer var1) {
-                    if (mCompletionListener != null) {
-                        mCompletionListener.onCompletion(var1);
-                    }
+            mPlayer.setOnCompletionListener(var1 -> {
+                if (mCompletionListener != null) {
+                    mCompletionListener.onCompletion(var1);
                 }
             });
             reInit();

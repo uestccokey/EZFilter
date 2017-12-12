@@ -223,7 +223,8 @@ public class EZFilter {
                 pipeline.startRender();
             }
 
-            boolean change = view.setAspectRatio(getAspectRatio(view), 0, 0);
+            float aspectRatio = getAspectRatio(view);
+            boolean change = view.setAspectRatio(aspectRatio, 0, 0);
             view.requestRender();
             if (change) {
                 // 确保requestLayout()在主线程调用
