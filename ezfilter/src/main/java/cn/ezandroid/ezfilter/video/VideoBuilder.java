@@ -4,6 +4,7 @@ import android.media.MediaMetadataRetriever;
 import android.net.Uri;
 
 import java.io.IOException;
+import java.util.HashMap;
 
 import cn.ezandroid.ezfilter.EZFilter;
 import cn.ezandroid.ezfilter.core.FBORender;
@@ -28,11 +29,24 @@ public class VideoBuilder extends EZFilter.Builder {
         mVideo = uri;
     }
 
+    /**
+     * 设置是否循环播放
+     *
+     * @param loop
+     * @return
+     */
     public VideoBuilder setLoop(boolean loop) {
         mVideoLoop = loop;
         return this;
     }
 
+    /**
+     * 设置音量
+     * 取值0~1
+     *
+     * @param volume
+     * @return
+     */
     public VideoBuilder setVolume(float volume) {
         mVideoVolume = volume;
         return this;
@@ -89,7 +103,14 @@ public class VideoBuilder extends EZFilter.Builder {
     protected float getAspectRatio(IFitView view) {
         MediaMetadataRetriever metadata = new MediaMetadataRetriever();
         try {
-            metadata.setDataSource(view.getContext(), mVideo);
+            String scheme = mVideo.getScheme();
+            if (scheme != null && (scheme.equals("http") || scheme.equals("https"))) {
+                // 在线视频
+                metadata.setDataSource(mVideo.toString(), new HashMap<>());
+            } else {
+                // 本地视频（SD卡或Assets目录）
+                metadata.setDataSource(view.getContext(), mVideo);
+            }
             String width = metadata.extractMetadata(MediaMetadataRetriever.METADATA_KEY_VIDEO_WIDTH);
             String height = metadata.extractMetadata(MediaMetadataRetriever.METADATA_KEY_VIDEO_HEIGHT);
             return Integer.parseInt(width) * 1.0f / Integer.parseInt(height);

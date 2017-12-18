@@ -4,6 +4,8 @@ import android.graphics.Bitmap;
 import android.hardware.Camera;
 import android.hardware.camera2.CameraDevice;
 import android.net.Uri;
+import android.os.Handler;
+import android.os.Looper;
 import android.util.Size;
 
 import java.util.ArrayList;
@@ -124,6 +126,8 @@ public class EZFilter {
 
         protected String mOutputPath;
 
+        protected Handler mMainHandler = new Handler(Looper.getMainLooper());
+
         protected Builder() {
         }
 
@@ -219,10 +223,12 @@ public class EZFilter {
                 pipeline.startRender();
             }
 
-            boolean change = view.setAspectRatio(getAspectRatio(view), 0, 0);
+            float aspectRatio = getAspectRatio(view);
+            boolean change = view.setAspectRatio(aspectRatio, 0, 0);
             view.requestRender();
             if (change) {
-                view.requestLayout();
+                // 确保requestLayout()在主线程调用
+                mMainHandler.post(view::requestLayout);
             }
             return pipeline;
         }

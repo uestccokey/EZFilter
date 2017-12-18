@@ -48,7 +48,7 @@ public class ViewFilterActivity extends BaseActivity {
 
         mWebView.setWebViewClient(new WebViewClient());
         mWebView.setWebChromeClient(new WebChromeClient());
-        mWebView.loadUrl("http://www.oschina.net");
+        mWebView.loadUrl("https://github.com/uestccokey/EZFilter");
 
         // 为了确保mLinearLayout已经初始化完成，宽高不为0
         mLinearLayout.post(new Runnable() {

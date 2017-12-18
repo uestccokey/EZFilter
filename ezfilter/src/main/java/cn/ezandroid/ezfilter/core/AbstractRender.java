@@ -70,6 +70,10 @@ public abstract class AbstractRender {
     private final Queue<Runnable> mRunOnDraw;
     private final Queue<Runnable> mRunOnDrawEnd;
 
+    private int mFps;
+    private long mLastTime;
+    private int mFrameCount;
+
     public AbstractRender() {
         initRenderVertices(new float[]{-1f, -1f, 1f, -1f, -1f, 1f, 1f, 1f});
         initTextureVertices();
@@ -276,6 +280,32 @@ public abstract class AbstractRender {
         runAll(mRunOnDrawEnd);
 
         mSizeChanged = false;
+
+        calculateFps();
+    }
+
+    /**
+     * 计算FPS
+     */
+    private void calculateFps() {
+        if (mLastTime == 0) {
+            mLastTime = System.currentTimeMillis();
+        }
+        mFrameCount++;
+        if (System.currentTimeMillis() - mLastTime >= 1000) {
+            mLastTime = System.currentTimeMillis();
+            mFps = mFrameCount;
+            mFrameCount = 0;
+        }
+    }
+
+    /**
+     * 获取Fps
+     *
+     * @return
+     */
+    public int getFps() {
+        return mFps;
     }
 
     protected void drawFrame() {
