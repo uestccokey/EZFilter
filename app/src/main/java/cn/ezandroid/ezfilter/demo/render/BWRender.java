@@ -3,6 +3,7 @@ package cn.ezandroid.ezfilter.demo.render;
 import android.content.Context;
 import android.opengl.GLES20;
 
+import cn.ezandroid.ezfilter.core.util.BitmapUtil;
 import cn.ezandroid.ezfilter.extra.IAdjustable;
 import cn.ezandroid.ezfilter.extra.MultiBitmapInputRender;
 
@@ -15,7 +16,8 @@ import cn.ezandroid.ezfilter.extra.MultiBitmapInputRender;
 public class BWRender extends MultiBitmapInputRender implements IAdjustable {
 
     private static final String[] BITMAP_PATHS = new String[]{
-            "file:///android_asset/filter/bw.png"
+            BitmapUtil.Scheme.ASSETS.wrap("filter/bw.png"),
+//            BitmapUtil.Scheme.DRAWABLE.wrap("" + R.drawable.bw)
     };
 
     private static final String UNIFORM_MIX = "u_mix";
