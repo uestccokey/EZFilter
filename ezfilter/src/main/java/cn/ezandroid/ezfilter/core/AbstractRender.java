@@ -266,7 +266,7 @@ public abstract class AbstractRender {
      */
     protected void onDrawFrame() {
         if (L.LOG_RENDER_DRAW) {
-            Log.e("AbstractRender", this + " onDrawFrame:" + mWidth + "x" + mHeight + " " + mCurrentRotation);
+            Log.e("AbstractRender", this + " onDrawFrame:" + mWidth + "x" + mHeight + " " + mCurrentRotation + " Fps:" + mFps);
         }
         if (!mInitialized) {
             initGLContext();
