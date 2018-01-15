@@ -62,7 +62,7 @@ public class VideoOffscreenActivity extends BaseActivity {
                 new Thread() {
                     public void run() {
                         final String output = "/sdcard/render.mp4";
-                        // save是耗时操作，需要在异步线程调用
+                        // output是耗时操作，需要在异步线程调用
                         EZFilter.input(Uri.parse(paths.get(0)))
                                 .addFilter(new BWRender(VideoOffscreenActivity.this))
                                 .addFilter(new WobbleRender())

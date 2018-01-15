@@ -13,6 +13,9 @@ import cn.ezandroid.ezfilter.extra.IAdjustable;
 
 /**
  * 摄像头处理构造器
+ *
+ * @author like
+ * @date 2017-09-15
  */
 @TargetApi(Build.VERSION_CODES.LOLLIPOP)
 public class Camera2Builder extends EZFilter.Builder {

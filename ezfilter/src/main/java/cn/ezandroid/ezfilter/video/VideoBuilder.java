@@ -16,6 +16,9 @@ import cn.ezandroid.ezfilter.video.player.IMediaPlayer;
 
 /**
  * 视频处理构造器
+ *
+ * @author like
+ * @date 2017-09-15
  */
 public class VideoBuilder extends EZFilter.Builder {
 

@@ -16,6 +16,7 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.util.ArrayList;
 
 import cn.ezandroid.ezfilter.EZFilter;
 import cn.ezandroid.ezfilter.core.PhotoTakenCallback;
@@ -24,7 +25,12 @@ import cn.ezandroid.ezfilter.core.output.BitmapOutput;
 import cn.ezandroid.ezfilter.demo.render.BWRender;
 import cn.ezandroid.ezfilter.demo.render.WobbleRender;
 import cn.ezandroid.ezfilter.environment.FitViewHelper;
+import cn.ezandroid.ezfilter.environment.GLTextureView;
 import cn.ezandroid.ezfilter.environment.TextureFitView;
+import cn.ezandroid.ezfilter.extra.sticker.ComponentConvert;
+import cn.ezandroid.ezfilter.extra.sticker.StickerRender;
+import cn.ezandroid.ezfilter.extra.sticker.model.Component;
+import cn.ezandroid.ezfilter.extra.sticker.model.Sticker;
 
 /**
  * CameraFilterActivity
@@ -88,6 +94,7 @@ public class CameraFilterActivity extends BaseActivity {
         mRecordButton = $(R.id.record);
 
         mRenderView.setScaleType(FitViewHelper.ScaleType.CENTER_CROP);
+        mRenderView.setRenderMode(GLTextureView.RENDERMODE_CONTINUOUSLY);
 
         mOrientationEventListener = new MyOrientationEventListener(this);
 
@@ -239,9 +246,22 @@ public class CameraFilterActivity extends BaseActivity {
         mCamera = Camera.open(id);
         setCameraParameters();
 
+        StickerRender stickerRender = new StickerRender(this);
+        Sticker sticker = new Sticker();
+        sticker.components = new ArrayList<>();
+        Component c1 = new Component();
+        c1.duration = 1000;
+        c1.src = "src_0";
+        c1.width = 180;
+        c1.height = 70;
+        sticker.components.add(c1);
+        ComponentConvert.convert(this, c1, "file:///android_asset/rabbit/");
+        stickerRender.setSticker(sticker);
+
         mRenderPipeline = EZFilter.input(mCamera, mCamera.getParameters().getPreviewSize())
                 .addFilter(new BWRender(this), 0.5f)
                 .addFilter(new WobbleRender())
+                .addFilter(stickerRender)
                 .enableRecord("/sdcard/recordCamera.mp4", true, true) // 支持录制为视频
                 .into(mRenderView);
     }

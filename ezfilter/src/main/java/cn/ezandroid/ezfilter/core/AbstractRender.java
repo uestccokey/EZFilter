@@ -70,7 +70,7 @@ public abstract class AbstractRender {
     private final Queue<Runnable> mRunOnDraw;
     private final Queue<Runnable> mRunOnDrawEnd;
 
-    private int mFps;
+    protected int mFps;
     private long mLastTime;
     private int mFrameCount;
 

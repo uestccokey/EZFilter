@@ -10,6 +10,9 @@ import cn.ezandroid.ezfilter.view.glview.IGLView;
 
 /**
  * 视图处理构造器
+ *
+ * @author like
+ * @date 2017-09-15
  */
 public class ViewBuilder extends EZFilter.Builder {
 

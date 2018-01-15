@@ -90,7 +90,7 @@ public class MediaUtil {
      * 读取多媒体第一个视频轨和音频轨
      *
      * @param extractor
-     * @return null, if has no video track and audio track.
+     * @return
      */
     public static Track getFirstTrack(MediaExtractor extractor) {
         Track track = new Track();

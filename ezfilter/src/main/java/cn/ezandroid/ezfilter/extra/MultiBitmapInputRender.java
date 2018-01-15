@@ -7,7 +7,7 @@ import android.opengl.GLES20;
 import cn.ezandroid.ezfilter.core.FBORender;
 import cn.ezandroid.ezfilter.core.FilterRender;
 import cn.ezandroid.ezfilter.core.util.BitmapUtil;
-import cn.ezandroid.ezfilter.core.util.BitmapUtil.Scheme;
+import cn.ezandroid.ezfilter.core.util.Path;
 
 /**
  * 多图片输入滤镜渲染器
@@ -113,7 +113,7 @@ public class MultiBitmapInputRender extends FilterRender {
                     String key = "";
                     if (mResources != null) {
                         int resource = mResources[i];
-                        key = Scheme.DRAWABLE.wrap("" + resource);
+                        key = Path.DRAWABLE.wrap("" + resource);
                     } else if (mPaths != null) {
                         String path = mPaths[i];
                         key = path;

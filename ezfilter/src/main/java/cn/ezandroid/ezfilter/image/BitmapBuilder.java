@@ -11,6 +11,9 @@ import cn.ezandroid.ezfilter.image.offscreen.OffscreenImage;
 
 /**
  * 图片处理构造器
+ *
+ * @author like
+ * @date 2017-09-15
  */
 public class BitmapBuilder extends EZFilter.Builder {
 
