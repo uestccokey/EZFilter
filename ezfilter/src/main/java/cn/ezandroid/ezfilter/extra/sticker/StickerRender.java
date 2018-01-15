@@ -22,9 +22,6 @@ public class StickerRender extends FilterRender {
 
     private Context mContext;
 
-    // 贴纸纹理
-    private int mStickerTexture;
-
     // 贴纸模型
     private Sticker mSticker;
 
@@ -58,11 +55,9 @@ public class StickerRender extends FilterRender {
     @Override
     public void destroy() {
         super.destroy();
-        if (mStickerTexture != 0) {
-            int[] tex = new int[1];
-            tex[0] = mStickerTexture;
-            GLES20.glDeleteTextures(1, tex, 0);
-            mStickerTexture = 0;
+
+        for (ComponentRender componentRender : mComponentRenders) {
+            componentRender.destroy();
         }
     }
 
@@ -79,8 +74,14 @@ public class StickerRender extends FilterRender {
     protected void onDraw() {
         super.onDraw();
 
+        // 开启混合
+        GLES20.glEnable(GLES20.GL_BLEND);
+        GLES20.glBlendFunc(GLES20.GL_ONE, GLES20.GL_ONE_MINUS_SRC_ALPHA);
+
         for (ComponentRender componentRender : mComponentRenders) {
-            componentRender.onDraw();
+            componentRender.onDraw(mTextureHandle, mPositionHandle, mTextureCoordHandle, mTextureVertices[2]);
         }
+
+        GLES20.glDisable(GLES20.GL_BLEND);
     }
 }

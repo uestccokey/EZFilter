@@ -223,8 +223,11 @@ public class CameraFilterActivity extends BaseActivity {
             mCamera.setDisplayOrientation(0);
         }
 
-        // 输出分辨率设置为1920*1080，质量100%
-        parameters.setPictureSize(1920, 1080);
+        // 预览分辨率设置为1280*720
+        parameters.setPreviewSize(1280, 720);
+
+        // 输出分辨率设置为1280*720，质量100%
+        parameters.setPictureSize(1280, 720);
         parameters.setJpegQuality(100);
 
         // 设置自动闪光灯
@@ -246,14 +249,15 @@ public class CameraFilterActivity extends BaseActivity {
         mCamera = Camera.open(id);
         setCameraParameters();
 
+        // 测试数据
         StickerRender stickerRender = new StickerRender(this);
         Sticker sticker = new Sticker();
         sticker.components = new ArrayList<>();
         Component c1 = new Component();
         c1.duration = 1000;
-        c1.src = "src_0";
-        c1.width = 180;
-        c1.height = 70;
+        c1.src = "src_2";
+        c1.width = 361;
+        c1.height = 500;
         sticker.components.add(c1);
         ComponentConvert.convert(this, c1, "file:///android_asset/rabbit/");
         stickerRender.setSticker(sticker);
