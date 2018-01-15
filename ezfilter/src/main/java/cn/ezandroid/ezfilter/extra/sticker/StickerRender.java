@@ -25,8 +25,8 @@ public class StickerRender extends FilterRender {
     // 贴纸模型
     private Sticker mSticker;
 
-    // 锚点组列表
-    private List<AnchorGroup> mAnchorGroupList = new ArrayList<>();
+    // 锚点组
+    private AnchorGroup mAnchorGroup;
 
     // 组件绘制器列表
     private List<ComponentRender> mComponentRenders = new ArrayList<>();
@@ -39,6 +39,11 @@ public class StickerRender extends FilterRender {
         return mSticker;
     }
 
+    /**
+     * 设置贴纸模型
+     *
+     * @param sticker
+     */
     public void setSticker(Sticker sticker) {
         mSticker = sticker;
 
@@ -48,8 +53,13 @@ public class StickerRender extends FilterRender {
         }
     }
 
-    public void setAnchorGroupList(List<AnchorGroup> anchorGroupList) {
-        mAnchorGroupList = anchorGroupList;
+    /**
+     * 设置锚点组
+     *
+     * @param anchorGroup
+     */
+    public void setAnchorGroup(AnchorGroup anchorGroup) {
+        mAnchorGroup = anchorGroup;
     }
 
     @Override
@@ -79,6 +89,8 @@ public class StickerRender extends FilterRender {
         GLES20.glBlendFunc(GLES20.GL_ONE, GLES20.GL_ONE_MINUS_SRC_ALPHA);
 
         for (ComponentRender componentRender : mComponentRenders) {
+            componentRender.setAnchorGroup(mAnchorGroup);
+            componentRender.updateRenderVertices(getWidth(), getHeight());
             componentRender.onDraw(mTextureHandle, mPositionHandle, mTextureCoordHandle, mTextureVertices[2]);
         }
 

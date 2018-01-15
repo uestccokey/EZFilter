@@ -1,5 +1,8 @@
 package cn.ezandroid.ezfilter.extra.sticker.model;
 
+import android.graphics.Point;
+import android.graphics.PointF;
+
 import java.io.Serializable;
 
 /**
@@ -31,6 +34,20 @@ public class AnchorPoint implements Serializable {
     // 组件左上角与锚点id的y轴偏移量
     public int y;
 
+    public AnchorPoint() {
+    }
+
+    public AnchorPoint(int x, int y) {
+        this.x = x;
+        this.y = y;
+    }
+
+    public AnchorPoint(int id, int x, int y) {
+        this.id = id;
+        this.x = x;
+        this.y = y;
+    }
+
     @Override
     public String toString() {
         return "AnchorPoint{" +
@@ -38,5 +55,13 @@ public class AnchorPoint implements Serializable {
                 ", x=" + x +
                 ", y=" + y +
                 '}';
+    }
+
+    public Point getPoint() {
+        return new Point(x, y);
+    }
+
+    public PointF getPointF() {
+        return new PointF(x, y);
     }
 }

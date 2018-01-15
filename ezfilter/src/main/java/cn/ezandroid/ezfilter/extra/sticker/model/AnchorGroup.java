@@ -14,7 +14,11 @@ public class AnchorGroup implements Serializable {
 
     private static final long serialVersionUID = 1L;
 
+    public static final int INVALID_VALUE = Integer.MAX_VALUE;
+
     public AnchorPoint leftAnchor;
 
     public AnchorPoint rightAnchor;
+
+    public float roll = INVALID_VALUE;
 }

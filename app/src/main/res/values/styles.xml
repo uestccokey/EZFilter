@@ -8,4 +8,9 @@
         <item name="colorAccent">@color/colorAccent</item>
     </style>
 
+    <style name="AppTheme.Fullscreen" parent="AppTheme">
+        <item name="android:windowIsTranslucent">false</item>
+        <item name="android:windowFullscreen">true</item>
+    </style>
+
 </resources>
