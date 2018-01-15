@@ -16,9 +16,17 @@ public class AnchorGroup implements Serializable {
 
     public static final int INVALID_VALUE = Integer.MAX_VALUE;
 
+    // 左锚点
     public AnchorPoint leftAnchor;
 
+    // 右锚点
     public AnchorPoint rightAnchor;
 
+    // 旋转角，往右转从-180~0，往左转从180~0
+    //>              180 | -180
+    //>            125   |    -125
+    //>          90      |       -90
+    //>            45    |    -45
+    //>               0  |  -0
     public float roll = INVALID_VALUE;
 }

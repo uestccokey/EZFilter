@@ -255,22 +255,37 @@ public class CameraFilterActivity extends BaseActivity {
         StickerRender stickerRender = new StickerRender(this);
         Sticker sticker = new Sticker();
         sticker.components = new ArrayList<>();
-        Component c1 = new Component();
-        c1.duration = 1000;
-        c1.src = "src_0";
-        c1.width = 180;
-        c1.height = 70;
-        AnchorGroup c1Group = new AnchorGroup();
-        c1Group.leftAnchor = new AnchorPoint(24, 227);
-        c1Group.rightAnchor = new AnchorPoint(159, 226);
-        c1.anchorGroup = c1Group;
-        sticker.components.add(c1);
-        ComponentConvert.convert(this, c1, "file:///android_asset/rabbit/");
+        {
+            Component c0 = new Component();
+            c0.duration = 1000;
+            c0.src = "src_0";
+            c0.width = 180;
+            c0.height = 70;
+            AnchorGroup c0Group = new AnchorGroup();
+            c0Group.leftAnchor = new AnchorPoint(AnchorPoint.LEFT_TOP, 0, 0, 180, 70);
+            c0Group.rightAnchor = new AnchorPoint(AnchorPoint.RIGHT_TOP, 0, 0, 180, 70);
+            c0.anchorGroup = c0Group;
+            sticker.components.add(c0);
+            ComponentConvert.convert(this, c0, "file:///android_asset/rabbit/");
+        }
+        {
+            Component c2 = new Component();
+            c2.duration = 1000;
+            c2.src = "src_2";
+            c2.width = 361;
+            c2.height = 500;
+            AnchorGroup c2Group = new AnchorGroup();
+            c2Group.leftAnchor = new AnchorPoint(AnchorPoint.LEFT_TOP, 0, 0, 361, 500);
+            c2Group.rightAnchor = new AnchorPoint(AnchorPoint.RIGHT_TOP, 0, 0, 361, 500);
+            c2.anchorGroup = c2Group;
+            sticker.components.add(c2);
+            ComponentConvert.convert(this, c2, "file:///android_asset/rabbit/");
+        }
         stickerRender.setSticker(sticker);
 
         AnchorGroup anchorGroup = new AnchorGroup();
-        anchorGroup.leftAnchor = new AnchorPoint(200, 1920 / 2);
-        anchorGroup.rightAnchor = new AnchorPoint(880, 1920 / 2);
+        anchorGroup.leftAnchor = new AnchorPoint(AnchorPoint.LEFT_TOP, 0, 0, 1080, 1920);
+        anchorGroup.rightAnchor = new AnchorPoint(AnchorPoint.RIGHT_TOP, 0, 0, 1080, 1920);
         stickerRender.setAnchorGroup(anchorGroup);
 
         mRenderPipeline = EZFilter.input(mCamera, mCamera.getParameters().getPreviewSize())

@@ -51,7 +51,8 @@
             android:theme="@style/AppTheme.Fullscreen" />
         <activity
             android:name=".Camera2FilterActivity"
-            android:screenOrientation="portrait" />
+            android:screenOrientation="portrait"
+            android:theme="@style/AppTheme.Fullscreen" />
 
         <activity
             android:name=".VideoOffscreenActivity"

@@ -28,6 +28,7 @@ public class ComponentRender {
 
     private int mTexture;
 
+    // 上一帧序号
     private int mLastIndex = -1;
 
     private long mStartTime = -1;
@@ -68,15 +69,17 @@ public class ComponentRender {
 
     /**
      * 更新渲染顶点坐标
+     * <p>
+     * 在GL线程调用
      *
      * @param width
      * @param height
      */
     public void updateRenderVertices(int width, int height) {
-        PointF facePoint0 = mAnchorGroup.leftAnchor.getPointF();
-        PointF facePoint1 = mAnchorGroup.rightAnchor.getPointF();
-        PointF stickP0 = mComponent.anchorGroup.leftAnchor.getPointF();
-        PointF stickP1 = mComponent.anchorGroup.rightAnchor.getPointF();
+        PointF facePoint0 = mAnchorGroup.leftAnchor.getPointF(true);
+        PointF facePoint1 = mAnchorGroup.rightAnchor.getPointF(true);
+        PointF stickP0 = mComponent.anchorGroup.leftAnchor.getPointF(false);
+        PointF stickP1 = mComponent.anchorGroup.rightAnchor.getPointF(false);
 
         float w = mComponent.width;
         float h = mComponent.height;
@@ -153,10 +156,10 @@ public class ComponentRender {
      * <p>
      * 在GL线程调用
      *
-     * @param textureHandle
-     * @param positionHandle
-     * @param textureCoordHandle
-     * @param textureVertices
+     * @param textureHandle      纹理指针
+     * @param positionHandle     渲染顶点坐标指针
+     * @param textureCoordHandle 纹理顶点坐标指针
+     * @param textureVertices    纹理顶点坐标
      */
     public void onDraw(int textureHandle, int positionHandle, int textureCoordHandle, FloatBuffer textureVertices) {
         mRenderVertices.position(0);
@@ -170,13 +173,10 @@ public class ComponentRender {
         // 如mComponent.duration=3000，mComponent.length=60，position=1000，则currentIndex=20
         int currentIndex = Math.round((mComponent.length - 1) * 1.0f / mComponent.duration * position);
 
-//        Log.e("ComponentRender:", "onDraw:" + currentIndex);
-
         String path = mComponent.resources.get(currentIndex);
         Bitmap bitmap = mBitmapCache.get(path);
         if (bitmap == null || bitmap.isRecycled()) {
             bitmap = BitmapUtil.loadBitmap(mContext, path);
-//            Log.e("ComponentRender:", "loadBitmap" + path + " -> " + bitmap);
             if (bitmap != null && !bitmap.isRecycled()) {
                 mBitmapCache.put(path, bitmap);
             } else {
@@ -193,7 +193,6 @@ public class ComponentRender {
                 mTexture = 0;
             }
             mTexture = BitmapUtil.bindBitmap(bitmap);
-//            Log.e("ComponentRender:", "bindBitmap:" + bitmap + " -> " + mTexture);
         }
 
         GLES20.glActiveTexture(GLES20.GL_TEXTURE2);
