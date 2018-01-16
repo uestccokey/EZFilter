@@ -10,7 +10,7 @@ import java.io.Serializable;
  * @author like
  * @date 2018-01-05
  */
-public class AnchorPoint implements Serializable {
+public class AnchorPoint extends PointF implements Serializable {
 
     private static final long serialVersionUID = 1L;
 
@@ -28,15 +28,6 @@ public class AnchorPoint implements Serializable {
     // 锚点id
     public int id;
 
-    // 组件左上角与锚点id的x轴偏移量
-    public float x;
-    // 组件左上角与锚点id的y轴偏移量
-    public float y;
-
-    public float width;
-
-    public float height;
-
     public AnchorPoint() {
     }
 
@@ -45,12 +36,10 @@ public class AnchorPoint implements Serializable {
         this.y = y;
     }
 
-    public AnchorPoint(int id, int x, int y, int width, int height) {
+    public AnchorPoint(int id, int x, int y) {
         this.id = id;
         this.x = x;
         this.y = y;
-        this.width = width;
-        this.height = height;
     }
 
     @Override
@@ -60,42 +49,5 @@ public class AnchorPoint implements Serializable {
                 ", x=" + x +
                 ", y=" + y +
                 '}';
-    }
-
-    /**
-     * 根据锚点id获取实际锚点位置
-     *
-     * @param mirror 是否垂直镜像
-     * @return
-     */
-    public PointF getPointF(boolean mirror) {
-        if (mirror) {
-            switch (id) {
-                case LEFT_TOP:
-                    return new PointF(x, height - y);
-                case LEFT_BOTTOM:
-                    return new PointF(x, -y);
-                case RIGHT_BOTTOM:
-                    return new PointF(width + x, -y);
-                case RIGHT_TOP:
-                    return new PointF(width + x, height - y);
-                case CENTER:
-                    return new PointF(width / 2 + x, height / 2 - y);
-            }
-        } else {
-            switch (id) {
-                case LEFT_TOP:
-                    return new PointF(-x, -y);
-                case LEFT_BOTTOM:
-                    return new PointF(-x, height - y);
-                case RIGHT_BOTTOM:
-                    return new PointF(width - x, height - y);
-                case RIGHT_TOP:
-                    return new PointF(width - x, -y);
-                case CENTER:
-                    return new PointF(width / 2 - x, height / 2 - y);
-            }
-        }
-        return new PointF(x, y);
     }
 }

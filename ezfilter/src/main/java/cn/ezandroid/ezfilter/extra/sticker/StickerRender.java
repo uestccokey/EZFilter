@@ -8,8 +8,8 @@ import java.util.List;
 
 import cn.ezandroid.ezfilter.core.FilterRender;
 import cn.ezandroid.ezfilter.core.cache.IBitmapCache;
-import cn.ezandroid.ezfilter.extra.sticker.model.AnchorGroup;
 import cn.ezandroid.ezfilter.extra.sticker.model.Component;
+import cn.ezandroid.ezfilter.extra.sticker.model.ScreenAnchor;
 import cn.ezandroid.ezfilter.extra.sticker.model.Sticker;
 
 /**
@@ -26,7 +26,7 @@ public class StickerRender extends FilterRender {
     private Sticker mSticker;
 
     // 锚点组
-    private AnchorGroup mAnchorGroup;
+    private ScreenAnchor mScreenAnchor;
 
     // 组件绘制器列表
     private List<ComponentRender> mComponentRenders = new ArrayList<>();
@@ -54,12 +54,12 @@ public class StickerRender extends FilterRender {
     }
 
     /**
-     * 设置锚点组
+     * 设置显示锚点
      *
-     * @param anchorGroup
+     * @param screenAnchor
      */
-    public void setAnchorGroup(AnchorGroup anchorGroup) {
-        mAnchorGroup = anchorGroup;
+    public void setScreenAnchor(ScreenAnchor screenAnchor) {
+        mScreenAnchor = screenAnchor;
     }
 
     @Override
@@ -89,7 +89,7 @@ public class StickerRender extends FilterRender {
         GLES20.glBlendFunc(GLES20.GL_ONE, GLES20.GL_ONE_MINUS_SRC_ALPHA);
 
         for (ComponentRender componentRender : mComponentRenders) {
-            componentRender.setAnchorGroup(mAnchorGroup);
+            componentRender.setScreenAnchor(mScreenAnchor);
             componentRender.updateRenderVertices(getWidth(), getHeight());
             componentRender.onDraw(mTextureHandle, mPositionHandle, mTextureCoordHandle, mTextureVertices[2]);
         }

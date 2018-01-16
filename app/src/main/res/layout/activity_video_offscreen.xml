@@ -10,8 +10,15 @@
         android:layout_centerInParent="true" />
 
     <Button
-        android:id="@+id/choose_video"
+        android:id="@+id/choose"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="选择视频" />
+        android:text="选择" />
+
+    <Button
+        android:id="@+id/rotate"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_toRightOf="@id/choose"
+        android:text="旋转" />
 </RelativeLayout>

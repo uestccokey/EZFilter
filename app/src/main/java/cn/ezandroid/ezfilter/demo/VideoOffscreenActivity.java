@@ -36,7 +36,7 @@ public class VideoOffscreenActivity extends BaseActivity {
         setContentView(R.layout.activity_video_offscreen);
         mRenderView = $(R.id.render_view);
 
-        $(R.id.choose_video).setOnClickListener(new View.OnClickListener() {
+        $(R.id.choose).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 Matisse.from(VideoOffscreenActivity.this)
@@ -49,6 +49,14 @@ public class VideoOffscreenActivity extends BaseActivity {
                         .thumbnailScale(0.85f)
                         .imageEngine(new PicassoEngine())
                         .forResult(REQUEST_CODE_CHOOSE);
+            }
+        });
+
+        $(R.id.rotate).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                mRenderView.setRotate90Degrees(mRenderView.getRotation90Degrees() + 1);
+                mRenderView.requestLayout();
             }
         });
     }

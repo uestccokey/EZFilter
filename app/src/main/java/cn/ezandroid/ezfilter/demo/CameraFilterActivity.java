@@ -29,10 +29,11 @@ import cn.ezandroid.ezfilter.environment.GLTextureView;
 import cn.ezandroid.ezfilter.environment.TextureFitView;
 import cn.ezandroid.ezfilter.extra.sticker.ComponentConvert;
 import cn.ezandroid.ezfilter.extra.sticker.StickerRender;
-import cn.ezandroid.ezfilter.extra.sticker.model.AnchorGroup;
 import cn.ezandroid.ezfilter.extra.sticker.model.AnchorPoint;
 import cn.ezandroid.ezfilter.extra.sticker.model.Component;
+import cn.ezandroid.ezfilter.extra.sticker.model.ScreenAnchor;
 import cn.ezandroid.ezfilter.extra.sticker.model.Sticker;
+import cn.ezandroid.ezfilter.extra.sticker.model.TextureAnchor;
 
 /**
  * CameraFilterActivity
@@ -229,7 +230,7 @@ public class CameraFilterActivity extends BaseActivity {
         parameters.setPreviewSize(1280, 720);
 
         // 输出分辨率设置为1280*720，质量100%
-        parameters.setPictureSize(1920, 1080);
+        parameters.setPictureSize(1280, 720);
         parameters.setJpegQuality(100);
 
         // 设置自动闪光灯
@@ -261,10 +262,12 @@ public class CameraFilterActivity extends BaseActivity {
             c0.src = "src_0";
             c0.width = 180;
             c0.height = 70;
-            AnchorGroup c0Group = new AnchorGroup();
-            c0Group.leftAnchor = new AnchorPoint(AnchorPoint.LEFT_TOP, 0, 0, 180, 70);
-            c0Group.rightAnchor = new AnchorPoint(AnchorPoint.RIGHT_TOP, 0, 0, 180, 70);
-            c0.anchorGroup = c0Group;
+            TextureAnchor c0Group = new TextureAnchor();
+            c0Group.leftAnchor = new AnchorPoint(AnchorPoint.LEFT_TOP, 0, 0);
+            c0Group.rightAnchor = new AnchorPoint(AnchorPoint.RIGHT_TOP, 0, 0);
+            c0Group.width = 180;
+            c0Group.height = 70;
+            c0.textureAnchor = c0Group;
             sticker.components.add(c0);
             ComponentConvert.convert(this, c0, "file:///android_asset/rabbit/");
         }
@@ -274,19 +277,23 @@ public class CameraFilterActivity extends BaseActivity {
             c2.src = "src_2";
             c2.width = 361;
             c2.height = 500;
-            AnchorGroup c2Group = new AnchorGroup();
-            c2Group.leftAnchor = new AnchorPoint(AnchorPoint.LEFT_TOP, 0, 0, 361, 500);
-            c2Group.rightAnchor = new AnchorPoint(AnchorPoint.RIGHT_TOP, 0, 0, 361, 500);
-            c2.anchorGroup = c2Group;
+            TextureAnchor c2Group = new TextureAnchor();
+            c2Group.leftAnchor = new AnchorPoint(AnchorPoint.LEFT_TOP, 0, 0);
+            c2Group.rightAnchor = new AnchorPoint(AnchorPoint.RIGHT_TOP, 0, 0);
+            c2Group.width = 361;
+            c2Group.height = 500;
+            c2.textureAnchor = c2Group;
             sticker.components.add(c2);
             ComponentConvert.convert(this, c2, "file:///android_asset/rabbit/");
         }
         stickerRender.setSticker(sticker);
 
-        AnchorGroup anchorGroup = new AnchorGroup();
-        anchorGroup.leftAnchor = new AnchorPoint(AnchorPoint.LEFT_TOP, 0, 0, 1080, 1920);
-        anchorGroup.rightAnchor = new AnchorPoint(AnchorPoint.RIGHT_TOP, 0, 0, 1080, 1920);
-        stickerRender.setAnchorGroup(anchorGroup);
+        ScreenAnchor anchorGroup = new ScreenAnchor();
+        anchorGroup.leftAnchor = new AnchorPoint(AnchorPoint.LEFT_TOP, 0, 0);
+        anchorGroup.rightAnchor = new AnchorPoint(AnchorPoint.RIGHT_TOP, 0, 0);
+        anchorGroup.width = 1080;
+        anchorGroup.height = 1920;
+        stickerRender.setScreenAnchor(anchorGroup);
 
         mRenderPipeline = EZFilter.input(mCamera, mCamera.getParameters().getPreviewSize())
                 .addFilter(new BWRender(this), 0.5f)

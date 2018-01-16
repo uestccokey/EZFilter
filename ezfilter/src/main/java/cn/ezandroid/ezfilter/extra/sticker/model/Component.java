@@ -22,8 +22,8 @@ public class Component implements Serializable {
     // 持续时间
     public int duration;
 
-    // 锚点组
-    public AnchorGroup anchorGroup;
+    // 纹理锚点
+    public TextureAnchor textureAnchor;
 
     // 素材原始宽度 为了进行多分辨率适配和节约内存，加载到内存的图片可能会比素材原始小，而锚点等的信息是根据素材原始尺寸设置的，因此这里进行记录
     public int width;

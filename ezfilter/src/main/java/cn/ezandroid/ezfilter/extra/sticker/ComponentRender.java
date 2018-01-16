@@ -11,8 +11,8 @@ import java.nio.FloatBuffer;
 
 import cn.ezandroid.ezfilter.core.cache.IBitmapCache;
 import cn.ezandroid.ezfilter.core.util.BitmapUtil;
-import cn.ezandroid.ezfilter.extra.sticker.model.AnchorGroup;
 import cn.ezandroid.ezfilter.extra.sticker.model.Component;
+import cn.ezandroid.ezfilter.extra.sticker.model.ScreenAnchor;
 
 /**
  * 贴纸组件渲染器
@@ -36,8 +36,8 @@ public class ComponentRender {
     // 渲染顶点坐标
     private FloatBuffer mRenderVertices;
 
-    // 锚点组
-    private AnchorGroup mAnchorGroup;
+    // 显示锚点
+    private ScreenAnchor mScreenAnchor;
 
     public ComponentRender(Context context, Component component) {
         mContext = context;
@@ -59,12 +59,12 @@ public class ComponentRender {
     }
 
     /**
-     * 设置锚点组
+     * 设置显示锚点
      *
-     * @param anchorGroup
+     * @param screenAnchor
      */
-    public void setAnchorGroup(AnchorGroup anchorGroup) {
-        mAnchorGroup = anchorGroup;
+    public void setScreenAnchor(ScreenAnchor screenAnchor) {
+        mScreenAnchor = screenAnchor;
     }
 
     /**
@@ -76,10 +76,10 @@ public class ComponentRender {
      * @param height
      */
     public void updateRenderVertices(int width, int height) {
-        PointF facePoint0 = mAnchorGroup.leftAnchor.getPointF(true);
-        PointF facePoint1 = mAnchorGroup.rightAnchor.getPointF(true);
-        PointF stickP0 = mComponent.anchorGroup.leftAnchor.getPointF(false);
-        PointF stickP1 = mComponent.anchorGroup.rightAnchor.getPointF(false);
+        PointF facePoint0 = mScreenAnchor.getLeftAnchorPoint();
+        PointF facePoint1 = mScreenAnchor.getRightAnchorPoint();
+        PointF stickP0 = mComponent.textureAnchor.getLeftAnchorPoint();
+        PointF stickP1 = mComponent.textureAnchor.getRightAnchorPoint();
 
         float w = mComponent.width;
         float h = mComponent.height;
@@ -106,7 +106,7 @@ public class ComponentRender {
 
         // 计算旋转角
         double angle;
-        if (mAnchorGroup.roll == AnchorGroup.INVALID_VALUE) {
+        if (mScreenAnchor.roll == ScreenAnchor.INVALID_VALUE) {
             // 这个旋转点在旋转角度为0时就是faceP1的坐标
             PointF beforeRotatePoint = new PointF(leftTop.x + stickP1.x, leftTop.y - stickP1.y);
             // 根据三点算旋转角度
@@ -121,7 +121,7 @@ public class ComponentRender {
                 angle = -angle;
             }
         } else {
-            angle = (180.0 - mAnchorGroup.roll) / 180.0 * 3.14;
+            angle = (180.0 - mScreenAnchor.roll) / 180.0 * 3.14;
         }
 
         // 旋转四个顶点到目标位置
