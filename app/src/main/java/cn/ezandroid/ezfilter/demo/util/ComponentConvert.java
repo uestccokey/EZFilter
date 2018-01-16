@@ -1,4 +1,4 @@
-package cn.ezandroid.ezfilter.extra.sticker;
+package cn.ezandroid.ezfilter.demo.util;
 
 import android.content.Context;
 import android.text.TextUtils;
@@ -9,6 +9,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
+import cn.ezandroid.ezfilter.core.util.NumberUtil;
 import cn.ezandroid.ezfilter.core.util.Path;
 import cn.ezandroid.ezfilter.extra.sticker.model.Component;
 
@@ -80,18 +81,8 @@ public class ComponentConvert {
             if (!TextUtils.isDigitsOnly(num2)) {
                 num2 = num2.substring(num2.length() - 2);
             }
-            return parseInt(num1) - parseInt(num2);
+            return NumberUtil.parseInt(num1) - NumberUtil.parseInt(num2);
         });
         component.resources = paths;
-    }
-
-    private static Integer parseInt(String string) {
-        if (TextUtils.isEmpty(string)) return 0;
-        try {
-            return Integer.parseInt(string);
-        } catch (NumberFormatException e) {
-            e.printStackTrace();
-        }
-        return 0;
     }
 }

@@ -13,9 +13,6 @@ public class Component implements Serializable {
 
     private static final long serialVersionUID = 1L;
 
-    // 组件类型
-    public int type;
-
     // 素材文件夹
     public String src;
 
@@ -34,8 +31,8 @@ public class Component implements Serializable {
     @Override
     public String toString() {
         return "Component{" +
-                "type=" + type +
-                ", src='" + src + '\'' +
+                "src='" + src + '\'' +
+                ", length=" + length +
                 '}';
     }
 
