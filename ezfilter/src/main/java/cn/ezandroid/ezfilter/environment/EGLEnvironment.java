@@ -22,7 +22,7 @@ public class EGLEnvironment {
 
     private static final int EGL_RECORDABLE_ANDROID = 0x3142;
 
-    private EGLConfig mEglConfig = null;
+    private EGLConfig mEglConfig;
     private EGLContext mEglContext = EGL14.EGL_NO_CONTEXT;
     private EGLDisplay mEglDisplay = EGL14.EGL_NO_DISPLAY;
     private EGLContext mDefaultContext = EGL14.EGL_NO_CONTEXT;

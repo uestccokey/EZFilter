@@ -54,7 +54,7 @@ public class GroupFilterRender extends FilterRender {
         if (mTerminalFilters.contains(source)) {
             setWidth(source.getWidth());
             setHeight(source.getHeight());
-            synchronized (getLock()) {
+            synchronized (getTargets()) {
                 for (OnTextureAcceptableListener target : getTargets()) {
                     target.onTextureAcceptable(texture, this);
                 }

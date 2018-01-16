@@ -16,6 +16,7 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.util.ArrayList;
 
 import cn.ezandroid.ezfilter.EZFilter;
 import cn.ezandroid.ezfilter.core.PhotoTakenCallback;
@@ -23,8 +24,16 @@ import cn.ezandroid.ezfilter.core.RenderPipeline;
 import cn.ezandroid.ezfilter.core.output.BitmapOutput;
 import cn.ezandroid.ezfilter.demo.render.BWRender;
 import cn.ezandroid.ezfilter.demo.render.WobbleRender;
+import cn.ezandroid.ezfilter.demo.util.ComponentConvert;
 import cn.ezandroid.ezfilter.environment.FitViewHelper;
+import cn.ezandroid.ezfilter.environment.GLTextureView;
 import cn.ezandroid.ezfilter.environment.TextureFitView;
+import cn.ezandroid.ezfilter.extra.sticker.StickerRender;
+import cn.ezandroid.ezfilter.extra.sticker.model.AnchorPoint;
+import cn.ezandroid.ezfilter.extra.sticker.model.Component;
+import cn.ezandroid.ezfilter.extra.sticker.model.ScreenAnchor;
+import cn.ezandroid.ezfilter.extra.sticker.model.Sticker;
+import cn.ezandroid.ezfilter.extra.sticker.model.TextureAnchor;
 
 /**
  * CameraFilterActivity
@@ -88,6 +97,7 @@ public class CameraFilterActivity extends BaseActivity {
         mRecordButton = $(R.id.record);
 
         mRenderView.setScaleType(FitViewHelper.ScaleType.CENTER_CROP);
+        mRenderView.setRenderMode(GLTextureView.RENDERMODE_CONTINUOUSLY);
 
         mOrientationEventListener = new MyOrientationEventListener(this);
 
@@ -216,8 +226,11 @@ public class CameraFilterActivity extends BaseActivity {
             mCamera.setDisplayOrientation(0);
         }
 
-        // 输出分辨率设置为1920*1080，质量100%
-        parameters.setPictureSize(1920, 1080);
+        // 预览分辨率设置为1280*720
+        parameters.setPreviewSize(1280, 720);
+
+        // 输出分辨率设置为1280*720，质量100%
+        parameters.setPictureSize(1280, 720);
         parameters.setJpegQuality(100);
 
         // 设置自动闪光灯
@@ -239,9 +252,53 @@ public class CameraFilterActivity extends BaseActivity {
         mCamera = Camera.open(id);
         setCameraParameters();
 
+        // 测试数据
+        StickerRender stickerRender = new StickerRender(this);
+        Sticker sticker = new Sticker();
+        sticker.components = new ArrayList<>();
+        {
+            Component c0 = new Component();
+            c0.duration = 1000;
+            c0.src = "src_0";
+            c0.width = 180;
+            c0.height = 70;
+            TextureAnchor c0Group = new TextureAnchor();
+            c0Group.leftAnchor = new AnchorPoint(AnchorPoint.LEFT_TOP, 0, 0);
+            c0Group.rightAnchor = new AnchorPoint(AnchorPoint.RIGHT_TOP, 0, 0);
+            c0Group.width = 180;
+            c0Group.height = 70;
+            c0.textureAnchor = c0Group;
+            sticker.components.add(c0);
+            ComponentConvert.convert(this, c0, "file:///android_asset/rabbit/");
+        }
+        {
+            Component c2 = new Component();
+            c2.duration = 1000;
+            c2.src = "src_2";
+            c2.width = 361;
+            c2.height = 500;
+            TextureAnchor c2Group = new TextureAnchor();
+            c2Group.leftAnchor = new AnchorPoint(AnchorPoint.LEFT_TOP, 0, 0);
+            c2Group.rightAnchor = new AnchorPoint(AnchorPoint.RIGHT_TOP, 0, 0);
+            c2Group.width = 361;
+            c2Group.height = 500;
+            c2.textureAnchor = c2Group;
+            sticker.components.add(c2);
+            ComponentConvert.convert(this, c2, "file:///android_asset/rabbit/");
+        }
+        stickerRender.setSticker(sticker);
+
+        ScreenAnchor anchorGroup = new ScreenAnchor();
+        anchorGroup.leftAnchor = new AnchorPoint(AnchorPoint.LEFT_TOP, 0, 0);
+        anchorGroup.rightAnchor = new AnchorPoint(AnchorPoint.RIGHT_TOP, 0, 0);
+        anchorGroup.width = 1080;
+        anchorGroup.height = 1920;
+        stickerRender.setScreenAnchor(anchorGroup);
+
         mRenderPipeline = EZFilter.input(mCamera, mCamera.getParameters().getPreviewSize())
                 .addFilter(new BWRender(this), 0.5f)
                 .addFilter(new WobbleRender())
+                .addFilter(stickerRender)
                 .enableRecord("/sdcard/recordCamera.mp4", true, true) // 支持录制为视频
                 .into(mRenderView);
     }

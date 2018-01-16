@@ -20,12 +20,10 @@ public class FBORender extends AbstractRender {
     protected int[] mTextureOut;
     protected int[] mDepthRenderBuffer;
 
-    protected List<OnTextureAcceptableListener> mTargets;
-    private final Object mListLock = new Object();
+    protected final List<OnTextureAcceptableListener> mTargets = new ArrayList<>();
 
     public FBORender() {
         super();
-        mTargets = new ArrayList<>();
     }
 
     @Override
@@ -61,7 +59,7 @@ public class FBORender extends AbstractRender {
 
         GLES20.glBindFramebuffer(GLES20.GL_FRAMEBUFFER, 0);
 
-        synchronized (mListLock) {
+        synchronized (mTargets) {
             for (OnTextureAcceptableListener target : mTargets) {
                 if (null != target && null != mTextureOut && mTextureOut.length > 0) {
                     target.onTextureAcceptable(mTextureOut[0], this);
@@ -75,10 +73,6 @@ public class FBORender extends AbstractRender {
      */
     protected void onDraw() {
         super.drawFrame();
-    }
-
-    public Object getLock() {
-        return mListLock;
     }
 
     @Override
@@ -137,8 +131,8 @@ public class FBORender extends AbstractRender {
         return mTargets;
     }
 
-    public synchronized void addTarget(OnTextureAcceptableListener target) {
-        synchronized (mListLock) {
+    public void addTarget(OnTextureAcceptableListener target) {
+        synchronized (mTargets) {
             if (!mTargets.contains(target) && target != null) {
                 mTargets.add(target);
             }
@@ -146,13 +140,13 @@ public class FBORender extends AbstractRender {
     }
 
     public void removeTarget(OnTextureAcceptableListener target) {
-        synchronized (mListLock) {
+        synchronized (mTargets) {
             mTargets.remove(target);
         }
     }
 
     public void clearTargets() {
-        synchronized (mListLock) {
+        synchronized (mTargets) {
             mTargets.clear();
         }
     }

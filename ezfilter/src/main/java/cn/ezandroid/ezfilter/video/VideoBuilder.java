@@ -9,6 +9,7 @@ import java.util.HashMap;
 import cn.ezandroid.ezfilter.EZFilter;
 import cn.ezandroid.ezfilter.core.FBORender;
 import cn.ezandroid.ezfilter.core.FilterRender;
+import cn.ezandroid.ezfilter.core.util.NumberUtil;
 import cn.ezandroid.ezfilter.environment.IFitView;
 import cn.ezandroid.ezfilter.extra.IAdjustable;
 import cn.ezandroid.ezfilter.video.offscreen.OffscreenVideo;
@@ -16,6 +17,9 @@ import cn.ezandroid.ezfilter.video.player.IMediaPlayer;
 
 /**
  * 视频处理构造器
+ *
+ * @author like
+ * @date 2017-09-15
  */
 public class VideoBuilder extends EZFilter.Builder {
 
@@ -113,7 +117,12 @@ public class VideoBuilder extends EZFilter.Builder {
             }
             String width = metadata.extractMetadata(MediaMetadataRetriever.METADATA_KEY_VIDEO_WIDTH);
             String height = metadata.extractMetadata(MediaMetadataRetriever.METADATA_KEY_VIDEO_HEIGHT);
-            return Integer.parseInt(width) * 1.0f / Integer.parseInt(height);
+            String rotation = metadata.extractMetadata(MediaMetadataRetriever.METADATA_KEY_VIDEO_ROTATION);
+            if ((NumberUtil.parseInt(rotation) / 90) % 2 != 0) {
+                return NumberUtil.parseInt(height) * 1.0f / NumberUtil.parseInt(width);
+            } else {
+                return NumberUtil.parseInt(width) * 1.0f / NumberUtil.parseInt(height);
+            }
         } catch (Exception e) {
             e.printStackTrace();
             return 1;

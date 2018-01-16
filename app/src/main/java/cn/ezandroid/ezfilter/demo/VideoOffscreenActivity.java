@@ -36,7 +36,7 @@ public class VideoOffscreenActivity extends BaseActivity {
         setContentView(R.layout.activity_video_offscreen);
         mRenderView = $(R.id.render_view);
 
-        $(R.id.choose_video).setOnClickListener(new View.OnClickListener() {
+        $(R.id.choose).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 Matisse.from(VideoOffscreenActivity.this)
@@ -51,6 +51,14 @@ public class VideoOffscreenActivity extends BaseActivity {
                         .forResult(REQUEST_CODE_CHOOSE);
             }
         });
+
+        $(R.id.rotate).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                mRenderView.setRotate90Degrees(mRenderView.getRotation90Degrees() + 1);
+                mRenderView.requestLayout();
+            }
+        });
     }
 
     @Override
@@ -62,7 +70,7 @@ public class VideoOffscreenActivity extends BaseActivity {
                 new Thread() {
                     public void run() {
                         final String output = "/sdcard/render.mp4";
-                        // save是耗时操作，需要在异步线程调用
+                        // output是耗时操作，需要在异步线程调用
                         EZFilter.input(Uri.parse(paths.get(0)))
                                 .addFilter(new BWRender(VideoOffscreenActivity.this))
                                 .addFilter(new WobbleRender())
@@ -78,6 +86,9 @@ public class VideoOffscreenActivity extends BaseActivity {
                         });
                     }
                 }.start();
+//                EZFilter.input(Uri.parse(paths.get(0)))
+//                        .setLoop(true)
+//                        .into(mRenderView);
             }
         }
     }

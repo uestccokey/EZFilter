@@ -56,8 +56,7 @@ public class MediaUtil {
         // FIXME 对齐后可能有几个像素的拉伸，暂时没有更好的方案
         MediaFormat format = MediaFormat.createVideoFormat(MIME_TYPE_MP4, align16(w), align16(h));
         // 数据来源
-        format.setInteger(MediaFormat.KEY_COLOR_FORMAT,
-                MediaCodecInfo.CodecCapabilities.COLOR_FormatSurface);
+        format.setInteger(MediaFormat.KEY_COLOR_FORMAT, MediaCodecInfo.CodecCapabilities.COLOR_FormatSurface);
         // 视频bit率
         format.setInteger(MediaFormat.KEY_BIT_RATE, (int) (0.2 * FRAME_RATE * w * h));
         // 帧率
@@ -91,7 +90,7 @@ public class MediaUtil {
      * 读取多媒体第一个视频轨和音频轨
      *
      * @param extractor
-     * @return null, if has no video track and audio track.
+     * @return
      */
     public static Track getFirstTrack(MediaExtractor extractor) {
         Track track = new Track();

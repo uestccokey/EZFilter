@@ -8,7 +8,6 @@ import android.opengl.GLUtils;
 
 import java.io.IOException;
 import java.io.InputStream;
-import java.util.Locale;
 
 /**
  * 图片工具类
@@ -17,48 +16,6 @@ import java.util.Locale;
  * @date 2017-08-10
  */
 public class BitmapUtil {
-
-    public enum Scheme {
-        FILE("file://"), // file:// + /sdcard/demo.mp4
-        ASSETS("file:///android_asset/"), // file:///android_asset/ + demo.mp4
-        DRAWABLE("drawable://"), // drawable:// + 3243342
-        UNKNOWN("");
-
-        private String mScheme;
-
-        private Scheme(String scheme) {
-            this.mScheme = scheme;
-        }
-
-        public static Scheme ofUri(String uri) {
-            if (uri != null) {
-                Scheme[] var1 = values();
-                for (Scheme s : var1) {
-                    if (s.belongsTo(uri)) {
-                        return s;
-                    }
-                }
-            }
-
-            return UNKNOWN;
-        }
-
-        private boolean belongsTo(String uri) {
-            return uri.toLowerCase(Locale.US).startsWith(this.mScheme);
-        }
-
-        public String wrap(String path) {
-            return this.mScheme + path;
-        }
-
-        public String crop(String uri) {
-            if (!this.belongsTo(uri)) {
-                throw new IllegalArgumentException(String.format("URI [%1$s] doesn't have expected mScheme [%2$s]", new Object[]{uri, this.mScheme}));
-            } else {
-                return uri.substring(this.mScheme.length());
-            }
-        }
-    }
 
     /**
      * 加载图片
@@ -75,16 +32,16 @@ public class BitmapUtil {
             options.inDither = false;
             options.inInputShareable = true;
             options.inPurgeable = true;
-            if (Scheme.ASSETS.belongsTo(path)) {
-                in = context.getAssets().open(Scheme.ASSETS.crop(path));
+            if (Path.ASSETS.belongsTo(path)) {
+                in = context.getAssets().open(Path.ASSETS.crop(path));
                 if (in != null) {
                     return BitmapFactory.decodeStream(in, null, options);
                 }
-            } else if (Scheme.FILE.belongsTo(path)) {
-                return BitmapFactory.decodeFile(Scheme.FILE.crop(path), options);
-            } else if (Scheme.DRAWABLE.belongsTo(path)) {
+            } else if (Path.FILE.belongsTo(path)) {
+                return BitmapFactory.decodeFile(Path.FILE.crop(path), options);
+            } else if (Path.DRAWABLE.belongsTo(path)) {
                 return BitmapFactory.decodeResource(context.getResources(),
-                        Integer.parseInt(Scheme.DRAWABLE.crop(path)), options);
+                        Integer.parseInt(Path.DRAWABLE.crop(path)), options);
             } else {
                 return BitmapFactory.decodeFile(path, options);
             }
@@ -116,16 +73,16 @@ public class BitmapUtil {
         try {
             BitmapFactory.Options options = new BitmapFactory.Options();
             options.inJustDecodeBounds = true;
-            if (Scheme.ASSETS.belongsTo(path)) {
-                in = context.getAssets().open(Scheme.ASSETS.crop(path));
+            if (Path.ASSETS.belongsTo(path)) {
+                in = context.getAssets().open(Path.ASSETS.crop(path));
                 if (in != null) {
                     BitmapFactory.decodeStream(in, null, options);
                 }
-            } else if (Scheme.FILE.belongsTo(path)) {
-                BitmapFactory.decodeFile(Scheme.FILE.crop(path), options);
-            } else if (Scheme.DRAWABLE.belongsTo(path)) {
+            } else if (Path.FILE.belongsTo(path)) {
+                BitmapFactory.decodeFile(Path.FILE.crop(path), options);
+            } else if (Path.DRAWABLE.belongsTo(path)) {
                 BitmapFactory.decodeResource(context.getResources(),
-                        Integer.parseInt(Scheme.DRAWABLE.crop(path)), options);
+                        Integer.parseInt(Path.DRAWABLE.crop(path)), options);
             } else {
                 BitmapFactory.decodeFile(path, options);
             }
@@ -137,16 +94,16 @@ public class BitmapUtil {
             }
             options.inJustDecodeBounds = false;
             options.inSampleSize = sampleSize;
-            if (Scheme.ASSETS.belongsTo(path)) {
-                in = context.getAssets().open(Scheme.ASSETS.crop(path));
+            if (Path.ASSETS.belongsTo(path)) {
+                in = context.getAssets().open(Path.ASSETS.crop(path));
                 if (in != null) {
                     return BitmapFactory.decodeStream(in, null, options);
                 }
-            } else if (Scheme.FILE.belongsTo(path)) {
-                return BitmapFactory.decodeFile(Scheme.FILE.crop(path), options);
-            } else if (Scheme.DRAWABLE.belongsTo(path)) {
+            } else if (Path.FILE.belongsTo(path)) {
+                return BitmapFactory.decodeFile(Path.FILE.crop(path), options);
+            } else if (Path.DRAWABLE.belongsTo(path)) {
                 return BitmapFactory.decodeResource(context.getResources(),
-                        Integer.parseInt(Scheme.DRAWABLE.crop(path)), options);
+                        Integer.parseInt(Path.DRAWABLE.crop(path)), options);
             } else {
                 return BitmapFactory.decodeFile(path, options);
             }

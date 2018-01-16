@@ -70,7 +70,7 @@ public abstract class AbstractRender {
     private final Queue<Runnable> mRunOnDraw;
     private final Queue<Runnable> mRunOnDrawEnd;
 
-    private int mFps;
+    protected int mFps;
     private long mLastTime;
     private int mFrameCount;
 
@@ -266,7 +266,7 @@ public abstract class AbstractRender {
      */
     protected void onDrawFrame() {
         if (L.LOG_RENDER_DRAW) {
-            Log.e("AbstractRender", this + " onDrawFrame:" + mWidth + "x" + mHeight + " " + mCurrentRotation);
+            Log.e("AbstractRender", this + " onDrawFrame:" + mWidth + "x" + mHeight + " " + mCurrentRotation + " Fps:" + mFps);
         }
         if (!mInitialized) {
             initGLContext();

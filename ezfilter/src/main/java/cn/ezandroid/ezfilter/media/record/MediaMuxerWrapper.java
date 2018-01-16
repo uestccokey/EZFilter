@@ -17,7 +17,7 @@ public class MediaMuxerWrapper {
     private String mOutputPath;
     private final MediaMuxer mMediaMuxer;
     private int mEncoderCount, mStartedCount;
-    private boolean mIsStarted;
+    private volatile boolean mIsStarted;
     private MediaEncoder mVideoEncoder, mAudioEncoder;
 
     /**

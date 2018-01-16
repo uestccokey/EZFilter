@@ -10,6 +10,9 @@ import cn.ezandroid.ezfilter.extra.IAdjustable;
 
 /**
  * 摄像头处理构造器
+ *
+ * @author like
+ * @date 2017-09-15
  */
 public class CameraBuilder extends EZFilter.Builder {
 
