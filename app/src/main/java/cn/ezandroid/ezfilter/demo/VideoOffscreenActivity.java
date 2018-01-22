@@ -86,9 +86,6 @@ public class VideoOffscreenActivity extends BaseActivity {
                         });
                     }
                 }.start();
-//                EZFilter.input(Uri.parse(paths.get(0)))
-//                        .setLoop(true)
-//                        .into(mRenderView);
             }
         }
     }

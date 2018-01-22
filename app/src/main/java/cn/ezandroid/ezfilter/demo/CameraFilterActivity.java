@@ -17,6 +17,7 @@ import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.List;
 
 import cn.ezandroid.ezfilter.EZFilter;
 import cn.ezandroid.ezfilter.core.PhotoTakenCallback;
@@ -234,10 +235,16 @@ public class CameraFilterActivity extends BaseActivity {
         parameters.setJpegQuality(100);
 
         // 设置自动闪光灯
-        parameters.setFlashMode(Camera.Parameters.FLASH_MODE_AUTO);
+        List<String> flashModes = parameters.getSupportedFlashModes();
+        if (flashModes != null && flashModes.contains(Camera.Parameters.FLASH_MODE_AUTO)) {
+            parameters.setFocusMode(Camera.Parameters.FLASH_MODE_AUTO);
+        }
 
         // 设置自动对焦
-        parameters.setFocusMode(Camera.Parameters.FOCUS_MODE_CONTINUOUS_PICTURE);
+        List<String> focusModes = parameters.getSupportedFocusModes();
+        if (focusModes != null && focusModes.contains(Camera.Parameters.FOCUS_MODE_CONTINUOUS_PICTURE)) {
+            parameters.setFocusMode(Camera.Parameters.FOCUS_MODE_CONTINUOUS_PICTURE);
+        }
 
         mCamera.setParameters(parameters);
     }

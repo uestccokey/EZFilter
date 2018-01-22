@@ -38,13 +38,16 @@
         </activity>
         <activity
             android:name=".ViewFilterActivity"
-            android:screenOrientation="portrait" />
+            android:screenOrientation="portrait"
+            android:theme="@style/AppTheme.Fullscreen" />
         <activity
             android:name=".ImageFilterActivity"
-            android:screenOrientation="portrait" />
+            android:screenOrientation="portrait"
+            android:theme="@style/AppTheme.Fullscreen" />
         <activity
             android:name=".VideoFilterActivity"
-            android:screenOrientation="portrait" />
+            android:screenOrientation="portrait"
+            android:theme="@style/AppTheme.Fullscreen" />
         <activity
             android:name=".CameraFilterActivity"
             android:screenOrientation="portrait"
@@ -56,7 +59,8 @@
 
         <activity
             android:name=".VideoOffscreenActivity"
-            android:screenOrientation="portrait" />
+            android:screenOrientation="portrait"
+            android:theme="@style/AppTheme.Fullscreen" />
     </application>
 
 </manifest>
