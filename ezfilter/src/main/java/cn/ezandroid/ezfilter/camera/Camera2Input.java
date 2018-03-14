@@ -185,7 +185,7 @@ public class Camera2Input extends FBORender implements SurfaceTexture.OnFrameAva
             e.printStackTrace();
         }
 
-        setRenderSize(mPreviewSize.getHeight(), mPreviewSize.getWidth());
+//        setRenderSize(mPreviewSize.getHeight(), mPreviewSize.getWidth());
     }
 
     private CameraCaptureSession.StateCallback mSessionPreviewStateCallback = new

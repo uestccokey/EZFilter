@@ -114,7 +114,7 @@ public class CameraInput extends FBORender implements SurfaceTexture.OnFrameAvai
             e.printStackTrace();
         }
 
-        setRenderSize(mPreviewSize.height, mPreviewSize.width);
+//        setRenderSize(mPreviewSize.height, mPreviewSize.width);
     }
 
     @Override
