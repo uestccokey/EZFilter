@@ -64,6 +64,18 @@ public class MediaMuxerWrapper {
         mAudioEncoder = null;
     }
 
+    public synchronized boolean isRecording() {
+        boolean audioRecording = true;
+        if (mAudioEncoder != null) {
+            audioRecording = mAudioEncoder.mIsCapturing;
+        }
+        boolean videoRecording = false;
+        if (mVideoEncoder != null) {
+            videoRecording = mVideoEncoder.mIsCapturing;
+        }
+        return audioRecording && videoRecording;
+    }
+
     public synchronized boolean isStarted() {
         return mIsStarted;
     }
