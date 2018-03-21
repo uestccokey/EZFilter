@@ -106,7 +106,7 @@ public class RecordableEndPointRender extends EndPointRender implements ISupport
      * @return
      */
     public boolean isRecording() {
-        return mMuxerWrapper != null && mMuxerWrapper.isRecording();
+        return mMuxerWrapper != null && mMuxerWrapper.isStarted();
     }
 
     /**
@@ -134,7 +134,7 @@ public class RecordableEndPointRender extends EndPointRender implements ISupport
     public void stopRecording() {
         if (mMuxerWrapper != null) {
             mMuxerWrapper.stopRecording();
-            mMuxerWrapper = null;
+//            mMuxerWrapper = null;
         }
     }
 
