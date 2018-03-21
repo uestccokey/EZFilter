@@ -199,6 +199,9 @@ public class MediaAudioEncoder extends MediaEncoder {
                             }
                         }
                     } finally {
+                        if (mAudioExtraEncoder != null) {
+                            mAudioExtraEncoder.release();
+                        }
                         audioRecord.release();
                     }
                 } else {

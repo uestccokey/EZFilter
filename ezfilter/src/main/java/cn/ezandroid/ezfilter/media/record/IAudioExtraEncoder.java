@@ -13,4 +13,6 @@ public interface IAudioExtraEncoder {
     void setup(int channel, int sampleRate, int bytesPerSample);
 
     ByteBuffer encode(ByteBuffer buffer);
+
+    void release();
 }
