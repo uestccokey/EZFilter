@@ -20,6 +20,8 @@ public class MediaMuxerWrapper {
     private volatile boolean mIsStarted;
     private MediaEncoder mVideoEncoder, mAudioEncoder;
 
+    private IRecordListener mRecordListener;
+
     /**
      * @param outPath 视频输出路径
      * @throws IOException
@@ -29,6 +31,15 @@ public class MediaMuxerWrapper {
         mMediaMuxer = new MediaMuxer(mOutputPath, MediaMuxer.OutputFormat.MUXER_OUTPUT_MPEG_4);
         mEncoderCount = mStartedCount = 0;
         mIsStarted = false;
+    }
+
+    /**
+     * 设置视频录制监听器
+     *
+     * @param listener
+     */
+    public void setRecordListener(IRecordListener listener) {
+        mRecordListener = listener;
     }
 
     public String getOutputPath() {
@@ -51,6 +62,9 @@ public class MediaMuxerWrapper {
         if (mAudioEncoder != null) {
             mAudioEncoder.startRecording();
         }
+        if (mRecordListener != null) {
+            mRecordListener.onStart();
+        }
     }
 
     public void stopRecording() {
@@ -62,6 +76,9 @@ public class MediaMuxerWrapper {
             mAudioEncoder.stopRecording();
         }
         mAudioEncoder = null;
+        if (mRecordListener != null) {
+            mRecordListener.onStop();
+        }
     }
 
     public synchronized boolean isStarted() {
@@ -101,6 +118,10 @@ public class MediaMuxerWrapper {
             mMediaMuxer.stop();
             mMediaMuxer.release();
             mIsStarted = false;
+
+            if (mRecordListener != null) {
+                mRecordListener.onFinish();
+            }
         }
     }
 

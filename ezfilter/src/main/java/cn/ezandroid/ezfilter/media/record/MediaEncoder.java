@@ -188,16 +188,16 @@ public abstract class MediaEncoder implements Runnable {
                 if (buffer != null) {
                     inputBuffer.put(buffer);
                 }
-                if (length <= 0) {
-                    // send EOS
-                    mIsEOS = true;
-                    mMediaCodec.queueInputBuffer(inputBufferIndex, 0, 0,
-                            presentationTimeUs, MediaCodec.BUFFER_FLAG_END_OF_STREAM);
-                    break;
-                } else {
-                    mMediaCodec.queueInputBuffer(inputBufferIndex, 0, length,
-                            presentationTimeUs, 0);
-                }
+//                if (length <= 0) {
+//                    // send EOS
+//                    mIsEOS = true;
+//                    mMediaCodec.queueInputBuffer(inputBufferIndex, 0, 0,
+//                            presentationTimeUs, MediaCodec.BUFFER_FLAG_END_OF_STREAM);
+//                    break;
+//                } else {
+                mMediaCodec.queueInputBuffer(inputBufferIndex, 0, length,
+                        presentationTimeUs, 0);
+//                }
                 break;
             } else if (inputBufferIndex == MediaCodec.INFO_TRY_AGAIN_LATER) {
                 // wait for MediaCodec encoder is ready to encode

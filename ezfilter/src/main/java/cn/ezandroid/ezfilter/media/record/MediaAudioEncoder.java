@@ -27,8 +27,16 @@ public class MediaAudioEncoder extends MediaEncoder {
 
     private AudioThread mAudioThread;
 
+    private IAudioExtraEncoder mAudioExtraEncoder;
+
+    private int mSamplingRate = SAMPLE_RATE;
+
     public MediaAudioEncoder(MediaMuxerWrapper muxer, MediaEncoderListener listener) {
         super(muxer, listener);
+    }
+
+    public void setAudioExtraEncoder(IAudioExtraEncoder encoder) {
+        mAudioExtraEncoder = encoder;
     }
 
     @Override
@@ -106,6 +114,7 @@ public class MediaAudioEncoder extends MediaEncoder {
                                 for (int source : AUDIO_SOURCES) {
                                     AudioRecord recorder = new AudioRecord(source, rate, config, format, bufferSize * 4);
                                     if (recorder.getState() == AudioRecord.STATE_INITIALIZED) {
+                                        mSamplingRate = rate;
                                         return recorder;
                                     }
                                 }
@@ -117,6 +126,38 @@ public class MediaAudioEncoder extends MediaEncoder {
                 }
             }
             return null;
+        }
+
+        private int getChannels(int channelConfig) {
+            int channels;
+            switch (channelConfig) {
+                case AudioFormat.CHANNEL_IN_MONO:
+                    channels = 1;
+                    break;
+                case AudioFormat.CHANNEL_IN_STEREO:
+                    channels = 2;
+                    break;
+                default:
+                    channels = 2;
+                    break;
+            }
+            return channels;
+        }
+
+        private int getBitsPerSample(int audioFormat) {
+            int bitsPerSample;
+            switch (audioFormat) {
+                case AudioFormat.ENCODING_PCM_16BIT:
+                    bitsPerSample = 16;
+                    break;
+                case AudioFormat.ENCODING_PCM_8BIT:
+                    bitsPerSample = 8;
+                    break;
+                default:
+                    bitsPerSample = 16;
+                    break;
+            }
+            return bitsPerSample;
         }
 
         @Override
@@ -131,6 +172,10 @@ public class MediaAudioEncoder extends MediaEncoder {
                             int readBytes;
                             audioRecord.startRecording();
                             try {
+                                if (mAudioExtraEncoder != null) {
+                                    mAudioExtraEncoder.setup(getChannels(audioRecord.getChannelConfiguration()),
+                                            mSamplingRate, getBitsPerSample(audioRecord.getAudioFormat()) / 8);
+                                }
                                 for (; mIsCapturing && !mRequestStop && !mIsEOS; ) {
                                     // read audio data from internal mic
                                     buf.clear();
@@ -139,7 +184,12 @@ public class MediaAudioEncoder extends MediaEncoder {
                                         // set audio data to encoder
                                         buf.position(readBytes);
                                         buf.flip();
-                                        encode(buf, readBytes, getPTSUs());
+                                        if (mAudioExtraEncoder != null) {
+                                            ByteBuffer buffer = mAudioExtraEncoder.encode(buf);
+                                            encode(buffer, buffer.hasArray() ? buffer.array().length : buffer.remaining(), getPTSUs());
+                                        } else {
+                                            encode(buf, readBytes, getPTSUs());
+                                        }
                                         frameAvailableSoon();
                                     }
                                 }

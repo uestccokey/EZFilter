@@ -22,6 +22,10 @@ public class RecordableEndPointRender extends EndPointRender implements ISupport
 
     private String mOutputPath;
 
+    private IRecordListener mRecordListener;
+
+    private IAudioExtraEncoder mAudioExtraEncoder;
+
     private final MediaEncoder.MediaEncoderListener mMediaEncoderListener =
             new MediaEncoder.MediaEncoderListener() {
                 @Override
@@ -57,6 +61,24 @@ public class RecordableEndPointRender extends EndPointRender implements ISupport
                 }
             }
         }
+    }
+
+    /**
+     * 设置视频录制监听器
+     *
+     * @param listener
+     */
+    public void setRecordListener(IRecordListener listener) {
+        mRecordListener = listener;
+    }
+
+    /**
+     * 设置音频额外编码器
+     *
+     * @param encoder
+     */
+    public void setAudioExtraEncoder(IAudioExtraEncoder encoder) {
+        mAudioExtraEncoder = encoder;
     }
 
     /**
@@ -119,8 +141,10 @@ public class RecordableEndPointRender extends EndPointRender implements ISupport
                 new MediaVideoEncoder(mMuxerWrapper, mMediaEncoderListener, getWidth(), getHeight());
             }
             if (mRecordAudio) {
-                new MediaAudioEncoder(mMuxerWrapper, mMediaEncoderListener);
+                MediaAudioEncoder audioEncoder = new MediaAudioEncoder(mMuxerWrapper, mMediaEncoderListener);
+                audioEncoder.setAudioExtraEncoder(mAudioExtraEncoder);
             }
+            mMuxerWrapper.setRecordListener(mRecordListener);
             mMuxerWrapper.prepare();
             mMuxerWrapper.startRecording();
         } catch (final IOException e) {

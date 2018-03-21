@@ -27,6 +27,9 @@ public class MediaUtil {
     public static final String MIME_TYPE_AAC = "audio/mp4a-latm";
     public static final int AUDIO_BIT_RATE = 96000;
 
+    // 统一配置一个buffer size，避免缓冲区大小不一致导致的各种问题
+    public static final int BUFFER_SIZE = 16 * 1024;
+
     /**
      * 进行整除16对齐
      * <p>
@@ -83,6 +86,8 @@ public class MediaUtil {
         format.setInteger(MediaFormat.KEY_CHANNEL_COUNT, channelCount);
         // 音频bit率
         format.setInteger(MediaFormat.KEY_BIT_RATE, AUDIO_BIT_RATE);
+        // 统一设置最大缓冲容量，否则在音频转码时因为大小不一致会报错
+        format.setInteger(MediaFormat.KEY_MAX_INPUT_SIZE, BUFFER_SIZE);
         return format;
     }
 
