@@ -160,11 +160,7 @@ public abstract class MediaEncoder implements Runnable {
         if (mMuxerStarted) {
             final MediaMuxerWrapper muxer = mWeakMuxer != null ? mWeakMuxer.get() : null;
             if (muxer != null) {
-                try {
-                    muxer.stop();
-                } catch (final Exception e) {
-                    Log.e(TAG, "failed stopping muxer", e);
-                }
+                muxer.stop();
             }
         }
         mBufferInfo = null;

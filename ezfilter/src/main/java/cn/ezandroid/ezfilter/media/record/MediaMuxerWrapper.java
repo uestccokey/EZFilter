@@ -115,8 +115,12 @@ public class MediaMuxerWrapper {
     synchronized void stop() {
         mStartedCount--;
         if ((mEncoderCount > 0) && (mStartedCount <= 0)) {
-            mMediaMuxer.stop();
-            mMediaMuxer.release();
+            try {
+                mMediaMuxer.stop();
+                mMediaMuxer.release();
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
             mIsStarted = false;
 
             if (mRecordListener != null) {
