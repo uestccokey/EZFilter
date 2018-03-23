@@ -397,7 +397,7 @@ public class RenderPipeline implements Renderer {
 
     public synchronized void removeOutput(FBORender filterRender, BufferOutput bufferOutput) {
         synchronized (mOutputs) {
-            if (filterRender != null && mFilterRenders.contains(filterRender)
+            if (filterRender != null && mOutputs.contains(bufferOutput)
                     && mStartPointRender != null && mEndPointRender != null) {
                 boolean isRenders = isRendering();
                 setRendering(false); // 暂时停止渲染，构建渲染链完成后再进行渲染
@@ -415,9 +415,10 @@ public class RenderPipeline implements Renderer {
     /**
      * 添加滤镜
      *
+     * @param index
      * @param filterRender
      */
-    public synchronized void addFilterRender(FilterRender filterRender) {
+    public synchronized void addFilterRender(int index, FilterRender filterRender) {
         synchronized (mFilterRenders) {
             if (filterRender != null && !mFilterRenders.contains(filterRender)
                     && mStartPointRender != null && mEndPointRender != null) {
@@ -433,16 +434,45 @@ public class RenderPipeline implements Renderer {
                     mStartPointRender.addTarget(filterRender);
                     filterRender.addTarget(mEndPointRender);
                 } else {
-                    FilterRender lastFilterRender = mFilterRenders.get(mFilterRenders.size() - 1);
-                    lastFilterRender.removeTarget(mEndPointRender);
-                    lastFilterRender.addTarget(filterRender);
-                    filterRender.addTarget(mEndPointRender);
+                    if (index == 0) {
+                        // 添加到滤镜列表开头
+                        FilterRender nextRender = mFilterRenders.get(0);
+                        mStartPointRender.removeTarget(nextRender);
+                        filterRender.addTarget(nextRender);
+                        mStartPointRender.addTarget(filterRender);
+                    } else if (index > mFilterRenders.size() - 1) {
+                        // 添加到滤镜列表最后
+                        FilterRender lastFilterRender = mFilterRenders.get(mFilterRenders.size() - 1);
+                        lastFilterRender.removeTarget(mEndPointRender);
+                        lastFilterRender.addTarget(filterRender);
+                        filterRender.addTarget(mEndPointRender);
+                    } else {
+                        // 添加到滤镜列表中间
+                        FilterRender prevFilterRender = mFilterRenders.get(index - 1);
+                        FilterRender nextFilterRender = mFilterRenders.get(index);
+                        prevFilterRender.removeTarget(nextFilterRender);
+                        prevFilterRender.addTarget(filterRender);
+                        filterRender.addTarget(nextFilterRender);
+                    }
                 }
-                mFilterRenders.add(filterRender);
+                if (index > mFilterRenders.size() - 1) {
+                    mFilterRenders.add(filterRender);
+                } else {
+                    mFilterRenders.add(index, filterRender);
+                }
 
                 setRendering(isRenders);
             }
         }
+    }
+
+    /**
+     * 添加滤镜
+     *
+     * @param filterRender
+     */
+    public synchronized void addFilterRender(FilterRender filterRender) {
+        addFilterRender(mFilterRenders.size(), filterRender);
     }
 
     /**
