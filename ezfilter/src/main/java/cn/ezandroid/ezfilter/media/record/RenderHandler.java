@@ -7,8 +7,8 @@ import android.text.TextUtils;
 import android.view.Surface;
 import android.view.SurfaceHolder;
 
-import cn.ezandroid.ezfilter.core.AbstractRender;
-import cn.ezandroid.ezfilter.environment.EGLEnvironment;
+import cn.ezandroid.ezfilter.core.GLRender;
+import cn.ezandroid.ezfilter.core.environment.EGLEnvironment;
 
 public final class RenderHandler implements Runnable {
 
@@ -166,9 +166,9 @@ public final class RenderHandler implements Runnable {
         }
     }
 
-    class SimpleRender extends AbstractRender {
+    class SimpleRender extends GLRender {
 
-        public void draw(int textureIn) {
+        void draw(int textureIn) {
             mTextureIn = textureIn;
             onDrawFrame();
         }

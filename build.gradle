@@ -2,6 +2,9 @@
 
 buildscript {
     repositories {
+        // 成都maven仓库
+        maven { url 'http://10.226.244.13:8081/nexus/content/repositories/releases/' }
+        maven { url 'http://10.226.244.13:8081/nexus/content/repositories/snapshots/' }
         google()
         jcenter()
     }
@@ -14,6 +17,9 @@ buildscript {
 
 allprojects {
     repositories {
+        // 成都maven仓库
+        maven { url 'http://10.226.244.13:8081/nexus/content/repositories/releases/' }
+        maven { url 'http://10.226.244.13:8081/nexus/content/repositories/snapshots/' }
         google()
         jcenter()
     }
@@ -40,9 +46,9 @@ ext {
     buildToolsVersion = "27.0.3"
 
     // App dependencies
-    supportLibraryVersion = '27.0.2'
+    supportLibraryVersion = '27.1.1'
 
     // Sdk version
-    sdkVersionCode = 160
-    sdkVersionName = '1.6.0'
+    sdkVersionCode = 200
+    sdkVersionName = '2.0.0'
 }

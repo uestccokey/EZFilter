@@ -1,6 +1,7 @@
 package cn.ezandroid.ezfilter.video.offscreen;
 
 import android.annotation.TargetApi;
+import android.graphics.SurfaceTexture;
 import android.media.AudioFormat;
 import android.media.MediaExtractor;
 import android.media.MediaFormat;
@@ -9,10 +10,13 @@ import android.media.MediaMuxer;
 import android.os.Build;
 
 import java.io.IOException;
+import java.util.List;
 
 import cn.ezandroid.ezfilter.core.FilterRender;
+import cn.ezandroid.ezfilter.core.GLRender;
 import cn.ezandroid.ezfilter.core.RenderPipeline;
 import cn.ezandroid.ezfilter.media.transcode.AudioTrackTranscoder;
+import cn.ezandroid.ezfilter.media.transcode.IVideoRender;
 import cn.ezandroid.ezfilter.media.transcode.QueuedMuxer;
 import cn.ezandroid.ezfilter.media.transcode.VideoFBORender;
 import cn.ezandroid.ezfilter.media.transcode.VideoTrackTranscoder;
@@ -34,8 +38,20 @@ public class OffscreenVideo {
     private String mVideoPath;
     private VideoFBORender mOffscreenRender;
 
+    private IVideoRenderListener mVideoRenderListener;
+
     private int mWidth;
     private int mHeight;
+
+    public interface IVideoRenderListener {
+
+        /**
+         * 当前帧绘制回调
+         *
+         * @param time 当前帧时间（单位纳秒）
+         */
+        void onFrameDraw(long time);
+    }
 
     public OffscreenVideo(String videoPath) {
         mVideoPath = videoPath;
@@ -84,16 +100,30 @@ public class OffscreenVideo {
             mHeight = h;
 
             mOffscreenRender = new VideoFBORender();
+            mOffscreenRender.setRenderSize(mWidth, mHeight);
             mPipeline = new RenderPipeline();
             mPipeline.onSurfaceCreated(null, null);
             mPipeline.setStartPointRender(mOffscreenRender);
+            mPipeline.addEndPointRender(new GLRender());
         } catch (Exception e) {
             e.printStackTrace();
         }
     }
 
+    public void setVideoRenderListener(IVideoRenderListener videoRenderListener) {
+        mVideoRenderListener = videoRenderListener;
+    }
+
     public void addFilterRender(FilterRender filterRender) {
         mPipeline.addFilterRender(filterRender);
+    }
+
+    public void removeFilterRender(FilterRender filterRender) {
+        mPipeline.removeFilterRender(filterRender);
+    }
+
+    public List<FilterRender> getFilterRenders() {
+        return mPipeline.getFilterRenders();
     }
 
     public void save(String output) throws IOException {
@@ -133,7 +163,20 @@ public class OffscreenVideo {
             // 音视频轨道都需要
             queuedMuxer.setTrackCount(QueuedMuxer.TRACK_VIDEO & QueuedMuxer.TRACK_AUDIO);
             VideoTrackTranscoder videoTrack = new VideoTrackTranscoder(mExtractor, mTrack.videoTrackIndex,
-                    videoFormat, queuedMuxer, mOffscreenRender);
+                    videoFormat, queuedMuxer, new IVideoRender() {
+                @Override
+                public void drawFrame(long time) {
+                    if (mVideoRenderListener != null) {
+                        mVideoRenderListener.onFrameDraw(time);
+                    }
+                    mOffscreenRender.drawFrame(time);
+                }
+
+                @Override
+                public SurfaceTexture getSurfaceTexture() {
+                    return mOffscreenRender.getSurfaceTexture();
+                }
+            });
             AudioTrackTranscoder audioTrack = new AudioTrackTranscoder(mExtractor, mTrack.audioTrackIndex,
                     audioFormat, queuedMuxer);
 
@@ -158,7 +201,20 @@ public class OffscreenVideo {
             // 只需视频轨
             queuedMuxer.setTrackCount(QueuedMuxer.TRACK_VIDEO);
             VideoTrackTranscoder videoTrack = new VideoTrackTranscoder(mExtractor, mTrack.videoTrackIndex,
-                    videoFormat, queuedMuxer, mOffscreenRender);
+                    videoFormat, queuedMuxer, new IVideoRender() {
+                @Override
+                public void drawFrame(long time) {
+                    if (mVideoRenderListener != null) {
+                        mVideoRenderListener.onFrameDraw(time);
+                    }
+                    mOffscreenRender.drawFrame(time);
+                }
+
+                @Override
+                public SurfaceTexture getSurfaceTexture() {
+                    return mOffscreenRender.getSurfaceTexture();
+                }
+            });
 
             videoTrack.setup();
 

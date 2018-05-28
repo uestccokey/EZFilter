@@ -27,9 +27,7 @@ import javax.microedition.khronos.opengles.GL10;
 
 import cn.ezandroid.ezfilter.camera.util.CameraUtil;
 import cn.ezandroid.ezfilter.core.FBORender;
-import cn.ezandroid.ezfilter.core.ISupportTakePhoto;
-import cn.ezandroid.ezfilter.core.PhotoTakenCallback;
-import cn.ezandroid.ezfilter.environment.IGLEnvironment;
+import cn.ezandroid.ezfilter.core.environment.IGLEnvironment;
 
 /**
  * CameraDevice输入

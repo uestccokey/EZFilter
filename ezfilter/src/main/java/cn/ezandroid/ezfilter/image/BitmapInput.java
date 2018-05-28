@@ -89,6 +89,8 @@ public class BitmapInput extends FBORender {
     private void loadImage(Bitmap bitmap) {
         this.mBitmap = bitmap;
         this.mIsNewBitmap = true;
+
+        setRenderSize(bitmap.getWidth(), bitmap.getHeight());
     }
 
     private void loadTexture() {

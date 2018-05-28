@@ -1,13 +1,9 @@
 package cn.ezandroid.ezfilter.media.util;
 
-import android.media.MediaCodec;
 import android.media.MediaCodecInfo;
 import android.media.MediaExtractor;
 import android.media.MediaFormat;
-import android.os.Build;
 import android.util.Log;
-
-import java.nio.ByteBuffer;
 
 /**
  * MediaUtil
@@ -26,6 +22,9 @@ public class MediaUtil {
 
     public static final String MIME_TYPE_AAC = "audio/mp4a-latm";
     public static final int AUDIO_BIT_RATE = 96000;
+
+    // 统一配置一个buffer size，避免缓冲区大小不一致导致的各种问题
+    public static final int BUFFER_SIZE = 256 * 1024;
 
     /**
      * 进行整除16对齐
@@ -53,12 +52,42 @@ public class MediaUtil {
      * @return
      */
     public static MediaFormat createVideoFormat(int w, int h) {
-        // FIXME 对齐后可能有几个像素的拉伸，暂时没有更好的方案
-        MediaFormat format = MediaFormat.createVideoFormat(MIME_TYPE_MP4, align16(w), align16(h));
+        return createVideoFormat(align16(w), align16(h), MediaCodecInfo.CodecCapabilities.COLOR_FormatSurface);
+    }
+
+    /**
+     * 创建视频MediaFormat[mp4]
+     *
+     * @param w           视频宽度
+     * @param h           视频高度
+     * @param colorFormat 颜色格式参考
+     *                    {@link MediaCodecInfo.CodecCapabilities#COLOR_FormatYUV420SemiPlanar}
+     *                    {@link MediaCodecInfo.CodecCapabilities#COLOR_FormatYUV420Planar}
+     *                    {@link MediaCodecInfo.CodecCapabilities#COLOR_FormatSurface}
+     * @return
+     */
+    public static MediaFormat createVideoFormat(int w, int h, int colorFormat) {
+        return createVideoFormat(align16(w), align16(h), (int) (0.2 * FRAME_RATE * w * h), colorFormat);
+    }
+
+    /**
+     * 创建视频MediaFormat[mp4]
+     *
+     * @param w           视频宽度
+     * @param h           视频高度
+     * @param bitrate     视频码率
+     * @param colorFormat 颜色格式参考
+     *                    {@link MediaCodecInfo.CodecCapabilities#COLOR_FormatYUV420SemiPlanar}
+     *                    {@link MediaCodecInfo.CodecCapabilities#COLOR_FormatYUV420Planar}
+     *                    {@link MediaCodecInfo.CodecCapabilities#COLOR_FormatSurface}
+     * @return
+     */
+    public static MediaFormat createVideoFormat(int w, int h, int bitrate, int colorFormat) {
+        MediaFormat format = MediaFormat.createVideoFormat(MIME_TYPE_MP4, w, h);
         // 数据来源
-        format.setInteger(MediaFormat.KEY_COLOR_FORMAT, MediaCodecInfo.CodecCapabilities.COLOR_FormatSurface);
+        format.setInteger(MediaFormat.KEY_COLOR_FORMAT, colorFormat);
         // 视频bit率
-        format.setInteger(MediaFormat.KEY_BIT_RATE, (int) (0.2 * FRAME_RATE * w * h));
+        format.setInteger(MediaFormat.KEY_BIT_RATE, bitrate);
         // 帧率
         format.setInteger(MediaFormat.KEY_FRAME_RATE, FRAME_RATE);
         // 设置关键帧时间间隔（单位为秒）表示：每隔多长时间有一个关键帧
@@ -83,6 +112,8 @@ public class MediaUtil {
         format.setInteger(MediaFormat.KEY_CHANNEL_COUNT, channelCount);
         // 音频bit率
         format.setInteger(MediaFormat.KEY_BIT_RATE, AUDIO_BIT_RATE);
+        // 统一设置最大缓冲容量，否则在音频转码时因为大小不一致会报错
+        format.setInteger(MediaFormat.KEY_MAX_INPUT_SIZE, BUFFER_SIZE);
         return format;
     }
 
@@ -114,40 +145,10 @@ public class MediaUtil {
 
         if (track.videoTrackIndex < 0 && track.audioTrackIndex < 0) {
             // 视频轨和音轨都没有
-            Log.e("ExtractorUtil", "Not found video/audio track.");
+            Log.e("MediaUtil", "Not found video/audio track.");
             return null;
         } else {
             return track;
-        }
-    }
-
-    /**
-     * 防止出现 http://stackoverflow.com/q/30646885 的问题
-     *
-     * @param codec
-     * @param index
-     * @return
-     */
-    public static ByteBuffer getInputBuffer(MediaCodec codec, int index) {
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-            return codec.getInputBuffer(index);
-        } else {
-            return codec.getInputBuffers()[index];
-        }
-    }
-
-    /**
-     * 防止出现 http://stackoverflow.com/q/30646885 的问题
-     *
-     * @param codec
-     * @param index
-     * @return
-     */
-    public static ByteBuffer getOutputBuffer(MediaCodec codec, int index) {
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-            return codec.getOutputBuffer(index);
-        } else {
-            return codec.getOutputBuffers()[index];
         }
     }
 

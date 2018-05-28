@@ -8,6 +8,8 @@ import java.io.IOException;
 import java.lang.ref.WeakReference;
 import java.nio.ByteBuffer;
 
+import cn.ezandroid.ezfilter.media.util.CodecUtil;
+
 /**
  * 编码器抽象类
  */
@@ -160,11 +162,7 @@ public abstract class MediaEncoder implements Runnable {
         if (mMuxerStarted) {
             final MediaMuxerWrapper muxer = mWeakMuxer != null ? mWeakMuxer.get() : null;
             if (muxer != null) {
-                try {
-                    muxer.stop();
-                } catch (final Exception e) {
-                    Log.e(TAG, "failed stopping muxer", e);
-                }
+                muxer.stop();
             }
         }
         mBufferInfo = null;
@@ -179,25 +177,24 @@ public abstract class MediaEncoder implements Runnable {
 
     protected void encode(final ByteBuffer buffer, final int length, final long presentationTimeUs) {
         if (!mIsCapturing) return;
-        final ByteBuffer[] inputBuffers = mMediaCodec.getInputBuffers();
         while (mIsCapturing) {
             final int inputBufferIndex = mMediaCodec.dequeueInputBuffer(TIMEOUT_USEC);
             if (inputBufferIndex >= 0) {
-                final ByteBuffer inputBuffer = inputBuffers[inputBufferIndex];
+                final ByteBuffer inputBuffer = CodecUtil.getInputBuffer(mMediaCodec, inputBufferIndex);
                 inputBuffer.clear();
                 if (buffer != null) {
                     inputBuffer.put(buffer);
                 }
-                if (length <= 0) {
-                    // send EOS
-                    mIsEOS = true;
-                    mMediaCodec.queueInputBuffer(inputBufferIndex, 0, 0,
-                            presentationTimeUs, MediaCodec.BUFFER_FLAG_END_OF_STREAM);
-                    break;
-                } else {
-                    mMediaCodec.queueInputBuffer(inputBufferIndex, 0, length,
-                            presentationTimeUs, 0);
-                }
+//                if (length <= 0) {
+//                    // send EOS
+//                    mIsEOS = true;
+//                    mMediaCodec.queueInputBuffer(inputBufferIndex, 0, 0,
+//                            presentationTimeUs, MediaCodec.BUFFER_FLAG_END_OF_STREAM);
+//                    break;
+//                } else {
+                mMediaCodec.queueInputBuffer(inputBufferIndex, 0, length,
+                        presentationTimeUs, 0);
+//                }
                 break;
             } else if (inputBufferIndex == MediaCodec.INFO_TRY_AGAIN_LATER) {
                 // wait for MediaCodec encoder is ready to encode
@@ -209,18 +206,21 @@ public abstract class MediaEncoder implements Runnable {
 
     protected void drain() {
         if (mMediaCodec == null) return;
-        ByteBuffer[] encoderOutputBuffers = mMediaCodec.getOutputBuffers();
         int encoderStatus, count = 0;
         final MediaMuxerWrapper muxer = mWeakMuxer.get();
         if (muxer == null) {
-//        	throw new NullPointerException("muxer is unexpectedly null");
-            Log.w(TAG, "muxer is unexpectedly null");
             return;
         }
         LOOP:
         while (mIsCapturing) {
             // get encoded data with maximum timeout duration of TIMEOUT_USEC(=10[msec])
-            encoderStatus = mMediaCodec.dequeueOutputBuffer(mBufferInfo, TIMEOUT_USEC);
+            try {
+                encoderStatus = mMediaCodec.dequeueOutputBuffer(mBufferInfo, TIMEOUT_USEC);
+            } catch (Exception e) {
+                encoderStatus = MediaCodec.INFO_TRY_AGAIN_LATER;
+
+                e.printStackTrace();
+            }
             if (encoderStatus == MediaCodec.INFO_TRY_AGAIN_LATER) {
                 // wait 3 counts(=TIMEOUT_USEC x 3 = 30msec) until data/EOS come
                 if (!mIsEOS) {
@@ -230,7 +230,6 @@ public abstract class MediaEncoder implements Runnable {
                 }
             } else if (encoderStatus == MediaCodec.INFO_OUTPUT_BUFFERS_CHANGED) {
                 // this shoud not come when encoding
-                encoderOutputBuffers = mMediaCodec.getOutputBuffers();
             } else if (encoderStatus == MediaCodec.INFO_OUTPUT_FORMAT_CHANGED) {
                 // this status indicate the output format of codec is changed
                 // this should come only once before actual encoded data
@@ -258,7 +257,7 @@ public abstract class MediaEncoder implements Runnable {
             } else if (encoderStatus < 0) {
                 // unexpected status
             } else {
-                final ByteBuffer encodedData = encoderOutputBuffers[encoderStatus];
+                final ByteBuffer encodedData = CodecUtil.getOutputBuffer(mMediaCodec, encoderStatus);
                 if (encodedData == null) {
                     // this never should come...may be a MediaCodec internal error
                     throw new RuntimeException("encoderOutputBuffer " + encoderStatus + " was null");

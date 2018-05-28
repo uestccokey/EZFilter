@@ -9,9 +9,9 @@ import java.nio.ByteBuffer;
 import java.util.ArrayList;
 import java.util.List;
 
-public class QueuedMuxer {
+import cn.ezandroid.ezfilter.media.util.MediaUtil;
 
-    public static final int BUFFER_SIZE = 256 * 1024;
+public class QueuedMuxer {
 
     private static final String TAG = "QueuedMuxer";
     // appropriate or not...
@@ -110,7 +110,7 @@ public class QueuedMuxer {
         byteBuf.limit(bufferInfo.offset + bufferInfo.size);
         byteBuf.position(bufferInfo.offset);
         if (mByteBuffer == null) {
-            mByteBuffer = ByteBuffer.allocate(BUFFER_SIZE);
+            mByteBuffer = ByteBuffer.allocate(MediaUtil.BUFFER_SIZE);
         }
         mByteBuffer.put(byteBuf);
         mSampleInfoList.add(new SampleInfo(sampleType, bufferInfo.size, bufferInfo));

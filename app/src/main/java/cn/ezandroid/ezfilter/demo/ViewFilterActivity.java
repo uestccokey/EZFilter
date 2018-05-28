@@ -11,11 +11,13 @@ import android.widget.Button;
 import android.widget.ImageView;
 
 import cn.ezandroid.ezfilter.EZFilter;
+import cn.ezandroid.ezfilter.core.GLRender;
 import cn.ezandroid.ezfilter.core.RenderPipeline;
+import cn.ezandroid.ezfilter.core.environment.GLTextureView;
+import cn.ezandroid.ezfilter.core.environment.TextureFitView;
 import cn.ezandroid.ezfilter.core.output.BitmapOutput;
 import cn.ezandroid.ezfilter.demo.render.WobbleRender;
-import cn.ezandroid.ezfilter.environment.GLTextureView;
-import cn.ezandroid.ezfilter.environment.TextureFitView;
+import cn.ezandroid.ezfilter.media.record.ISupportRecord;
 import cn.ezandroid.ezfilter.view.glview.GLLinearLayout;
 
 /**
@@ -33,6 +35,8 @@ public class ViewFilterActivity extends BaseActivity {
     private Button mRecordButton;
 
     private RenderPipeline mRenderPipeline;
+
+    private ISupportRecord mSupportRecord;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -58,6 +62,12 @@ public class ViewFilterActivity extends BaseActivity {
                         .addFilter(new WobbleRender())
                         .enableRecord("/sdcard/recordView.mp4", true, false)
                         .into(mRenderView);
+
+                for (GLRender render : mRenderPipeline.getEndPointRenders()) {
+                    if (render instanceof ISupportRecord) {
+                        mSupportRecord = (ISupportRecord) render;
+                    }
+                }
             }
         });
 
@@ -82,10 +92,12 @@ public class ViewFilterActivity extends BaseActivity {
         mRecordButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                if (mRenderPipeline.isRecording()) {
-                    stopRecording();
-                } else {
-                    startRecording();
+                if (mSupportRecord != null) {
+                    if (mSupportRecord.isRecording()) {
+                        stopRecording();
+                    } else {
+                        startRecording();
+                    }
                 }
             }
         });
@@ -93,12 +105,16 @@ public class ViewFilterActivity extends BaseActivity {
 
     private void startRecording() {
         mRecordButton.setText("停止");
-        mRenderPipeline.startRecording();
+        if (mSupportRecord != null) {
+            mSupportRecord.startRecording();
+        }
     }
 
     private void stopRecording() {
         mRecordButton.setText("录制");
-        mRenderPipeline.stopRecording();
+        if (mSupportRecord != null) {
+            mSupportRecord.stopRecording();
+        }
     }
 
     @Override

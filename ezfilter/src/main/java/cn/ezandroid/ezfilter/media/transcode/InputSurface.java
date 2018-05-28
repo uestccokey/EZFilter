@@ -3,7 +3,7 @@ package cn.ezandroid.ezfilter.media.transcode;
 import android.opengl.EGL14;
 import android.view.Surface;
 
-import cn.ezandroid.ezfilter.environment.EGLEnvironment;
+import cn.ezandroid.ezfilter.core.environment.EGLEnvironment;
 
 /**
  * 将MediaCodec.createInputSurface()创建的Surface与EGL环境绑定，

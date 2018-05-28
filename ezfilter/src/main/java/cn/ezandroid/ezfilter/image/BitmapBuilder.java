@@ -5,7 +5,7 @@ import android.graphics.Bitmap;
 import cn.ezandroid.ezfilter.EZFilter;
 import cn.ezandroid.ezfilter.core.FBORender;
 import cn.ezandroid.ezfilter.core.FilterRender;
-import cn.ezandroid.ezfilter.environment.IFitView;
+import cn.ezandroid.ezfilter.core.environment.IFitView;
 import cn.ezandroid.ezfilter.extra.IAdjustable;
 import cn.ezandroid.ezfilter.image.offscreen.OffscreenImage;
 

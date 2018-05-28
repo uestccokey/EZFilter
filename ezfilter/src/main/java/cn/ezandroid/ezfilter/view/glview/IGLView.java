@@ -2,7 +2,7 @@ package cn.ezandroid.ezfilter.view.glview;
 
 import android.view.Surface;
 
-import cn.ezandroid.ezfilter.environment.IGLEnvironment;
+import cn.ezandroid.ezfilter.core.environment.IGLEnvironment;
 
 /**
  * 支持OpenGL渲染的View的接口

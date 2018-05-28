@@ -16,24 +16,22 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
-import java.util.ArrayList;
+import java.util.List;
 
 import cn.ezandroid.ezfilter.EZFilter;
-import cn.ezandroid.ezfilter.core.PhotoTakenCallback;
+import cn.ezandroid.ezfilter.camera.ISupportTakePhoto;
+import cn.ezandroid.ezfilter.camera.PhotoTakenCallback;
+import cn.ezandroid.ezfilter.core.FBORender;
+import cn.ezandroid.ezfilter.core.GLRender;
 import cn.ezandroid.ezfilter.core.RenderPipeline;
+import cn.ezandroid.ezfilter.core.environment.FitViewHelper;
+import cn.ezandroid.ezfilter.core.environment.GLTextureView;
+import cn.ezandroid.ezfilter.core.environment.TextureFitView;
 import cn.ezandroid.ezfilter.core.output.BitmapOutput;
 import cn.ezandroid.ezfilter.demo.render.BWRender;
+import cn.ezandroid.ezfilter.demo.render.TestStickerRender;
 import cn.ezandroid.ezfilter.demo.render.WobbleRender;
-import cn.ezandroid.ezfilter.demo.util.ComponentConvert;
-import cn.ezandroid.ezfilter.environment.FitViewHelper;
-import cn.ezandroid.ezfilter.environment.GLTextureView;
-import cn.ezandroid.ezfilter.environment.TextureFitView;
-import cn.ezandroid.ezfilter.extra.sticker.StickerRender;
-import cn.ezandroid.ezfilter.extra.sticker.model.AnchorPoint;
-import cn.ezandroid.ezfilter.extra.sticker.model.Component;
-import cn.ezandroid.ezfilter.extra.sticker.model.ScreenAnchor;
-import cn.ezandroid.ezfilter.extra.sticker.model.Sticker;
-import cn.ezandroid.ezfilter.extra.sticker.model.TextureAnchor;
+import cn.ezandroid.ezfilter.media.record.ISupportRecord;
 
 /**
  * CameraFilterActivity
@@ -59,6 +57,9 @@ public class CameraFilterActivity extends BaseActivity {
     private MyOrientationEventListener mOrientationEventListener;
 
     private int mOrientation;
+
+    private ISupportTakePhoto mSupportTakePhoto;
+    private ISupportRecord mSupportRecord;
 
     private class MyOrientationEventListener extends OrientationEventListener {
 
@@ -111,7 +112,10 @@ public class CameraFilterActivity extends BaseActivity {
         $(R.id.take_photo).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                mRenderPipeline.takePhoto(mCurrentCameraId == Camera.CameraInfo.CAMERA_FACING_FRONT, mOrientation,
+                if (mSupportTakePhoto == null) {
+                    return;
+                }
+                mSupportTakePhoto.takePhoto(mCurrentCameraId == Camera.CameraInfo.CAMERA_FACING_FRONT, mOrientation,
                         new PhotoTakenCallback() {
                             @Override
                             public void onPhotoTaken(Bitmap bitmap) {
@@ -151,10 +155,12 @@ public class CameraFilterActivity extends BaseActivity {
         mRecordButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                if (mRenderPipeline.isRecording()) {
-                    stopRecording();
-                } else {
-                    startRecording();
+                if (mSupportRecord != null) {
+                    if (mSupportRecord.isRecording()) {
+                        stopRecording();
+                    } else {
+                        startRecording();
+                    }
                 }
             }
         });
@@ -197,12 +203,16 @@ public class CameraFilterActivity extends BaseActivity {
 
     private void startRecording() {
         mRecordButton.setText("停止");
-        mRenderPipeline.startRecording();
+        if (mSupportRecord != null) {
+            mSupportRecord.startRecording();
+        }
     }
 
     private void stopRecording() {
         mRecordButton.setText("录制");
-        mRenderPipeline.stopRecording();
+        if (mSupportRecord != null) {
+            mSupportRecord.stopRecording();
+        }
     }
 
     private void setCameraParameters() {
@@ -234,10 +244,16 @@ public class CameraFilterActivity extends BaseActivity {
         parameters.setJpegQuality(100);
 
         // 设置自动闪光灯
-        parameters.setFlashMode(Camera.Parameters.FLASH_MODE_AUTO);
+        List<String> flashModes = parameters.getSupportedFlashModes();
+        if (flashModes != null && flashModes.contains(Camera.Parameters.FLASH_MODE_AUTO)) {
+            parameters.setFocusMode(Camera.Parameters.FLASH_MODE_AUTO);
+        }
 
         // 设置自动对焦
-        parameters.setFocusMode(Camera.Parameters.FOCUS_MODE_CONTINUOUS_PICTURE);
+        List<String> focusModes = parameters.getSupportedFocusModes();
+        if (focusModes != null && focusModes.contains(Camera.Parameters.FOCUS_MODE_CONTINUOUS_PICTURE)) {
+            parameters.setFocusMode(Camera.Parameters.FOCUS_MODE_CONTINUOUS_PICTURE);
+        }
 
         mCamera.setParameters(parameters);
     }
@@ -252,55 +268,21 @@ public class CameraFilterActivity extends BaseActivity {
         mCamera = Camera.open(id);
         setCameraParameters();
 
-        // 测试数据
-        StickerRender stickerRender = new StickerRender(this);
-        Sticker sticker = new Sticker();
-        sticker.components = new ArrayList<>();
-        {
-            Component c0 = new Component();
-            c0.duration = 1000;
-            c0.src = "src_0";
-            c0.width = 180;
-            c0.height = 70;
-            TextureAnchor c0Group = new TextureAnchor();
-            c0Group.leftAnchor = new AnchorPoint(AnchorPoint.LEFT_TOP, 0, 0);
-            c0Group.rightAnchor = new AnchorPoint(AnchorPoint.RIGHT_TOP, 0, 0);
-            c0Group.width = 180;
-            c0Group.height = 70;
-            c0.textureAnchor = c0Group;
-            sticker.components.add(c0);
-            ComponentConvert.convert(this, c0, "file:///android_asset/rabbit/");
-        }
-        {
-            Component c2 = new Component();
-            c2.duration = 1000;
-            c2.src = "src_2";
-            c2.width = 361;
-            c2.height = 500;
-            TextureAnchor c2Group = new TextureAnchor();
-            c2Group.leftAnchor = new AnchorPoint(AnchorPoint.LEFT_TOP, 0, 0);
-            c2Group.rightAnchor = new AnchorPoint(AnchorPoint.RIGHT_TOP, 0, 0);
-            c2Group.width = 361;
-            c2Group.height = 500;
-            c2.textureAnchor = c2Group;
-            sticker.components.add(c2);
-            ComponentConvert.convert(this, c2, "file:///android_asset/rabbit/");
-        }
-        stickerRender.setSticker(sticker);
-
-        ScreenAnchor anchorGroup = new ScreenAnchor();
-        anchorGroup.leftAnchor = new AnchorPoint(AnchorPoint.LEFT_TOP, 0, 0);
-        anchorGroup.rightAnchor = new AnchorPoint(AnchorPoint.RIGHT_TOP, 0, 0);
-        anchorGroup.width = 1080;
-        anchorGroup.height = 1920;
-        stickerRender.setScreenAnchor(anchorGroup);
-
         mRenderPipeline = EZFilter.input(mCamera, mCamera.getParameters().getPreviewSize())
-                .addFilter(new BWRender(this), 0.5f)
+                .addFilter(new TestStickerRender(this))
                 .addFilter(new WobbleRender())
-                .addFilter(stickerRender)
                 .enableRecord("/sdcard/recordCamera.mp4", true, true) // 支持录制为视频
                 .into(mRenderView);
+
+        FBORender startRender = mRenderPipeline.getStartPointRender();
+        if (startRender instanceof ISupportTakePhoto) {
+            mSupportTakePhoto = (ISupportTakePhoto) startRender;
+        }
+        for (GLRender render : mRenderPipeline.getEndPointRenders()) {
+            if (render instanceof ISupportRecord) {
+                mSupportRecord = (ISupportRecord) render;
+            }
+        }
     }
 
     private void releaseCamera() {

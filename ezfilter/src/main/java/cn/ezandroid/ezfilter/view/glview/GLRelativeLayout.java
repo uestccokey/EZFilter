@@ -8,7 +8,7 @@ import android.view.Surface;
 import android.view.ViewTreeObserver;
 import android.widget.RelativeLayout;
 
-import cn.ezandroid.ezfilter.environment.IGLEnvironment;
+import cn.ezandroid.ezfilter.core.environment.IGLEnvironment;
 
 /**
  * 支持OpenGL渲染的相对布局

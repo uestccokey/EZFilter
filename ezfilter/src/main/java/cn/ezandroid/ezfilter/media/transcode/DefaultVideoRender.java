@@ -6,12 +6,15 @@ import android.opengl.GLES20;
 
 import javax.microedition.khronos.opengles.GL10;
 
-import cn.ezandroid.ezfilter.core.AbstractRender;
+import cn.ezandroid.ezfilter.core.GLRender;
 
 /**
  * 默认的视频渲染器，不加任何特效
+ *
+ * @author like
+ * @date 2017-09-24
  */
-class DefaultVideoRender extends AbstractRender implements IVideoRender {
+class DefaultVideoRender extends GLRender implements IVideoRender {
 
     private static final String UNIFORM_CAM_MATRIX = "u_Matrix";
 

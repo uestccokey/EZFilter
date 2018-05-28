@@ -35,14 +35,18 @@ import java.util.Comparator;
 import java.util.List;
 
 import cn.ezandroid.ezfilter.EZFilter;
+import cn.ezandroid.ezfilter.camera.ISupportTakePhoto;
+import cn.ezandroid.ezfilter.camera.PhotoTakenCallback;
+import cn.ezandroid.ezfilter.core.FBORender;
 import cn.ezandroid.ezfilter.core.FilterRender;
-import cn.ezandroid.ezfilter.core.PhotoTakenCallback;
+import cn.ezandroid.ezfilter.core.GLRender;
 import cn.ezandroid.ezfilter.core.RenderPipeline;
+import cn.ezandroid.ezfilter.core.environment.FitViewHelper;
+import cn.ezandroid.ezfilter.core.environment.SurfaceFitView;
 import cn.ezandroid.ezfilter.core.output.BitmapOutput;
 import cn.ezandroid.ezfilter.demo.render.BWRender;
 import cn.ezandroid.ezfilter.demo.render.WobbleRender;
-import cn.ezandroid.ezfilter.environment.FitViewHelper;
-import cn.ezandroid.ezfilter.environment.SurfaceFitView;
+import cn.ezandroid.ezfilter.media.record.ISupportRecord;
 
 /**
  * Camera2FilterActivity
@@ -85,6 +89,9 @@ public class Camera2FilterActivity extends BaseActivity {
     private MyOrientationEventListener mOrientationEventListener;
 
     private int mOrientation;
+
+    private ISupportTakePhoto mSupportTakePhoto;
+    private ISupportRecord mSupportRecord;
 
     private class MyOrientationEventListener extends OrientationEventListener {
 
@@ -143,6 +150,9 @@ public class Camera2FilterActivity extends BaseActivity {
         $(R.id.take_photo).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                if (mSupportTakePhoto == null) {
+                    return;
+                }
                 boolean isFront = false;
                 try {
                     CameraCharacteristics characteristics = mCameraManager.getCameraCharacteristics(String.valueOf(mCurrentCameraId));
@@ -151,9 +161,8 @@ public class Camera2FilterActivity extends BaseActivity {
                 } catch (CameraAccessException e) {
                     e.printStackTrace();
                 }
-                mRenderPipeline.takePhoto(isFront, mOrientation,
+                mSupportTakePhoto.takePhoto(isFront, mOrientation,
                         new PhotoTakenCallback() {
-
                             @Override
                             public void onPhotoTaken(Bitmap bitmap) {
                                 saveBitmap(bitmap);
@@ -206,10 +215,12 @@ public class Camera2FilterActivity extends BaseActivity {
         mRecordButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                if (mRenderPipeline.isRecording()) {
-                    stopRecording();
-                } else {
-                    startRecording();
+                if (mSupportRecord != null) {
+                    if (mSupportRecord.isRecording()) {
+                        stopRecording();
+                    } else {
+                        startRecording();
+                    }
                 }
             }
         });
@@ -252,12 +263,16 @@ public class Camera2FilterActivity extends BaseActivity {
 
     private void startRecording() {
         mRecordButton.setText("停止");
-        mRenderPipeline.startRecording();
+        if (mSupportRecord != null) {
+            mSupportRecord.startRecording();
+        }
     }
 
     private void stopRecording() {
         mRecordButton.setText("录制");
-        mRenderPipeline.stopRecording();
+        if (mSupportRecord != null) {
+            mSupportRecord.stopRecording();
+        }
     }
 
     @SuppressLint("MissingPermission")
@@ -385,6 +400,16 @@ public class Camera2FilterActivity extends BaseActivity {
                     .addFilter(mCurrentRender)
                     .enableRecord("/sdcard/recordCamera2.mp4", true, true) // 支持录制为视频
                     .into(mRenderView);
+
+            FBORender startRender = mRenderPipeline.getStartPointRender();
+            if (startRender instanceof ISupportTakePhoto) {
+                mSupportTakePhoto = (ISupportTakePhoto) startRender;
+            }
+            for (GLRender render : mRenderPipeline.getEndPointRenders()) {
+                if (render instanceof ISupportRecord) {
+                    mSupportRecord = (ISupportRecord) render;
+                }
+            }
         }
 
         @Override

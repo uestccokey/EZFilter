@@ -9,10 +9,11 @@ import java.util.HashMap;
 import cn.ezandroid.ezfilter.EZFilter;
 import cn.ezandroid.ezfilter.core.FBORender;
 import cn.ezandroid.ezfilter.core.FilterRender;
+import cn.ezandroid.ezfilter.core.environment.IFitView;
 import cn.ezandroid.ezfilter.core.util.NumberUtil;
-import cn.ezandroid.ezfilter.environment.IFitView;
 import cn.ezandroid.ezfilter.extra.IAdjustable;
 import cn.ezandroid.ezfilter.video.offscreen.OffscreenVideo;
+import cn.ezandroid.ezfilter.video.player.DefaultMediaPlayer;
 import cn.ezandroid.ezfilter.video.player.IMediaPlayer;
 
 /**
@@ -28,9 +29,21 @@ public class VideoBuilder extends EZFilter.Builder {
     private float mVideoVolume = 1.0f;
     private IMediaPlayer.OnPreparedListener mPreparedListener;
     private IMediaPlayer.OnCompletionListener mCompletionListener;
+    private IMediaPlayer mMediaPlayer = new DefaultMediaPlayer();
 
     public VideoBuilder(Uri uri) {
         mVideo = uri;
+    }
+
+    /**
+     * 设置使用的媒体播放器
+     *
+     * @param mediaPlayer
+     * @return
+     */
+    public VideoBuilder setMediaPlayer(IMediaPlayer mediaPlayer) {
+        mMediaPlayer = mediaPlayer;
+        return this;
     }
 
     /**
@@ -94,7 +107,7 @@ public class VideoBuilder extends EZFilter.Builder {
 
     @Override
     protected FBORender getStartPointRender(IFitView view) {
-        VideoInput videoInput = new VideoInput(view.getContext(), view, mVideo);
+        VideoInput videoInput = new VideoInput(view.getContext(), view, mVideo, mMediaPlayer);
         videoInput.setLoop(mVideoLoop);
         videoInput.setVolume(mVideoVolume, mVideoVolume);
         videoInput.setOnPreparedListener(mPreparedListener);

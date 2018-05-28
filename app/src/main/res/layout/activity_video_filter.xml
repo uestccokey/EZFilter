@@ -3,7 +3,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent">
 
-    <cn.ezandroid.ezfilter.environment.SurfaceFitView
+    <cn.ezandroid.ezfilter.core.environment.SurfaceFitView
         android:id="@+id/render_view"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
@@ -17,10 +17,17 @@
 
     <Button
         android:id="@+id/capture"
-        android:layout_toRightOf="@id/change_video"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:layout_toRightOf="@id/change_video"
         android:text="截图" />
+
+    <Button
+        android:id="@+id/record"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_toRightOf="@id/capture"
+        android:text="录制" />
 
     <ImageView
         android:id="@+id/preview_image"
