@@ -6,7 +6,7 @@ import android.media.MediaFormat;
 
 import java.io.IOException;
 
-import cn.ezandroid.ezfilter.media.util.MediaUtil;
+import cn.ezandroid.ezfilter.media.util.CodecUtil;
 
 /**
  * 音轨转码器
@@ -114,7 +114,7 @@ public class AudioTrackTranscoder implements TrackTranscoder {
             return DRAIN_STATE_NONE;
         }
 
-        int sampleSize = mExtractor.readSampleData(MediaUtil.getInputBuffer(mDecoder, result), 0);
+        int sampleSize = mExtractor.readSampleData(CodecUtil.getInputBuffer(mDecoder, result), 0);
         boolean isKeyFrame = (mExtractor.getSampleFlags() & MediaExtractor.SAMPLE_FLAG_SYNC) != 0;
         mDecoder.queueInputBuffer(result, 0, sampleSize, mExtractor.getSampleTime(), isKeyFrame ? MediaCodec.BUFFER_FLAG_SYNC_FRAME : 0);
         mExtractor.advance();
@@ -175,7 +175,7 @@ public class AudioTrackTranscoder implements TrackTranscoder {
             mEncoder.releaseOutputBuffer(result, false);
             return DRAIN_STATE_SHOULD_RETRY_IMMEDIATELY;
         }
-        mMuxer.writeSampleData(QueuedMuxer.SampleType.AUDIO, MediaUtil.getOutputBuffer(mEncoder, result), mBufferInfo);
+        mMuxer.writeSampleData(QueuedMuxer.SampleType.AUDIO, CodecUtil.getOutputBuffer(mEncoder, result), mBufferInfo);
         mEncoder.releaseOutputBuffer(result, false);
         return DRAIN_STATE_CONSUMED;
     }

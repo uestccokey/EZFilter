@@ -3,7 +3,7 @@ package cn.ezandroid.ezfilter.view.glview;
 import android.graphics.Canvas;
 import android.view.Surface;
 
-import cn.ezandroid.ezfilter.environment.IGLEnvironment;
+import cn.ezandroid.ezfilter.core.environment.IGLEnvironment;
 
 /**
  * OpenGL渲染视图辅助类

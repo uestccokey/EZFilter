@@ -19,7 +19,7 @@ import cn.ezandroid.ezfilter.core.util.L;
  * @author like
  * @date 2017-09-15
  */
-public abstract class AbstractRender {
+public class GLRender implements OnTextureAcceptableListener {
 
     public static final String ATTRIBUTE_POSITION = "position";
     public static final String ATTRIBUTE_TEXTURE_COORD = "inputTextureCoordinate";
@@ -74,7 +74,7 @@ public abstract class AbstractRender {
     private long mLastTime;
     private int mFrameCount;
 
-    public AbstractRender() {
+    public GLRender() {
         initRenderVertices(new float[]{-1f, -1f, 1f, -1f, -1f, 1f, 1f, 1f});
         initTextureVertices();
 
@@ -171,7 +171,6 @@ public abstract class AbstractRender {
      */
     public boolean resetRotate() {
         if (mCurrentRotation % 2 == 1) {
-//            swapWidthAndHeight();
             mCurrentRotation = 0;
             return true;
         }
@@ -190,9 +189,6 @@ public abstract class AbstractRender {
         }
         mCurrentRotation += numOfTimes;
         mCurrentRotation = mCurrentRotation % 4;
-//        if (numOfTimes % 2 == 1) {
-//            swapWidthAndHeight();
-//        }
     }
 
     /**
@@ -237,7 +233,7 @@ public abstract class AbstractRender {
         GLES20.glUniform1i(mTextureHandle, 0);
     }
 
-    /***
+    /**
      * 绑定Attributes参数
      */
     protected void bindShaderAttributes() {
@@ -266,7 +262,7 @@ public abstract class AbstractRender {
      */
     protected void onDrawFrame() {
         if (L.LOG_RENDER_DRAW) {
-            Log.e("AbstractRender", this + " onDrawFrame:" + mWidth + "x" + mHeight + " " + mCurrentRotation + " Fps:" + mFps);
+            Log.e("GLRender", this + " onDrawFrame:" + mWidth + "x" + mHeight + " " + mCurrentRotation + " Fps:" + mFps);
         }
         if (!mInitialized) {
             initGLContext();
@@ -387,7 +383,7 @@ public abstract class AbstractRender {
             }
         }
         if (mProgramHandle == 0) {
-            throw new RuntimeException(this + ":Could not create program.");
+            throw new RuntimeException(this + ": Could not create program.");
         }
 
         initShaderHandles();
@@ -397,7 +393,6 @@ public abstract class AbstractRender {
      * 当渲染尺寸改变时调用
      */
     protected void onRenderSizeChanged() {
-
     }
 
     protected String getVertexShader() {
@@ -431,7 +426,7 @@ public abstract class AbstractRender {
      */
     public void destroy() {
         if (L.LOG_RENDER_DESTROY) {
-            Log.e("AbstractRender", this + " destroy " + Thread.currentThread().getName());
+            Log.e("GLRender", this + " destroy " + Thread.currentThread().getName());
         }
         mInitialized = false;
         if (mProgramHandle != 0) {
@@ -466,5 +461,13 @@ public abstract class AbstractRender {
         synchronized (mRunOnDrawEnd) {
             mRunOnDrawEnd.add(runnable);
         }
+    }
+
+    @Override
+    public void onTextureAcceptable(int texture, GLRender source) {
+        mTextureIn = texture;
+        setWidth(source.getWidth());
+        setHeight(source.getHeight());
+        onDrawFrame();
     }
 }

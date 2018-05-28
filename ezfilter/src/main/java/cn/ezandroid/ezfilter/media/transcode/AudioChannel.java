@@ -9,7 +9,7 @@ import java.nio.ShortBuffer;
 import java.util.ArrayDeque;
 import java.util.Queue;
 
-import cn.ezandroid.ezfilter.media.util.MediaUtil;
+import cn.ezandroid.ezfilter.media.util.CodecUtil;
 
 /**
  * 编码器到解码器的声道转换
@@ -89,7 +89,7 @@ class AudioChannel {
             throw new RuntimeException("Buffer received before format!");
         }
 
-        final ByteBuffer data = bufferIndex == BUFFER_INDEX_END_OF_STREAM ? null : MediaUtil.getOutputBuffer(mDecoder, bufferIndex);
+        final ByteBuffer data = bufferIndex == BUFFER_INDEX_END_OF_STREAM ? null : CodecUtil.getOutputBuffer(mDecoder, bufferIndex);
 
         AudioBuffer buffer = mEmptyBuffers.poll();
         if (buffer == null) {
@@ -125,7 +125,7 @@ class AudioChannel {
         }
 
         // Drain overflow first
-        final ShortBuffer outBuffer = MediaUtil.getInputBuffer(mEncoder, encoderInBuffIndex).asShortBuffer();
+        final ShortBuffer outBuffer = CodecUtil.getInputBuffer(mEncoder, encoderInBuffIndex).asShortBuffer();
         if (hasOverflow) {
             final long presentationTimeUs = drainOverflow(outBuffer);
             mEncoder.queueInputBuffer(encoderInBuffIndex, 0, outBuffer.position() * BYTES_PER_SHORT, presentationTimeUs, 0);

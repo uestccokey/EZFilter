@@ -2,9 +2,8 @@ package cn.ezandroid.ezfilter.media.record;
 
 import java.io.IOException;
 
-import cn.ezandroid.ezfilter.core.EndPointRender;
 import cn.ezandroid.ezfilter.core.FBORender;
-import cn.ezandroid.ezfilter.core.ISupportRecord;
+import cn.ezandroid.ezfilter.core.GLRender;
 
 /**
  * 支持视频录制的终点渲染器
@@ -12,19 +11,22 @@ import cn.ezandroid.ezfilter.core.ISupportRecord;
  * @author like
  * @date 2017-10-13
  */
-public class RecordableEndPointRender extends EndPointRender implements ISupportRecord {
+public class RecordableEndPointRender extends FBORender implements ISupportRecord {
 
     private MediaVideoEncoder mVideoEncoder;
     private MediaMuxerWrapper mMuxerWrapper;
 
-    private boolean mRecordVideo = true;
-    private boolean mRecordAudio = true;
+    private boolean mRecordVideo;
+    private boolean mRecordAudio;
 
     private String mOutputPath;
 
     private IRecordListener mRecordListener;
 
     private IAudioExtraEncoder mAudioExtraEncoder;
+
+    private int mRecordWidth;
+    private int mRecordHeight;
 
     private final MediaEncoder.MediaEncoderListener mMediaEncoderListener =
             new MediaEncoder.MediaEncoderListener() {
@@ -51,7 +53,7 @@ public class RecordableEndPointRender extends EndPointRender implements ISupport
     }
 
     @Override
-    public void onTextureAcceptable(int texture, FBORender source) {
+    public void onTextureAcceptable(int texture, GLRender source) {
         super.onTextureAcceptable(texture, source);
         synchronized (this) {
             if (mVideoEncoder != null) {
@@ -73,7 +75,7 @@ public class RecordableEndPointRender extends EndPointRender implements ISupport
     }
 
     /**
-     * 设置音频额外编码器
+     * 设置音频的额外编码器
      *
      * @param encoder
      */
@@ -123,6 +125,18 @@ public class RecordableEndPointRender extends EndPointRender implements ISupport
     }
 
     /**
+     * 设置视频录制宽高
+     *
+     * @param width
+     * @param height
+     */
+    @Override
+    public void setRecordSize(int width, int height) {
+        mRecordWidth = width;
+        mRecordHeight = height;
+    }
+
+    /**
      * 是否正在录制视频
      *
      * @return
@@ -138,7 +152,8 @@ public class RecordableEndPointRender extends EndPointRender implements ISupport
         try {
             mMuxerWrapper = new MediaMuxerWrapper(mOutputPath);
             if (mRecordVideo) {
-                new MediaVideoEncoder(mMuxerWrapper, mMediaEncoderListener, getWidth(), getHeight());
+                new MediaVideoEncoder(mMuxerWrapper, mMediaEncoderListener,
+                        mRecordWidth <= 0 ? getWidth() : mRecordWidth, mRecordHeight <= 0 ? getHeight() : mRecordHeight);
             }
             if (mRecordAudio) {
                 MediaAudioEncoder audioEncoder = new MediaAudioEncoder(mMuxerWrapper, mMediaEncoderListener);

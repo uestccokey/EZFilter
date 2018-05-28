@@ -44,9 +44,9 @@ public interface IMediaPlayer {
 
     void setVolume(float var1, float var2);
 
-    void setOnPreparedListener(IMediaPlayer.OnPreparedListener var1);
+    void setOnPreparedListener(OnPreparedListener var1);
 
-    void setOnCompletionListener(IMediaPlayer.OnCompletionListener var1);
+    void setOnCompletionListener(OnCompletionListener var1);
 
     void setLooping(boolean var1);
 

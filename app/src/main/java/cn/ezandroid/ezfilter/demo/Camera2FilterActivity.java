@@ -36,13 +36,12 @@ import java.util.List;
 
 import cn.ezandroid.ezfilter.EZFilter;
 import cn.ezandroid.ezfilter.core.FilterRender;
-import cn.ezandroid.ezfilter.core.PhotoTakenCallback;
 import cn.ezandroid.ezfilter.core.RenderPipeline;
+import cn.ezandroid.ezfilter.core.environment.FitViewHelper;
+import cn.ezandroid.ezfilter.core.environment.SurfaceFitView;
 import cn.ezandroid.ezfilter.core.output.BitmapOutput;
 import cn.ezandroid.ezfilter.demo.render.BWRender;
 import cn.ezandroid.ezfilter.demo.render.WobbleRender;
-import cn.ezandroid.ezfilter.environment.FitViewHelper;
-import cn.ezandroid.ezfilter.environment.SurfaceFitView;
 
 /**
  * Camera2FilterActivity
@@ -140,36 +139,35 @@ public class Camera2FilterActivity extends BaseActivity {
             }
         });
 
-        $(R.id.take_photo).setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                boolean isFront = false;
-                try {
-                    CameraCharacteristics characteristics = mCameraManager.getCameraCharacteristics(String.valueOf(mCurrentCameraId));
-                    Integer facing = characteristics.get(CameraCharacteristics.LENS_FACING);
-                    isFront = facing != null && CameraCharacteristics.LENS_FACING_FRONT == facing;
-                } catch (CameraAccessException e) {
-                    e.printStackTrace();
-                }
-                mRenderPipeline.takePhoto(isFront, mOrientation,
-                        new PhotoTakenCallback() {
-
-                            @Override
-                            public void onPhotoTaken(Bitmap bitmap) {
-                                saveBitmap(bitmap);
-
-                                final Bitmap bitmap2 = EZFilter.input(bitmap)
-                                        .addFilter(new BWRender(Camera2FilterActivity.this))
-                                        .output(); // 添加滤镜
-
-                                saveBitmap(bitmap2);  // 保存滤镜后的图
-
-                                releaseCamera();
-                                openCamera(mCurrentCameraId);
-                            }
-                        });
-            }
-        });
+//        $(R.id.take_photo).setOnClickListener(new View.OnClickListener() {
+//            @Override
+//            public void onClick(View v) {
+//                boolean isFront = false;
+//                try {
+//                    CameraCharacteristics characteristics = mCameraManager.getCameraCharacteristics(String.valueOf(mCurrentCameraId));
+//                    Integer facing = characteristics.get(CameraCharacteristics.LENS_FACING);
+//                    isFront = facing != null && CameraCharacteristics.LENS_FACING_FRONT == facing;
+//                } catch (CameraAccessException e) {
+//                    e.printStackTrace();
+//                }
+//                mRenderPipeline.takePhoto(isFront, mOrientation,
+//                        new PhotoTakenCallback() {
+//                            @Override
+//                            public void onPhotoTaken(Bitmap bitmap) {
+//                                saveBitmap(bitmap);
+//
+//                                final Bitmap bitmap2 = EZFilter.input(bitmap)
+//                                        .addFilter(new BWRender(Camera2FilterActivity.this))
+//                                        .output(); // 添加滤镜
+//
+//                                saveBitmap(bitmap2);  // 保存滤镜后的图
+//
+//                                releaseCamera();
+//                                openCamera(mCurrentCameraId);
+//                            }
+//                        });
+//            }
+//        });
 
         $(R.id.capture).setOnClickListener(new View.OnClickListener() {
             @Override
@@ -203,16 +201,16 @@ public class Camera2FilterActivity extends BaseActivity {
             }
         });
 
-        mRecordButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                if (mRenderPipeline.isRecording()) {
-                    stopRecording();
-                } else {
-                    startRecording();
-                }
-            }
-        });
+//        mRecordButton.setOnClickListener(new View.OnClickListener() {
+//            @Override
+//            public void onClick(View v) {
+//                if (mRenderPipeline.isRecording()) {
+//                    stopRecording();
+//                } else {
+//                    startRecording();
+//                }
+//            }
+//        });
     }
 
     private void saveBitmap(Bitmap bitmap) {
@@ -250,15 +248,15 @@ public class Camera2FilterActivity extends BaseActivity {
         }
     }
 
-    private void startRecording() {
-        mRecordButton.setText("停止");
-        mRenderPipeline.startRecording();
-    }
-
-    private void stopRecording() {
-        mRecordButton.setText("录制");
-        mRenderPipeline.stopRecording();
-    }
+//    private void startRecording() {
+//        mRecordButton.setText("停止");
+//        mRenderPipeline.startRecording();
+//    }
+//
+//    private void stopRecording() {
+//        mRecordButton.setText("录制");
+//        mRenderPipeline.stopRecording();
+//    }
 
     @SuppressLint("MissingPermission")
     private void openCamera(int id) {

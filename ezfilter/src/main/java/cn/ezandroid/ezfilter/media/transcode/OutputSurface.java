@@ -69,7 +69,7 @@ public class OutputSurface implements SurfaceTexture.OnFrameAvailableListener {
     /**
      * 绘制当前帧
      *
-     * @param time 当前帧时间（单位毫秒）
+     * @param time 当前帧时间（单位纳秒）
      */
     public void drawImage(long time) {
         mTextureRender.drawFrame(time);

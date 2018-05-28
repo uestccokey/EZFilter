@@ -11,9 +11,9 @@ import android.widget.ImageView;
 
 import cn.ezandroid.ezfilter.EZFilter;
 import cn.ezandroid.ezfilter.core.RenderPipeline;
+import cn.ezandroid.ezfilter.core.environment.SurfaceFitView;
 import cn.ezandroid.ezfilter.core.output.BitmapOutput;
 import cn.ezandroid.ezfilter.demo.render.BWRender;
-import cn.ezandroid.ezfilter.environment.SurfaceFitView;
 import cn.ezandroid.ezfilter.video.VideoInput;
 import cn.ezandroid.ezfilter.video.player.IMediaPlayer;
 
@@ -75,27 +75,27 @@ public class VideoFilterActivity extends BaseActivity {
             }
         });
 
-        mRecordButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                if (mRenderPipeline.isRecording()) {
-                    stopRecording();
-                } else {
-                    startRecording();
-                }
-            }
-        });
+//        mRecordButton.setOnClickListener(new View.OnClickListener() {
+//            @Override
+//            public void onClick(View v) {
+//                if (mRenderPipeline.isRecording()) {
+//                    stopRecording();
+//                } else {
+//                    startRecording();
+//                }
+//            }
+//        });
     }
 
-    private void startRecording() {
-        mRecordButton.setText("停止");
-        mRenderPipeline.startRecording();
-    }
-
-    private void stopRecording() {
-        mRecordButton.setText("录制");
-        mRenderPipeline.stopRecording();
-    }
+//    private void startRecording() {
+//        mRecordButton.setText("停止");
+//        mRenderPipeline.startRecording();
+//    }
+//
+//    private void stopRecording() {
+//        mRecordButton.setText("录制");
+//        mRenderPipeline.stopRecording();
+//    }
 
     private void changeVideo() {
         if (mCurrentUri == uri1) {

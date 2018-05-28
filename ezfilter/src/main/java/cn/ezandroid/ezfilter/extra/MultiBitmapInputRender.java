@@ -4,8 +4,8 @@ import android.content.Context;
 import android.graphics.Bitmap;
 import android.opengl.GLES20;
 
-import cn.ezandroid.ezfilter.core.FBORender;
 import cn.ezandroid.ezfilter.core.FilterRender;
+import cn.ezandroid.ezfilter.core.GLRender;
 import cn.ezandroid.ezfilter.core.util.BitmapUtil;
 import cn.ezandroid.ezfilter.core.util.Path;
 
@@ -22,13 +22,20 @@ public class MultiBitmapInputRender extends FilterRender {
     protected int[] mTextureHandles;
     protected int[] mTextures;
     protected Bitmap[] mBitmaps;
-    protected int mTextureNum;
+    protected int mTextureNum = 1;
 
     protected Context mContext;
     protected int[] mResources;
     protected String[] mPaths;
 
+    public MultiBitmapInputRender() {
+    }
+
     public MultiBitmapInputRender(Context context, Bitmap[] bmps) {
+        setImages(context, bmps);
+    }
+
+    public void setImages(Context context, Bitmap[] bmps) {
         mContext = context;
         if (bmps != null) {
             // 输入纹理和上级Filter的纹理总数
@@ -43,6 +50,10 @@ public class MultiBitmapInputRender extends FilterRender {
     }
 
     public MultiBitmapInputRender(Context context, int[] bmpIds) {
+        setImages(context, bmpIds);
+    }
+
+    public void setImages(Context context, int[] bmpIds) {
         mContext = context;
         if (bmpIds != null) {
             // 输入纹理和上级Filter的纹理总数
@@ -58,6 +69,10 @@ public class MultiBitmapInputRender extends FilterRender {
     }
 
     public MultiBitmapInputRender(Context context, String[] bmpPaths) {
+        setImages(context, bmpPaths);
+    }
+
+    public void setImages(Context context, String[] bmpPaths) {
         mContext = context;
         if (bmpPaths != null) {
             // 输入纹理和上级Filter的纹理总数
@@ -74,7 +89,8 @@ public class MultiBitmapInputRender extends FilterRender {
 
     private void destroyTextures() {
         if (mTextures != null) {
-//            GLES20.glDeleteTextures(mTextures.length, mTextures, 0); // 某些手机上会花屏，所以不用这种方式
+            // 某些手机上会花屏，所以不用这种方式
+//            GLES20.glDeleteTextures(mTextures.length, mTextures, 0);
             for (int i = 0; i < mTextures.length; i++) {
                 if (mTextures[i] != 0) {
                     int[] tex = new int[1];
@@ -103,7 +119,7 @@ public class MultiBitmapInputRender extends FilterRender {
     }
 
     @Override
-    public void onTextureAcceptable(int texture, FBORender source) {
+    public void onTextureAcceptable(int texture, GLRender source) {
         mTextureIn = texture;
 
         if (mTextureNum > 1) {

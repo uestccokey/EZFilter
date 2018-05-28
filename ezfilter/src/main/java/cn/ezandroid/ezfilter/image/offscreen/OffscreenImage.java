@@ -7,10 +7,11 @@ import android.opengl.GLES20;
 import android.os.Build;
 
 import java.nio.IntBuffer;
+import java.util.List;
 
 import cn.ezandroid.ezfilter.core.FilterRender;
 import cn.ezandroid.ezfilter.core.RenderPipeline;
-import cn.ezandroid.ezfilter.environment.EGLEnvironment;
+import cn.ezandroid.ezfilter.core.environment.EGLEnvironment;
 import cn.ezandroid.ezfilter.image.BitmapInput;
 
 import static javax.microedition.khronos.opengles.GL10.GL_RGBA;
@@ -53,6 +54,14 @@ public class OffscreenImage {
 
     public void addFilterRender(FilterRender filterRender) {
         mPipeline.addFilterRender(filterRender);
+    }
+
+    public void removeFilterRender(FilterRender filterRender) {
+        mPipeline.removeFilterRender(filterRender);
+    }
+
+    public List<FilterRender> getFilterRenders() {
+        return mPipeline.getFilterRenders();
     }
 
     public Bitmap capture(int width, int height) {

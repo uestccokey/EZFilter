@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package cn.ezandroid.ezfilter.environment;
+package cn.ezandroid.ezfilter.core.environment;
 
 import android.content.Context;
 import android.content.pm.ConfigurationInfo;
@@ -604,11 +604,19 @@ public class GLTextureView extends TextureView implements TextureView.SurfaceTex
         if (LOG_ATTACH_DETACH) {
             Log.d(TAG, "onDetachedFromWindow");
         }
-        if (mGLThread != null) {
-            mGLThread.requestExitAndWait();
+        if (mIsExitGLThreadOnDetached) {
+            if (mGLThread != null) {
+                mGLThread.requestExitAndWait();
+            }
+            mDetached = true;
         }
-        mDetached = true;
         super.onDetachedFromWindow();
+    }
+
+    private boolean mIsExitGLThreadOnDetached = true;
+
+    public void setExitGLThreadOnDetached(boolean exitGLThreadOnDetached) {
+        mIsExitGLThreadOnDetached = exitGLThreadOnDetached;
     }
 
     // ----------------------------------------------------------------------

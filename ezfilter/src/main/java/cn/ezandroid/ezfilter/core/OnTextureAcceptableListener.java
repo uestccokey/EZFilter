@@ -8,5 +8,5 @@ package cn.ezandroid.ezfilter.core;
  */
 public interface OnTextureAcceptableListener {
 
-    void onTextureAcceptable(int texture, FBORender source);
+    void onTextureAcceptable(int texture, GLRender source);
 }

@@ -1,20 +1,20 @@
 package cn.ezandroid.ezfilter.core;
 
 import cn.ezandroid.ezfilter.core.cache.IBitmapCache;
+import cn.ezandroid.ezfilter.core.cache.LruBitmapCache;
 
 /**
  * 滤镜渲染器
  * <p>
  * 所有滤镜的父类
- * 继承自FBORender，支持滤镜渲染结果作为纹理输出
- * 实现了OnTextureAcceptableListener接口，支持接受纹理作为输入进行渲染
+ * 继承自FBORender，支持设置图片缓存
  *
  * @author like
  * @date 2017-09-15
  */
-public class FilterRender extends FBORender implements OnTextureAcceptableListener {
+public class FilterRender extends FBORender {
 
-    protected IBitmapCache mBitmapCache;
+    protected IBitmapCache mBitmapCache = LruBitmapCache.getSingleInstance();
 
     /**
      * 设置图片缓存
@@ -25,11 +25,12 @@ public class FilterRender extends FBORender implements OnTextureAcceptableListen
         mBitmapCache = bitmapCache;
     }
 
-    @Override
-    public void onTextureAcceptable(int texture, FBORender source) {
-        mTextureIn = texture;
-        setWidth(source.getWidth());
-        setHeight(source.getHeight());
-        onDrawFrame();
+    /**
+     * 获取图片缓存
+     *
+     * @return
+     */
+    public IBitmapCache getBitmapCache() {
+        return mBitmapCache;
     }
 }

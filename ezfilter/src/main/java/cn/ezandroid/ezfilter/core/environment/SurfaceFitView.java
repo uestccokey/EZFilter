@@ -1,37 +1,36 @@
-package cn.ezandroid.ezfilter.environment;
+package cn.ezandroid.ezfilter.core.environment;
 
 import android.content.Context;
-import android.opengl.GLSurfaceView;
 import android.util.AttributeSet;
 
 import cn.ezandroid.ezfilter.core.FBORender;
 import cn.ezandroid.ezfilter.core.RenderPipeline;
 
 /**
- * 支持自适应布局的GLTextureView
+ * 支持自适应布局的GLSurfaceView
  *
  * @author like
  * @date 2017-09-15
  */
-public class TextureFitView extends GLTextureView implements IFitView {
+public class SurfaceFitView extends GLSurfaceView implements IFitView {
 
     private RenderPipeline mPipeline;
 
     private FitViewHelper mHelper;
 
-    public TextureFitView(final Context context) {
+    public SurfaceFitView(final Context context) {
         this(context, null);
         init();
     }
 
-    public TextureFitView(final Context context, AttributeSet attr) {
+    public SurfaceFitView(final Context context, AttributeSet attr) {
         super(context, attr);
         init();
     }
 
     private void init() {
-        setDebugFlags(GLSurfaceView.DEBUG_CHECK_GL_ERROR
-                | GLSurfaceView.DEBUG_LOG_GL_CALLS);
+        setDebugFlags(android.opengl.GLSurfaceView.DEBUG_CHECK_GL_ERROR
+                | android.opengl.GLSurfaceView.DEBUG_LOG_GL_CALLS);
         setEGLContextClientVersion(2);
         mHelper = new FitViewHelper();
 
@@ -47,7 +46,7 @@ public class TextureFitView extends GLTextureView implements IFitView {
      */
     @Override
     public void initRenderPipeline(FBORender startPointRender) {
-        mPipeline.pauseRender();
+//        mPipeline.pauseRender();
         if (startPointRender != null) {
             mPipeline.setStartPointRender(startPointRender);
         }

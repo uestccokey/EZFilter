@@ -7,6 +7,7 @@ import java.util.List;
 
 import cn.ezandroid.ezfilter.core.FBORender;
 import cn.ezandroid.ezfilter.core.FilterRender;
+import cn.ezandroid.ezfilter.core.GLRender;
 
 /**
  * 多输入滤镜渲染器
@@ -21,8 +22,8 @@ public class MultiInputFilterRender extends FilterRender {
     private int mNumOfInputs;
     private int[] mMultiTextureHandle;
     private int[] mMultiTexture;
-    protected List<FBORender> mTexturesReceived;
-    protected List<FBORender> mFilterLocations;
+    protected List<GLRender> mTexturesReceived;
+    protected List<GLRender> mFilterLocations;
 
     public MultiInputFilterRender(int numOfInputs) {
         super();
@@ -34,7 +35,7 @@ public class MultiInputFilterRender extends FilterRender {
     }
 
     @Override
-    public synchronized void onTextureAcceptable(int texture, FBORender source) {
+    public synchronized void onTextureAcceptable(int texture, GLRender source) {
         if (!mTexturesReceived.contains(source)) {
             mTexturesReceived.add(source);
         }

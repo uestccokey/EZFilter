@@ -15,10 +15,11 @@ import cn.ezandroid.ezfilter.camera.Camera2Builder;
 import cn.ezandroid.ezfilter.camera.CameraBuilder;
 import cn.ezandroid.ezfilter.core.FBORender;
 import cn.ezandroid.ezfilter.core.FilterRender;
+import cn.ezandroid.ezfilter.core.GLRender;
 import cn.ezandroid.ezfilter.core.RenderPipeline;
 import cn.ezandroid.ezfilter.core.cache.IBitmapCache;
 import cn.ezandroid.ezfilter.core.cache.LruBitmapCache;
-import cn.ezandroid.ezfilter.environment.IFitView;
+import cn.ezandroid.ezfilter.core.environment.IFitView;
 import cn.ezandroid.ezfilter.extra.IAdjustable;
 import cn.ezandroid.ezfilter.image.BitmapBuilder;
 import cn.ezandroid.ezfilter.media.record.RecordableEndPointRender;
@@ -196,25 +197,34 @@ public class EZFilter {
         /**
          * 渲染到View中
          *
-         * @param view 要渲染到的View
+         * @param view  要渲染到的View
+         * @param clean 是否要清空渲染管道
          * @return 渲染管道
          */
-        public RenderPipeline into(IFitView view) {
+        public RenderPipeline into(IFitView view, boolean clean) {
             RenderPipeline pipeline = view.getRenderPipeline();
-            // 如果渲染管道不为空，确保渲染管道是干净的
-            if (pipeline != null) {
+            if (pipeline != null && clean) {
                 pipeline.clean();
             }
 
             view.initRenderPipeline(getStartPointRender(view));
 
             pipeline = view.getRenderPipeline();
+
+            float aspectRatio = getAspectRatio(view);
+            boolean change = view.setAspectRatio(aspectRatio, 0, 0);
+            view.requestRender();
+
             if (pipeline != null) {
+                pipeline.clearEndPointRenders();
+
+                // 添加用于显示的终点渲染器
+                pipeline.addEndPointRender(new GLRender());
+
+                // 要支持录制时，添加用于录制的终点渲染器
                 if (mEnableRecordVideo || mEnableRecordAudio) {
-                    if (!(pipeline.getEndPointRender() instanceof RecordableEndPointRender)) {
-                        pipeline.setEndPointRender(new RecordableEndPointRender(mOutputPath,
-                                mEnableRecordVideo, mEnableRecordAudio));
-                    }
+                    pipeline.addEndPointRender(new RecordableEndPointRender(mOutputPath,
+                            mEnableRecordVideo, mEnableRecordAudio));
                 }
 
                 for (FilterRender filterRender : mFilterRenders) {
@@ -223,14 +233,21 @@ public class EZFilter {
                 pipeline.startRender();
             }
 
-            float aspectRatio = getAspectRatio(view);
-            boolean change = view.setAspectRatio(aspectRatio, 0, 0);
-            view.requestRender();
             if (change) {
                 // 确保requestLayout()在主线程调用
                 mMainHandler.post(view::requestLayout);
             }
             return pipeline;
+        }
+
+        /**
+         * 渲染到View中
+         *
+         * @param view 要渲染到的View
+         * @return 渲染管道
+         */
+        public RenderPipeline into(IFitView view) {
+            return into(view, true);
         }
     }
 }

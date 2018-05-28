@@ -1,36 +1,38 @@
-package cn.ezandroid.ezfilter.environment;
+package cn.ezandroid.ezfilter.core.environment;
 
 import android.content.Context;
+import android.opengl.GLSurfaceView;
 import android.util.AttributeSet;
+import android.view.View;
 
 import cn.ezandroid.ezfilter.core.FBORender;
 import cn.ezandroid.ezfilter.core.RenderPipeline;
 
 /**
- * 支持自适应布局的GLSurfaceView
+ * 支持自适应布局的GLTextureView
  *
  * @author like
  * @date 2017-09-15
  */
-public class SurfaceFitView extends GLSurfaceView implements IFitView {
+public class TextureFitView extends GLTextureView implements IFitView {
 
     private RenderPipeline mPipeline;
 
     private FitViewHelper mHelper;
 
-    public SurfaceFitView(final Context context) {
+    public TextureFitView(final Context context) {
         this(context, null);
         init();
     }
 
-    public SurfaceFitView(final Context context, AttributeSet attr) {
+    public TextureFitView(final Context context, AttributeSet attr) {
         super(context, attr);
         init();
     }
 
     private void init() {
-        setDebugFlags(android.opengl.GLSurfaceView.DEBUG_CHECK_GL_ERROR
-                | android.opengl.GLSurfaceView.DEBUG_LOG_GL_CALLS);
+        setDebugFlags(GLSurfaceView.DEBUG_CHECK_GL_ERROR
+                | GLSurfaceView.DEBUG_LOG_GL_CALLS);
         setEGLContextClientVersion(2);
         mHelper = new FitViewHelper();
 
@@ -46,7 +48,7 @@ public class SurfaceFitView extends GLSurfaceView implements IFitView {
      */
     @Override
     public void initRenderPipeline(FBORender startPointRender) {
-        mPipeline.pauseRender();
+//        mPipeline.pauseRender();
         if (startPointRender != null) {
             mPipeline.setStartPointRender(startPointRender);
         }
@@ -147,12 +149,12 @@ public class SurfaceFitView extends GLSurfaceView implements IFitView {
 
     @Override
     protected void onMeasure(int widthSpec, int heightSpec) {
-        int previewWidth = MeasureSpec.getSize(widthSpec);
-        int previewHeight = MeasureSpec.getSize(heightSpec);
+        int previewWidth = View.MeasureSpec.getSize(widthSpec);
+        int previewHeight = View.MeasureSpec.getSize(heightSpec);
 
         // 计算预览区域大小
         mHelper.calculatePreviewSize(previewWidth, previewHeight);
-        super.onMeasure(MeasureSpec.makeMeasureSpec(mHelper.getPreviewWidth(), MeasureSpec.EXACTLY),
-                MeasureSpec.makeMeasureSpec(mHelper.getPreviewHeight(), MeasureSpec.EXACTLY));
+        super.onMeasure(View.MeasureSpec.makeMeasureSpec(mHelper.getPreviewWidth(), View.MeasureSpec.EXACTLY),
+                View.MeasureSpec.makeMeasureSpec(mHelper.getPreviewHeight(), View.MeasureSpec.EXACTLY));
     }
 }

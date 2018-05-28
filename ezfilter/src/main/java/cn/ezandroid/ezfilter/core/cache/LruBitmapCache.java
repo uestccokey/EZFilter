@@ -11,6 +11,8 @@ import android.util.LruCache;
  */
 public class LruBitmapCache implements IBitmapCache {
 
+    private static LruBitmapCache sInstance = new LruBitmapCache((int) (Runtime.getRuntime().maxMemory() / 8));
+
     private LruCache<String, Bitmap> mLruCache;
 
     public LruBitmapCache(int size) {
@@ -20,6 +22,10 @@ public class LruBitmapCache implements IBitmapCache {
                 return value.getRowBytes() * value.getHeight();
             }
         };
+    }
+
+    public static LruBitmapCache getSingleInstance() {
+        return sInstance;
     }
 
     @Override

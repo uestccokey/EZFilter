@@ -27,9 +27,7 @@ import javax.microedition.khronos.opengles.GL10;
 
 import cn.ezandroid.ezfilter.camera.util.CameraUtil;
 import cn.ezandroid.ezfilter.core.FBORender;
-import cn.ezandroid.ezfilter.core.ISupportTakePhoto;
-import cn.ezandroid.ezfilter.core.PhotoTakenCallback;
-import cn.ezandroid.ezfilter.environment.IGLEnvironment;
+import cn.ezandroid.ezfilter.core.environment.IGLEnvironment;
 
 /**
  * CameraDevice输入
@@ -185,7 +183,7 @@ public class Camera2Input extends FBORender implements SurfaceTexture.OnFrameAva
             e.printStackTrace();
         }
 
-//        setRenderSize(mPreviewSize.getHeight(), mPreviewSize.getWidth());
+        setRenderSize(mPreviewSize.getHeight(), mPreviewSize.getWidth());
     }
 
     private CameraCaptureSession.StateCallback mSessionPreviewStateCallback = new

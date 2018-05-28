@@ -1,4 +1,4 @@
-package cn.ezandroid.ezfilter.core;
+package cn.ezandroid.ezfilter.camera;
 
 /**
  * 支持拍照接口

@@ -3,8 +3,8 @@ package cn.ezandroid.ezfilter.extra;
 import java.util.ArrayList;
 import java.util.List;
 
-import cn.ezandroid.ezfilter.core.FBORender;
 import cn.ezandroid.ezfilter.core.FilterRender;
+import cn.ezandroid.ezfilter.core.GLRender;
 import cn.ezandroid.ezfilter.core.OnTextureAcceptableListener;
 
 /**
@@ -17,80 +17,92 @@ import cn.ezandroid.ezfilter.core.OnTextureAcceptableListener;
  */
 public class GroupFilterRender extends FilterRender {
 
-    protected List<FilterRender> mInitialFilters;
-    protected List<FilterRender> mFilters;
-    protected List<FilterRender> mTerminalFilters;
+    protected final List<GLRender> mFilters = new ArrayList<>();
+
+    protected final List<GLRender> mInitialFilters = new ArrayList<>();
+    protected final List<GLRender> mTerminalFilters = new ArrayList<>();
 
     public GroupFilterRender() {
-        mInitialFilters = new ArrayList<>();
-        mTerminalFilters = new ArrayList<>();
-        mFilters = new ArrayList<>();
     }
 
     @Override
     public void destroy() {
         super.destroy();
-        for (FilterRender filter : mFilters) {
-            filter.destroy();
+        synchronized (mFilters) {
+            for (GLRender filter : mFilters) {
+                filter.destroy();
+            }
         }
     }
 
     @Override
     public void reInit() {
-        for (FilterRender filter : mFilters) {
-            filter.reInit();
+        synchronized (mFilters) {
+            for (GLRender filter : mFilters) {
+                filter.reInit();
+            }
         }
     }
 
     @Override
     public void setRenderSize(int width, int height) {
-        for (FilterRender filter : mFilters) {
-            filter.setRenderSize(width, height);
+        synchronized (mFilters) {
+            for (GLRender filter : mFilters) {
+                filter.setRenderSize(width, height);
+            }
         }
     }
 
     @Override
-    public void onTextureAcceptable(int texture, FBORender source) {
+    public void onTextureAcceptable(int texture, GLRender source) {
         if (mTerminalFilters.contains(source)) {
             setWidth(source.getWidth());
             setHeight(source.getHeight());
-            synchronized (getTargets()) {
-                for (OnTextureAcceptableListener target : getTargets()) {
+            synchronized (mTargets) {
+                for (OnTextureAcceptableListener target : mTargets) {
                     target.onTextureAcceptable(texture, this);
                 }
             }
         } else {
-            for (FilterRender initialFilter : mInitialFilters) {
-                initialFilter.onTextureAcceptable(texture, source);
+            synchronized (mInitialFilters) {
+                for (GLRender initialFilter : mInitialFilters) {
+                    initialFilter.onTextureAcceptable(texture, source);
+                }
             }
         }
     }
 
-    public void registerFilter(FilterRender filter) {
-        if (!mFilters.contains(filter)) {
-            mFilters.add(filter);
+    public void registerFilter(GLRender filter) {
+        synchronized (mFilters) {
+            if (!mFilters.contains(filter)) {
+                mFilters.add(filter);
+            }
         }
     }
 
-    public void registerInitialFilter(FilterRender filter) {
-        mInitialFilters.add(filter);
-        registerFilter(filter);
+    public void registerInitialFilter(GLRender filter) {
+        synchronized (mInitialFilters) {
+            mInitialFilters.add(filter);
+            registerFilter(filter);
+        }
     }
 
-    public void registerTerminalFilter(FilterRender filter) {
-        mTerminalFilters.add(filter);
-        registerFilter(filter);
+    public void registerTerminalFilter(GLRender filter) {
+        synchronized (mTerminalFilters) {
+            mTerminalFilters.add(filter);
+            registerFilter(filter);
+        }
     }
 
-    public List<FilterRender> getFilters() {
+    public List<GLRender> getFilters() {
         return mFilters;
     }
 
-    public List<FilterRender> getInitialFilters() {
+    public List<GLRender> getInitialFilters() {
         return mInitialFilters;
     }
 
-    public List<FilterRender> getTerminalFilters() {
+    public List<GLRender> getTerminalFilters() {
         return mTerminalFilters;
     }
 }

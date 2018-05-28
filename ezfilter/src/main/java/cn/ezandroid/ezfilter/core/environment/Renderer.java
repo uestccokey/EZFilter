@@ -1,4 +1,4 @@
-package cn.ezandroid.ezfilter.environment;
+package cn.ezandroid.ezfilter.core.environment;
 
 import javax.microedition.khronos.egl.EGLConfig;
 import javax.microedition.khronos.opengles.GL10;

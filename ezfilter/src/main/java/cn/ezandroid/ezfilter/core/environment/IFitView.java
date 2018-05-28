@@ -1,4 +1,4 @@
-package cn.ezandroid.ezfilter.environment;
+package cn.ezandroid.ezfilter.core.environment;
 
 import android.content.Context;
 

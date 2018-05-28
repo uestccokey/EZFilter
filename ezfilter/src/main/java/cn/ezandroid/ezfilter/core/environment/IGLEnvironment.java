@@ -1,4 +1,4 @@
-package cn.ezandroid.ezfilter.environment;
+package cn.ezandroid.ezfilter.core.environment;
 
 /**
  * 渲染环境接口

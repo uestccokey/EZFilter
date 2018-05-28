@@ -14,7 +14,7 @@ import java.util.List;
  * @author like
  * @date 2017-09-15
  */
-public class FBORender extends AbstractRender {
+public class FBORender extends GLRender {
 
     protected int[] mFrameBuffer;
     protected int[] mTextureOut;

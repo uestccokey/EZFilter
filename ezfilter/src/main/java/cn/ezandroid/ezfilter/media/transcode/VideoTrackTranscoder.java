@@ -5,7 +5,8 @@ import android.media.MediaExtractor;
 import android.media.MediaFormat;
 
 import java.io.IOException;
-import java.nio.ByteBuffer;
+
+import cn.ezandroid.ezfilter.media.util.CodecUtil;
 
 /**
  * 视轨转码器
@@ -28,8 +29,6 @@ public class VideoTrackTranscoder implements TrackTranscoder {
     private final MediaCodec.BufferInfo mBufferInfo = new MediaCodec.BufferInfo();
     private MediaCodec mDecoder;
     private MediaCodec mEncoder;
-    private ByteBuffer[] mDecoderInputBuffers;
-    private ByteBuffer[] mEncoderOutputBuffers;
     private MediaFormat mActualOutputFormat;
 
     private boolean mIsExtractorEOS;
@@ -67,7 +66,6 @@ public class VideoTrackTranscoder implements TrackTranscoder {
         mEncoderInputSurfaceWrapper = new InputSurface(mEncoder.createInputSurface());
         mEncoder.start();
         mEncoderStarted = true;
-        mEncoderOutputBuffers = mEncoder.getOutputBuffers();
 
         MediaFormat inputFormat = mExtractor.getTrackFormat(mTrackIndex);
 //        if (inputFormat.containsKey(MediaUtil.KEY_ROTATION)) {
@@ -83,7 +81,6 @@ public class VideoTrackTranscoder implements TrackTranscoder {
         mDecoder.configure(inputFormat, mDecoderOutputSurfaceWrapper.getSurface(), null, 0);
         mDecoder.start();
         mDecoderStarted = true;
-        mDecoderInputBuffers = mDecoder.getInputBuffers();
     }
 
     @Override
@@ -91,14 +88,14 @@ public class VideoTrackTranscoder implements TrackTranscoder {
         boolean busy = false;
 
         int status;
-        while (drainEncoder(0) != DRAIN_STATE_NONE) busy = true;
+        while (drainEncoder() != DRAIN_STATE_NONE) busy = true;
         do {
-            status = drainDecoder(0);
+            status = drainDecoder();
             if (status != DRAIN_STATE_NONE) busy = true;
             // NOTE: not repeating to keep from deadlock when encoder is full.
         } while (status == DRAIN_STATE_SHOULD_RETRY_IMMEDIATELY);
 
-        while (drainExtractor(0) != DRAIN_STATE_NONE) busy = true;
+        while (drainExtractor() != DRAIN_STATE_NONE) busy = true;
 
         return busy;
     }
@@ -130,14 +127,14 @@ public class VideoTrackTranscoder implements TrackTranscoder {
         }
     }
 
-    private int drainExtractor(long timeoutUs) {
+    private int drainExtractor() {
         if (mIsExtractorEOS) return DRAIN_STATE_NONE;
         int trackIndex = mExtractor.getSampleTrackIndex();
         if (trackIndex >= 0 && trackIndex != mTrackIndex) {
             return DRAIN_STATE_NONE;
         }
 
-        int result = mDecoder.dequeueInputBuffer(timeoutUs);
+        int result = mDecoder.dequeueInputBuffer(0);
         if (result < 0) return DRAIN_STATE_NONE;
         if (trackIndex < 0) {
             mIsExtractorEOS = true;
@@ -145,17 +142,25 @@ public class VideoTrackTranscoder implements TrackTranscoder {
             return DRAIN_STATE_NONE;
         }
 
-        int sampleSize = mExtractor.readSampleData(mDecoderInputBuffers[result], 0);
+        int sampleSize = mExtractor.readSampleData(CodecUtil.getInputBuffer(mDecoder, result), 0);
         boolean isKeyFrame = (mExtractor.getSampleFlags() & MediaExtractor.SAMPLE_FLAG_SYNC) != 0;
-        mDecoder.queueInputBuffer(result, 0, sampleSize, mExtractor.getSampleTime(), isKeyFrame ? MediaCodec.BUFFER_FLAG_SYNC_FRAME : 0);
+        mDecoder.queueInputBuffer(result, 0, sampleSize, mExtractor.getSampleTime(),
+                isKeyFrame ? MediaCodec.BUFFER_FLAG_SYNC_FRAME : 0);
         mExtractor.advance();
         return DRAIN_STATE_CONSUMED;
     }
 
-    private int drainDecoder(long timeoutUs) {
+    private int drainDecoder() {
         if (mIsDecoderEOS) return DRAIN_STATE_NONE;
 
-        int result = mDecoder.dequeueOutputBuffer(mBufferInfo, timeoutUs);
+        int result;
+        try {
+            result = mDecoder.dequeueOutputBuffer(mBufferInfo, 0);
+        } catch (Exception e) {
+            e.printStackTrace();
+
+            result = MediaCodec.INFO_TRY_AGAIN_LATER;
+        }
         switch (result) {
             case MediaCodec.INFO_TRY_AGAIN_LATER:
                 return DRAIN_STATE_NONE;
@@ -184,10 +189,17 @@ public class VideoTrackTranscoder implements TrackTranscoder {
         return DRAIN_STATE_CONSUMED;
     }
 
-    private int drainEncoder(long timeoutUs) {
+    private int drainEncoder() {
         if (mIsEncoderEOS) return DRAIN_STATE_NONE;
 
-        int result = mEncoder.dequeueOutputBuffer(mBufferInfo, timeoutUs);
+        int result;
+        try {
+            result = mEncoder.dequeueOutputBuffer(mBufferInfo, 0);
+        } catch (Exception e) {
+            e.printStackTrace();
+
+            result = MediaCodec.INFO_TRY_AGAIN_LATER;
+        }
         switch (result) {
             case MediaCodec.INFO_TRY_AGAIN_LATER:
                 return DRAIN_STATE_NONE;
@@ -199,7 +211,6 @@ public class VideoTrackTranscoder implements TrackTranscoder {
                 mMuxer.setOutputFormat(QueuedMuxer.SampleType.VIDEO, mActualOutputFormat);
                 return DRAIN_STATE_SHOULD_RETRY_IMMEDIATELY;
             case MediaCodec.INFO_OUTPUT_BUFFERS_CHANGED:
-                mEncoderOutputBuffers = mEncoder.getOutputBuffers();
                 return DRAIN_STATE_SHOULD_RETRY_IMMEDIATELY;
         }
 
@@ -216,7 +227,7 @@ public class VideoTrackTranscoder implements TrackTranscoder {
             mEncoder.releaseOutputBuffer(result, false);
             return DRAIN_STATE_SHOULD_RETRY_IMMEDIATELY;
         }
-        mMuxer.writeSampleData(QueuedMuxer.SampleType.VIDEO, mEncoderOutputBuffers[result], mBufferInfo);
+        mMuxer.writeSampleData(QueuedMuxer.SampleType.VIDEO, CodecUtil.getOutputBuffer(mEncoder, result), mBufferInfo);
         mEncoder.releaseOutputBuffer(result, false);
         return DRAIN_STATE_CONSUMED;
     }

@@ -14,7 +14,7 @@ import java.io.IOException;
 import javax.microedition.khronos.opengles.GL10;
 
 import cn.ezandroid.ezfilter.core.FBORender;
-import cn.ezandroid.ezfilter.environment.IGLEnvironment;
+import cn.ezandroid.ezfilter.core.environment.IGLEnvironment;
 import cn.ezandroid.ezfilter.video.player.DefaultMediaPlayer;
 import cn.ezandroid.ezfilter.video.player.IMediaPlayer;
 
@@ -30,6 +30,7 @@ public class VideoInput extends FBORender implements SurfaceTexture.OnFrameAvail
 
     private IMediaPlayer mPlayer;
     private SurfaceTexture mSurfaceTexture;
+    private Surface mSurface;
 
     private Uri mVideoUri;
 
@@ -38,7 +39,7 @@ public class VideoInput extends FBORender implements SurfaceTexture.OnFrameAvail
 
     private IGLEnvironment mRender;
 
-    private boolean mStartWhenReady;
+    private boolean mStartWhenReady = true;
     private boolean mReady;
 
     private float mVideoVolumeLeft = 1.0f;
@@ -116,11 +117,13 @@ public class VideoInput extends FBORender implements SurfaceTexture.OnFrameAvail
             mPlayer.setOnPreparedListener(var1 -> {
                 mReady = true;
                 if (mStartWhenReady) {
-                    mPlayer.start();
+                    var1.start();
                 }
 
+                setRenderSize(mPlayer.getVideoWidth(), mPlayer.getVideoHeight());
+
                 if (mPreparedListener != null) {
-                    mPreparedListener.onPrepared(mPlayer);
+                    mPreparedListener.onPrepared(var1);
                 }
             });
             mPlayer.setOnCompletionListener(var1 -> {
@@ -142,6 +145,10 @@ public class VideoInput extends FBORender implements SurfaceTexture.OnFrameAvail
 
     public Uri getVideoUri() {
         return mVideoUri;
+    }
+
+    public void setStartWhenReady(boolean startWhenReady) {
+        mStartWhenReady = startWhenReady;
     }
 
     public void setLoop(boolean isLoop) {
@@ -206,8 +213,8 @@ public class VideoInput extends FBORender implements SurfaceTexture.OnFrameAvail
         mSurfaceTexture = new SurfaceTexture(mTextureIn);
         mSurfaceTexture.setOnFrameAvailableListener(this);
 
-        Surface surface = new Surface(mSurfaceTexture);
-        mPlayer.setSurface(surface);
+        mSurface = new Surface(mSurfaceTexture);
+        mPlayer.setSurface(mSurface);
 
         // 在主线程执行prepareAsync，因为某些Player的实现在异步线程调用prepareAsync时可能崩溃
         new Handler(Looper.getMainLooper()).post(() -> {
@@ -311,6 +318,10 @@ public class VideoInput extends FBORender implements SurfaceTexture.OnFrameAvail
         if (mSurfaceTexture != null) {
             mSurfaceTexture.release();
             mSurfaceTexture = null;
+        }
+        if (mSurface != null) {
+            mSurface.release();
+            mSurface = null;
         }
         if (mTextureIn != 0) {
             int[] tex = new int[1];

@@ -14,9 +14,9 @@ import com.zhihu.matisse.engine.impl.PicassoEngine;
 import java.util.List;
 
 import cn.ezandroid.ezfilter.EZFilter;
+import cn.ezandroid.ezfilter.core.environment.SurfaceFitView;
 import cn.ezandroid.ezfilter.demo.render.BWRender;
 import cn.ezandroid.ezfilter.demo.render.WobbleRender;
-import cn.ezandroid.ezfilter.environment.SurfaceFitView;
 
 /**
  * VideoOffscreenActivity

@@ -1,4 +1,4 @@
-package cn.ezandroid.ezfilter.core;
+package cn.ezandroid.ezfilter.media.record;
 
 /**
  * 支持录制接口
@@ -30,6 +30,15 @@ public interface ISupportRecord {
      * @param enable
      */
     default void enableRecordVideo(boolean enable) {
+    }
+
+    /**
+     * 设置视频录制宽高
+     *
+     * @param width
+     * @param height
+     */
+    default void setRecordSize(int width, int height) {
     }
 
     /**
