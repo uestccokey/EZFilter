@@ -39,9 +39,9 @@ android {
 }
 
 dependencies {
-    compile 'cn.ezandroid:EZFilter:1.6.0' // Gradle version < 3.0
+    compile 'cn.ezandroid:EZFilter:2.0.0' // Gradle version < 3.0
     // or
-    implementation 'cn.ezandroid:EZFilter:1.6.0' // Gradle version >= 3.0
+    implementation 'cn.ezandroid:EZFilter:2.0.0' // Gradle version >= 3.0
 }
 ```
 
@@ -98,26 +98,5 @@ mPipeline.output(new BitmapOutput.BitmapOutputCallback() {
     }, width, height, true);
 view.requestRender();
 ```
-
-in addition, if `enableRecord` is called, you can record a video by the `RenderPipeline` object.
-
-``` java
-mPipeline = EZFilter.input(camera)
-                .addFilter(filter)
-                .enableRecord(path, true, true)
-                .into(view);
-
-// start recording
-mPipeline.startRecording()
-
-// stop recording
-mPipeline.stopRecording()
-
-mPipeline.enableRecordVideo(enable);
-
-mPipeline.enableRecordAudio(enable);
-
-// set output path
-mPipeline.setRecordOutputPath(path);
-```
+Other functions, such as recording videos, adding dynamic stickers, etc., please refer to demo.
 

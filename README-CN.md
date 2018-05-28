@@ -40,9 +40,9 @@ android {
 }
 
 dependencies {
-    compile 'cn.ezandroid:EZFilter:1.6.0' // Gradle 3.0以下
+    compile 'cn.ezandroid:EZFilter:2.0.0' // Gradle 3.0以下
     // 或者
-    implementation 'cn.ezandroid:EZFilter:1.6.0' // Gradle3.0及以上
+    implementation 'cn.ezandroid:EZFilter:2.0.0' // Gradle3.0及以上
 }
 ```
 
@@ -99,28 +99,6 @@ mPipeline.output(new BitmapOutput.BitmapOutputCallback() {
     }, width, height, true);
 view.requestRender();
 ```
+其他功能，如录制视频，添加动态贴纸等，请参考Demo工程。
 
-另外，假如`enableRecord`被调用过，那么你也可以使用该对象可以进行视频录制
-
-``` java
-mPipeline = EZFilter.input(camera)
-                .addFilter(filter)
-                .enableRecord(path, true, true)
-                .into(view);
-
-// 开始录制
-mPipeline.startRecording()
-
-// 结束录制
-mPipeline.stopRecording()
-
-// 修改影像录制开关
-mPipeline.enableRecordVideo(enable);
-
-// 修改音频录制开关
-mPipeline.enableRecordAudio(enable);
-
-// 修改录制输出路径
-mPipeline.setRecordOutputPath(path);
-```
 
