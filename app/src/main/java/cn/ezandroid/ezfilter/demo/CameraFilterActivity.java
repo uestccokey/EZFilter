@@ -19,6 +19,10 @@ import java.io.IOException;
 import java.util.List;
 
 import cn.ezandroid.ezfilter.EZFilter;
+import cn.ezandroid.ezfilter.camera.ISupportTakePhoto;
+import cn.ezandroid.ezfilter.camera.PhotoTakenCallback;
+import cn.ezandroid.ezfilter.core.FBORender;
+import cn.ezandroid.ezfilter.core.GLRender;
 import cn.ezandroid.ezfilter.core.RenderPipeline;
 import cn.ezandroid.ezfilter.core.environment.FitViewHelper;
 import cn.ezandroid.ezfilter.core.environment.GLTextureView;
@@ -26,6 +30,7 @@ import cn.ezandroid.ezfilter.core.environment.TextureFitView;
 import cn.ezandroid.ezfilter.core.output.BitmapOutput;
 import cn.ezandroid.ezfilter.demo.render.BWRender;
 import cn.ezandroid.ezfilter.demo.render.WobbleRender;
+import cn.ezandroid.ezfilter.media.record.ISupportRecord;
 
 /**
  * CameraFilterActivity
@@ -51,6 +56,9 @@ public class CameraFilterActivity extends BaseActivity {
     private MyOrientationEventListener mOrientationEventListener;
 
     private int mOrientation;
+
+    private ISupportTakePhoto mSupportTakePhoto;
+    private ISupportRecord mSupportRecord;
 
     private class MyOrientationEventListener extends OrientationEventListener {
 
@@ -100,28 +108,31 @@ public class CameraFilterActivity extends BaseActivity {
             }
         });
 
-//        $(R.id.take_photo).setOnClickListener(new View.OnClickListener() {
-//            @Override
-//            public void onClick(View v) {
-//                mRenderPipeline.takePhoto(mCurrentCameraId == Camera.CameraInfo.CAMERA_FACING_FRONT, mOrientation,
-//                        new PhotoTakenCallback() {
-//                            @Override
-//                            public void onPhotoTaken(Bitmap bitmap) {
-//                                saveBitmap(bitmap);
-//
-//                                final Bitmap bitmap2 = EZFilter.input(bitmap)
-//                                        .addFilter(new BWRender(CameraFilterActivity.this), 0.5f)
-//                                        .addFilter(new WobbleRender())
-//                                        .output(); // 添加滤镜
-//
-//                                saveBitmap(bitmap2);  // 保存滤镜后的图
-//
-//                                releaseCamera();
-//                                openCamera(mCurrentCameraId);
-//                            }
-//                        });
-//            }
-//        });
+        $(R.id.take_photo).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if (mSupportTakePhoto == null) {
+                    return;
+                }
+                mSupportTakePhoto.takePhoto(mCurrentCameraId == Camera.CameraInfo.CAMERA_FACING_FRONT, mOrientation,
+                        new PhotoTakenCallback() {
+                            @Override
+                            public void onPhotoTaken(Bitmap bitmap) {
+                                saveBitmap(bitmap);
+
+                                final Bitmap bitmap2 = EZFilter.input(bitmap)
+                                        .addFilter(new BWRender(CameraFilterActivity.this), 0.5f)
+                                        .addFilter(new WobbleRender())
+                                        .output(); // 添加滤镜
+
+                                saveBitmap(bitmap2);  // 保存滤镜后的图
+
+                                releaseCamera();
+                                openCamera(mCurrentCameraId);
+                            }
+                        });
+            }
+        });
 
         $(R.id.capture).setOnClickListener(new View.OnClickListener() {
             @Override
@@ -140,16 +151,18 @@ public class CameraFilterActivity extends BaseActivity {
             }
         });
 
-//        mRecordButton.setOnClickListener(new View.OnClickListener() {
-//            @Override
-//            public void onClick(View v) {
-//                if (mRenderPipeline.isRecording()) {
-//                    stopRecording();
-//                } else {
-//                    startRecording();
-//                }
-//            }
-//        });
+        mRecordButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if (mSupportRecord != null) {
+                    if (mSupportRecord.isRecording()) {
+                        stopRecording();
+                    } else {
+                        startRecording();
+                    }
+                }
+            }
+        });
     }
 
     private void saveBitmap(Bitmap bitmap) {
@@ -187,15 +200,19 @@ public class CameraFilterActivity extends BaseActivity {
         }
     }
 
-//    private void startRecording() {
-//        mRecordButton.setText("停止");
-//        mRenderPipeline.startRecording();
-//    }
-//
-//    private void stopRecording() {
-//        mRecordButton.setText("录制");
-//        mRenderPipeline.stopRecording();
-//    }
+    private void startRecording() {
+        mRecordButton.setText("停止");
+        if (mSupportRecord != null) {
+            mSupportRecord.startRecording();
+        }
+    }
+
+    private void stopRecording() {
+        mRecordButton.setText("录制");
+        if (mSupportRecord != null) {
+            mSupportRecord.stopRecording();
+        }
+    }
 
     private void setCameraParameters() {
         Camera.Parameters parameters = mCamera.getParameters();
@@ -255,6 +272,16 @@ public class CameraFilterActivity extends BaseActivity {
                 .addFilter(new WobbleRender())
                 .enableRecord("/sdcard/recordCamera.mp4", true, true) // 支持录制为视频
                 .into(mRenderView);
+
+        FBORender startRender = mRenderPipeline.getStartPointRender();
+        if (startRender instanceof ISupportTakePhoto) {
+            mSupportTakePhoto = (ISupportTakePhoto) startRender;
+        }
+        for (GLRender render : mRenderPipeline.getEndPointRenders()) {
+            if (render instanceof ISupportRecord) {
+                mSupportRecord = (ISupportRecord) render;
+            }
+        }
     }
 
     private void releaseCamera() {

@@ -10,10 +10,12 @@ import android.widget.Button;
 import android.widget.ImageView;
 
 import cn.ezandroid.ezfilter.EZFilter;
+import cn.ezandroid.ezfilter.core.GLRender;
 import cn.ezandroid.ezfilter.core.RenderPipeline;
 import cn.ezandroid.ezfilter.core.environment.SurfaceFitView;
 import cn.ezandroid.ezfilter.core.output.BitmapOutput;
 import cn.ezandroid.ezfilter.demo.render.BWRender;
+import cn.ezandroid.ezfilter.media.record.ISupportRecord;
 import cn.ezandroid.ezfilter.video.VideoInput;
 import cn.ezandroid.ezfilter.video.player.IMediaPlayer;
 
@@ -35,6 +37,8 @@ public class VideoFilterActivity extends BaseActivity {
     private Uri mCurrentUri;
 
     private RenderPipeline mRenderPipeline;
+
+    private ISupportRecord mSupportRecord;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -75,27 +79,33 @@ public class VideoFilterActivity extends BaseActivity {
             }
         });
 
-//        mRecordButton.setOnClickListener(new View.OnClickListener() {
-//            @Override
-//            public void onClick(View v) {
-//                if (mRenderPipeline.isRecording()) {
-//                    stopRecording();
-//                } else {
-//                    startRecording();
-//                }
-//            }
-//        });
+        mRecordButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if (mSupportRecord != null) {
+                    if (mSupportRecord.isRecording()) {
+                        stopRecording();
+                    } else {
+                        startRecording();
+                    }
+                }
+            }
+        });
     }
 
-//    private void startRecording() {
-//        mRecordButton.setText("停止");
-//        mRenderPipeline.startRecording();
-//    }
-//
-//    private void stopRecording() {
-//        mRecordButton.setText("录制");
-//        mRenderPipeline.stopRecording();
-//    }
+    private void startRecording() {
+        mRecordButton.setText("停止");
+        if (mSupportRecord != null) {
+            mSupportRecord.startRecording();
+        }
+    }
+
+    private void stopRecording() {
+        mRecordButton.setText("录制");
+        if (mSupportRecord != null) {
+            mSupportRecord.stopRecording();
+        }
+    }
 
     private void changeVideo() {
         if (mCurrentUri == uri1) {
@@ -123,6 +133,12 @@ public class VideoFilterActivity extends BaseActivity {
                             }
                         })
                         .into(mRenderView);
+
+                for (GLRender render : mRenderPipeline.getEndPointRenders()) {
+                    if (render instanceof ISupportRecord) {
+                        mSupportRecord = (ISupportRecord) render;
+                    }
+                }
             }
         }.start();
     }

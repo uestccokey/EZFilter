@@ -10,6 +10,7 @@ import java.nio.IntBuffer;
 import java.util.List;
 
 import cn.ezandroid.ezfilter.core.FilterRender;
+import cn.ezandroid.ezfilter.core.GLRender;
 import cn.ezandroid.ezfilter.core.RenderPipeline;
 import cn.ezandroid.ezfilter.core.environment.EGLEnvironment;
 import cn.ezandroid.ezfilter.image.BitmapInput;
@@ -50,6 +51,7 @@ public class OffscreenImage {
         mPipeline = new RenderPipeline();
         mPipeline.onSurfaceCreated(null, null);
         mPipeline.setStartPointRender(bitmapInput);
+        mPipeline.addEndPointRender(new GLRender());
     }
 
     public void addFilterRender(FilterRender filterRender) {

@@ -9,12 +9,14 @@ import android.widget.Button;
 import android.widget.ImageView;
 
 import cn.ezandroid.ezfilter.EZFilter;
+import cn.ezandroid.ezfilter.core.GLRender;
 import cn.ezandroid.ezfilter.core.RenderPipeline;
 import cn.ezandroid.ezfilter.core.environment.GLTextureView;
 import cn.ezandroid.ezfilter.core.environment.TextureFitView;
 import cn.ezandroid.ezfilter.core.output.BitmapOutput;
 import cn.ezandroid.ezfilter.demo.render.LookupRender;
 import cn.ezandroid.ezfilter.demo.render.WobbleRender;
+import cn.ezandroid.ezfilter.media.record.ISupportRecord;
 
 /**
  * ImageFilterActivity
@@ -34,6 +36,8 @@ public class ImageFilterActivity extends BaseActivity {
     private Bitmap mCurrentBitmap;
 
     private RenderPipeline mRenderPipeline;
+
+    private ISupportRecord mSupportRecord;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -82,27 +86,33 @@ public class ImageFilterActivity extends BaseActivity {
             }
         });
 
-//        mRecordButton.setOnClickListener(new View.OnClickListener() {
-//            @Override
-//            public void onClick(View v) {
-//                if (mRenderPipeline.isRecording()) {
-//                    stopRecording();
-//                } else {
-//                    startRecording();
-//                }
-//            }
-//        });
+        mRecordButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if (mSupportRecord != null) {
+                    if (mSupportRecord.isRecording()) {
+                        stopRecording();
+                    } else {
+                        startRecording();
+                    }
+                }
+            }
+        });
     }
 
-//    private void startRecording() {
-//        mRecordButton.setText("停止");
-//        mRenderPipeline.startRecording();
-//    }
-//
-//    private void stopRecording() {
-//        mRecordButton.setText("录制");
-//        mRenderPipeline.stopRecording();
-//    }
+    private void startRecording() {
+        mRecordButton.setText("停止");
+        if (mSupportRecord != null) {
+            mSupportRecord.startRecording();
+        }
+    }
+
+    private void stopRecording() {
+        mRecordButton.setText("录制");
+        if (mSupportRecord != null) {
+            mSupportRecord.stopRecording();
+        }
+    }
 
     private void changeBitmap() {
         if (mCurrentBitmap == mBitmap1) {
@@ -116,6 +126,12 @@ public class ImageFilterActivity extends BaseActivity {
                 .addFilter(new WobbleRender())
                 .enableRecord("/sdcard/recordBitmap.mp4", true, false)
                 .into(mRenderView);
+
+        for (GLRender render : mRenderPipeline.getEndPointRenders()) {
+            if (render instanceof ISupportRecord) {
+                mSupportRecord = (ISupportRecord) render;
+            }
+        }
     }
 
     @Override
