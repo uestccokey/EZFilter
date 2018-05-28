@@ -20,16 +20,16 @@ import cn.ezandroid.ezfilter.extra.sticker.model.Sticker;
  */
 public class StickerRender extends FilterRender {
 
-    private Context mContext;
+    protected Context mContext;
 
     // 贴纸模型
-    private Sticker mSticker;
+    protected Sticker mSticker;
 
     // 锚点组
-    private ScreenAnchor mScreenAnchor;
+    protected ScreenAnchor mScreenAnchor;
 
     // 组件绘制器列表
-    private List<ComponentRender> mComponentRenders = new ArrayList<>();
+    protected List<ComponentRender> mComponentRenders = new ArrayList<>();
 
     public StickerRender(Context context) {
         mContext = context;
@@ -77,6 +77,15 @@ public class StickerRender extends FilterRender {
 
         for (ComponentRender componentRender : mComponentRenders) {
             componentRender.setBitmapCache(bitmapCache);
+        }
+    }
+
+    @Override
+    protected void onRenderSizeChanged() {
+        super.onRenderSizeChanged();
+        if (mScreenAnchor != null) {
+            mScreenAnchor.width = mWidth;
+            mScreenAnchor.height = mHeight;
         }
     }
 

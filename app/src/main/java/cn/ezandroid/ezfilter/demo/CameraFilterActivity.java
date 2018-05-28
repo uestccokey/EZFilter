@@ -29,6 +29,7 @@ import cn.ezandroid.ezfilter.core.environment.GLTextureView;
 import cn.ezandroid.ezfilter.core.environment.TextureFitView;
 import cn.ezandroid.ezfilter.core.output.BitmapOutput;
 import cn.ezandroid.ezfilter.demo.render.BWRender;
+import cn.ezandroid.ezfilter.demo.render.TestStickerRender;
 import cn.ezandroid.ezfilter.demo.render.WobbleRender;
 import cn.ezandroid.ezfilter.media.record.ISupportRecord;
 
@@ -268,7 +269,7 @@ public class CameraFilterActivity extends BaseActivity {
         setCameraParameters();
 
         mRenderPipeline = EZFilter.input(mCamera, mCamera.getParameters().getPreviewSize())
-                .addFilter(new BWRender(this), 0.5f)
+                .addFilter(new TestStickerRender(this))
                 .addFilter(new WobbleRender())
                 .enableRecord("/sdcard/recordCamera.mp4", true, true) // 支持录制为视频
                 .into(mRenderView);
