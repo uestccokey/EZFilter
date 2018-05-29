@@ -50,14 +50,14 @@ public class ParticleRender extends FilterRender {
 
         mParticleShaderProgram = new ParticleShaderProgram(mContext);
 
-        mParticleShooter = new ParticleShooter(new Geometry.Point(0, 0, 0),
-                new Geometry.Vector(0.0f, 0.2f, 0.0f),
-                Color.argb(255, 255, 50, 5),
-                32,
+        mParticleShooter = new ParticleShooter(new Geometry.Point(0, 0, 0), 10,
+                new Geometry.Vector(0.0f, 0.2f, 0.0f), 360, 1f,
+                16, 4, 32, 4,
+                0, 10, 360, 10,
+                Color.argb(255, 255, 0, 0), Color.argb(0, 0, 0, 0),
+                Color.argb(255, 0, 0, 255), Color.argb(0, 0, 0, 0),
                 1f,
-                360,
-                1f,
-                0);
+                2);
 
         mTexture = BitmapUtil.bindBitmap(BitmapUtil.loadBitmap(mContext, Path.DRAWABLE.wrap(String.valueOf(R.drawable.texture))));
     }
@@ -87,10 +87,10 @@ public class ParticleRender extends FilterRender {
         mParticleShaderProgram.useProgram(); // 切换到粒子效果渲染程序
 
         if (!mIsPause) {
-            mParticleShooter.addParticles(mParticleSystem, mTimeController.getCurrentTime(), 20);
+            mParticleShooter.addParticles(mParticleSystem, mTimeController.getCurrentTime());
         }
 
-        mParticleShaderProgram.setUniforms(mTimeController.getCurrentTime(), mTexture);
+        mParticleShaderProgram.setUniforms(mTimeController.getCurrentTime(), mTexture, 2);
 
         mParticleSystem.bindData(mParticleShaderProgram);
         mParticleSystem.draw();
