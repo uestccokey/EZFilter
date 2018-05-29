@@ -61,6 +61,11 @@
             android:name=".VideoOffscreenActivity"
             android:screenOrientation="portrait"
             android:theme="@style/AppTheme.Fullscreen" />
+
+        <activity
+            android:name=".ParticleRenderActivity"
+            android:screenOrientation="portrait"
+            android:theme="@style/AppTheme.Fullscreen" />
     </application>
 
 </manifest>
