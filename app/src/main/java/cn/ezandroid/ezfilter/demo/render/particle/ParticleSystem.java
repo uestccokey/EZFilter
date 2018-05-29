@@ -151,7 +151,7 @@ public class ParticleSystem {
                 PARTICLE_FROM_ANGLE_COMPONENT_COUNT, STRIDE);
         dataOffset += PARTICLE_FROM_ANGLE_COMPONENT_COUNT;
 
-        mVertexArray.setVertexAttribPointer(dataOffset, particleProgram.getaParticleToAngleLocation(),
+        mVertexArray.setVertexAttribPointer(dataOffset, particleProgram.getParticleToAngleLocation(),
                 PARTICLE_TO_ANGLE_COMPONENT_COUNT, STRIDE);
         dataOffset += PARTICLE_TO_ANGLE_COMPONENT_COUNT;
 
@@ -171,7 +171,7 @@ public class ParticleSystem {
                 PARTICLE_TO_COLOR_COMPONENT_COUNT, STRIDE);
         dataOffset += PARTICLE_TO_COLOR_COMPONENT_COUNT;
 
-        mVertexArray.setVertexAttribPointer(dataOffset, particleProgram.getaParticleTextureIndexLocation(),
+        mVertexArray.setVertexAttribPointer(dataOffset, particleProgram.getParticleTextureIndexLocation(),
                 PARTICLE_TEXTURE_INDEX_COMPONENT_COUNT, STRIDE);
         dataOffset += PARTICLE_TEXTURE_INDEX_COMPONENT_COUNT;
     }

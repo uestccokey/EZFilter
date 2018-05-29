@@ -1,4 +1,4 @@
-package cn.ezandroid.ezfilter.core.util;
+package cn.ezandroid.ezfilter.demo.util;
 
 import android.text.TextUtils;
 

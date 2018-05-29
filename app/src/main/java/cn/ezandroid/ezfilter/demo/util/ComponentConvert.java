@@ -9,7 +9,6 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
-import cn.ezandroid.ezfilter.core.util.NumberUtil;
 import cn.ezandroid.ezfilter.core.util.Path;
 import cn.ezandroid.ezfilter.extra.sticker.model.Component;
 

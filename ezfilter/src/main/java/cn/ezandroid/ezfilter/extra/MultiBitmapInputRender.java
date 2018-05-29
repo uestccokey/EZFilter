@@ -170,8 +170,8 @@ public class MultiBitmapInputRender extends FilterRender {
     }
 
     @Override
-    protected void bindShaderValues() {
-        super.bindShaderValues();
+    protected void bindShaderTextures() {
+        super.bindShaderTextures();
         for (int i = 0; i < mTextureNum - 1; i++) {
             int tex = GLES20.GL_TEXTURE1 + i;
             GLES20.glActiveTexture(tex);

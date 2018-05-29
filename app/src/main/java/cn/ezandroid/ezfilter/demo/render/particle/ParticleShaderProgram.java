@@ -121,7 +121,7 @@ public class ParticleShaderProgram {
         return A_PARTICLE_FROM_ANGLE_LOCATION;
     }
 
-    public int getaParticleToAngleLocation() {
+    public int getParticleToAngleLocation() {
         return A_PARTICLE_TO_ANGLE_LOCATION;
     }
 
@@ -141,7 +141,7 @@ public class ParticleShaderProgram {
         return A_PARTICLE_TO_COLOR_LOCATION;
     }
 
-    public int getaParticleTextureIndexLocation() {
+    public int getParticleTextureIndexLocation() {
         return A_PARTICLE_TEXTURE_INDEX_LOCATION;
     }
 }

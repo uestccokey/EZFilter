@@ -10,6 +10,7 @@ import java.util.LinkedList;
 import java.util.Queue;
 
 import cn.ezandroid.ezfilter.core.util.L;
+import cn.ezandroid.ezfilter.core.util.ShaderHelper;
 
 /**
  * 滤镜核心类
@@ -39,8 +40,7 @@ public class GLRender implements OnTextureAcceptableListener {
             + "uniform sampler2D " + UNIFORM_TEXTURE_0 + ";\n"
             + "varying vec2 " + VARYING_TEXTURE_COORD + ";\n"
             + "void main(){\n"
-            + "   gl_FragColor = texture2D(" + UNIFORM_TEXTURE_0 + "," + VARYING_TEXTURE_COORD + ")" +
-            ";\n"
+            + "   gl_FragColor = texture2D(" + UNIFORM_TEXTURE_0 + "," + VARYING_TEXTURE_COORD + ")" + ";\n"
             + "}\n";
 
     protected String mVertexShader = DEFAULT_VERTEX_SHADER;
@@ -48,7 +48,7 @@ public class GLRender implements OnTextureAcceptableListener {
 
     protected int mCurrentRotation;
 
-    protected FloatBuffer mRenderVertices;
+    protected FloatBuffer mWorldVertices;
     protected FloatBuffer[] mTextureVertices;
 
     protected int mProgramHandle;
@@ -75,19 +75,33 @@ public class GLRender implements OnTextureAcceptableListener {
     private int mFrameCount;
 
     public GLRender() {
-        initRenderVertices(new float[]{-1f, -1f, 1f, -1f, -1f, 1f, 1f, 1f});
+        initWorldVertices();
         initTextureVertices();
 
         mRunOnDraw = new LinkedList<>();
         mRunOnDrawEnd = new LinkedList<>();
     }
 
-    protected void initRenderVertices(float[] vertices) {
-        mRenderVertices = ByteBuffer.allocateDirect(vertices.length * 4)
+    /**
+     * 初始化世界坐标系顶点
+     */
+    protected void initWorldVertices() {
+        // (-1, 1) -------> (1,1)
+        //      ^
+        //       \\
+        //         (0,0)
+        //           \\
+        //             \\
+        // (-1,-1) -------> (1,-1)
+        float[] vertices = new float[]{-1f, -1f, 1f, -1f, -1f, 1f, 1f, 1f};
+        mWorldVertices = ByteBuffer.allocateDirect(vertices.length * 4)
                 .order(ByteOrder.nativeOrder()).asFloatBuffer();
-        mRenderVertices.put(vertices).position(0);
+        mWorldVertices.put(vertices).position(0);
     }
 
+    /**
+     * 初始化纹理坐标系顶点
+     */
     protected void initTextureVertices() {
         mTextureVertices = new FloatBuffer[4];
 
@@ -98,24 +112,28 @@ public class GLRender implements OnTextureAcceptableListener {
         //          \\
         //            \\
         // (0,0) -------> (1,0)
+        // 正向纹理坐标
         float[] texData0 = new float[]{0.0f, 0.0f, 1.0f, 0.0f, 0.0f, 1.0f,
                 1.0f, 1.0f,};
         mTextureVertices[0] = ByteBuffer.allocateDirect(texData0.length * 4)
                 .order(ByteOrder.nativeOrder()).asFloatBuffer();
         mTextureVertices[0].put(texData0).position(0);
 
+        // 顺时针旋转90°的纹理坐标
         float[] texData1 = new float[]{1.0f, 0.0f, 1.0f, 1.0f, 0.0f, 0.0f,
                 0.0f, 1.0f,};
         mTextureVertices[1] = ByteBuffer.allocateDirect(texData1.length * 4)
                 .order(ByteOrder.nativeOrder()).asFloatBuffer();
         mTextureVertices[1].put(texData1).position(0);
 
+        // 顺时针旋转180°的纹理坐标
         float[] texData2 = new float[]{1.0f, 1.0f, 0.0f, 1.0f, 1.0f, 0.0f,
                 0.0f, 0.0f,};
         mTextureVertices[2] = ByteBuffer.allocateDirect(texData2.length * 4)
                 .order(ByteOrder.nativeOrder()).asFloatBuffer();
         mTextureVertices[2].put(texData2).position(0);
 
+        // 顺时针旋转270°的纹理坐标
         float[] texData3 = new float[]{0.0f, 1.0f, 0.0f, 0.0f, 1.0f, 1.0f,
                 1.0f, 0.0f,};
         mTextureVertices[3] = ByteBuffer.allocateDirect(texData3.length * 4)
@@ -141,6 +159,13 @@ public class GLRender implements OnTextureAcceptableListener {
         return mHeight;
     }
 
+    /**
+     * 设置渲染宽度
+     * <p>
+     * 调用setRenderSize后，再调用该方法无效
+     *
+     * @param width
+     */
     protected void setWidth(int width) {
         if (!mCustomSizeSet && this.mWidth != width) {
             this.mWidth = width;
@@ -148,6 +173,13 @@ public class GLRender implements OnTextureAcceptableListener {
         }
     }
 
+    /**
+     * 设置渲染高度
+     * <p>
+     * 调用setRenderSize后，再调用该方法无效
+     *
+     * @param height
+     */
     protected void setHeight(int height) {
         if (!mCustomSizeSet && this.mHeight != height) {
             this.mHeight = height;
@@ -193,6 +225,7 @@ public class GLRender implements OnTextureAcceptableListener {
 
     /**
      * 设置渲染尺寸
+     * <p>
      * 调用setRenderSize后，再调用setWidth或setHeight无效
      *
      * @param width
@@ -216,38 +249,45 @@ public class GLRender implements OnTextureAcceptableListener {
     }
 
     /**
-     * 绑定Uniform参数
+     * 初始化参数句柄
      */
-    protected void bindShaderValues() {
-        mRenderVertices.position(0);
+    protected void initShaderHandles() {
+        mPositionHandle = GLES20.glGetAttribLocation(mProgramHandle, ATTRIBUTE_POSITION);
+        mTextureCoordHandle = GLES20.glGetAttribLocation(mProgramHandle, ATTRIBUTE_TEXTURE_COORD);
+
+        mTextureHandle = GLES20.glGetUniformLocation(mProgramHandle, UNIFORM_TEXTURE_0);
+    }
+
+    /**
+     * 绑定顶点
+     */
+    protected void bindShaderVertices() {
+        mWorldVertices.position(0);
         GLES20.glVertexAttribPointer(mPositionHandle, 2, GLES20.GL_FLOAT, false,
-                8, mRenderVertices);
+                8, mWorldVertices);
         GLES20.glEnableVertexAttribArray(mPositionHandle);
+
         mTextureVertices[mCurrentRotation].position(0);
         GLES20.glVertexAttribPointer(mTextureCoordHandle, 2, GLES20.GL_FLOAT, false,
                 8, mTextureVertices[mCurrentRotation]);
         GLES20.glEnableVertexAttribArray(mTextureCoordHandle);
+    }
 
+    /**
+     * 绑定纹理
+     */
+    protected void bindShaderTextures() {
         GLES20.glActiveTexture(GLES20.GL_TEXTURE0);
         GLES20.glBindTexture(GLES20.GL_TEXTURE_2D, mTextureIn);
         GLES20.glUniform1i(mTextureHandle, 0);
     }
 
     /**
-     * 绑定Attributes参数
+     * 绑定顶点、纹理等
      */
-    protected void bindShaderAttributes() {
-        GLES20.glBindAttribLocation(mProgramHandle, 0, ATTRIBUTE_POSITION);
-        GLES20.glBindAttribLocation(mProgramHandle, 1, ATTRIBUTE_TEXTURE_COORD);
-    }
-
-    /**
-     * 初始化参数句柄
-     */
-    protected void initShaderHandles() {
-        mTextureHandle = GLES20.glGetUniformLocation(mProgramHandle, UNIFORM_TEXTURE_0);
-        mPositionHandle = GLES20.glGetAttribLocation(mProgramHandle, ATTRIBUTE_POSITION);
-        mTextureCoordHandle = GLES20.glGetAttribLocation(mProgramHandle, ATTRIBUTE_TEXTURE_COORD);
+    protected void bindShaderValues() {
+        bindShaderVertices();
+        bindShaderTextures();
     }
 
     /**
@@ -311,6 +351,7 @@ public class GLRender implements OnTextureAcceptableListener {
         if (mWidth != 0 && mHeight != 0) {
             GLES20.glViewport(0, 0, mWidth, mHeight);
         }
+
         GLES20.glUseProgram(mProgramHandle);
 
         GLES20.glClearColor(0, 0, 0, 0);
@@ -322,69 +363,29 @@ public class GLRender implements OnTextureAcceptableListener {
     }
 
     /**
-     * 初始化GL上下文
+     * 获取Attribute参数数组
+     */
+    protected String[] getShaderAttributes() {
+        return new String[]{
+                ATTRIBUTE_POSITION,
+                ATTRIBUTE_TEXTURE_COORD
+        };
+    }
+
+    /**
+     * 初始化OpenGL上下文
      */
     protected void initGLContext() {
         final String vertexShader = getVertexShader();
         final String fragmentShader = getFragmentShader();
 
-        String errorInfo = "none";
-
         // 初始化顶点着色器
-        mVertexShaderHandle = GLES20.glCreateShader(GLES20.GL_VERTEX_SHADER);
-        if (mVertexShaderHandle != 0) {
-            GLES20.glShaderSource(mVertexShaderHandle, vertexShader);
-            GLES20.glCompileShader(mVertexShaderHandle);
-            final int[] compileStatus = new int[1];
-            GLES20.glGetShaderiv(mVertexShaderHandle, GLES20.GL_COMPILE_STATUS, compileStatus, 0);
-            if (compileStatus[0] == 0) {
-                errorInfo = GLES20.glGetShaderInfoLog(mVertexShaderHandle);
-                GLES20.glDeleteShader(mVertexShaderHandle);
-                mVertexShaderHandle = 0;
-            }
-        }
-        if (mVertexShaderHandle == 0) {
-            throw new RuntimeException(this + ": Could not create vertex shader. Reason: "
-                    + errorInfo);
-        }
-
+        mVertexShaderHandle = ShaderHelper.compileShader(vertexShader, GLES20.GL_VERTEX_SHADER);
         // 初始化片元着色器
-        mFragmentShaderHandle = GLES20.glCreateShader(GLES20.GL_FRAGMENT_SHADER);
-        if (mFragmentShaderHandle != 0) {
-            GLES20.glShaderSource(mFragmentShaderHandle, fragmentShader);
-            GLES20.glCompileShader(mFragmentShaderHandle);
-            final int[] compileStatus = new int[1];
-            GLES20.glGetShaderiv(mFragmentShaderHandle, GLES20.GL_COMPILE_STATUS, compileStatus, 0);
-            if (compileStatus[0] == 0) {
-                errorInfo = GLES20.glGetShaderInfoLog(mFragmentShaderHandle);
-                GLES20.glDeleteShader(mFragmentShaderHandle);
-                mFragmentShaderHandle = 0;
-            }
-        }
-        if (mFragmentShaderHandle == 0) {
-            throw new RuntimeException(this + ": Could not create fragment shader. Reason: "
-                    + errorInfo);
-        }
+        mFragmentShaderHandle = ShaderHelper.compileShader(fragmentShader, GLES20.GL_FRAGMENT_SHADER);
 
         // 将顶点着色器和片元着色器链接到OpenGL渲染程序
-        mProgramHandle = GLES20.glCreateProgram();
-        if (mProgramHandle != 0) {
-            GLES20.glAttachShader(mProgramHandle, mVertexShaderHandle);
-            GLES20.glAttachShader(mProgramHandle, mFragmentShaderHandle);
-
-            bindShaderAttributes();
-
-            GLES20.glLinkProgram(mProgramHandle);
-            final int[] linkStatus = new int[1];
-            GLES20.glGetProgramiv(mProgramHandle, GLES20.GL_LINK_STATUS, linkStatus, 0);
-            if (linkStatus[0] == 0) {
-                GLES20.glDeleteProgram(mProgramHandle);
-                mProgramHandle = 0;
-            }
-        }
-        if (mProgramHandle == 0) {
-            throw new RuntimeException(this + ": Could not create program.");
-        }
+        mProgramHandle = ShaderHelper.linkProgram(mVertexShaderHandle, mFragmentShaderHandle, getShaderAttributes());
 
         initShaderHandles();
     }
