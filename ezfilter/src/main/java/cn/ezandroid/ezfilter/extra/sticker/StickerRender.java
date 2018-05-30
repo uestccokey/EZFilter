@@ -49,7 +49,9 @@ public class StickerRender extends FilterRender {
 
         mComponentRenders.clear();
         for (Component component : mSticker.components) {
-            mComponentRenders.add(new ComponentRender(mContext, component));
+            ComponentRender componentRender = new ComponentRender(mContext, component);
+            componentRender.setBitmapCache(mBitmapCache);
+            mComponentRenders.add(componentRender);
         }
     }
 

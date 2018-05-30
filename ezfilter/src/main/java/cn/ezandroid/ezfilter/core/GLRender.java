@@ -315,7 +315,7 @@ public class GLRender implements OnTextureAcceptableListener {
         drawFrame();
         runAll(mRunOnDrawEnd);
 
-        mSizeChanged = false;
+        mSizeChanged = false; // 在drawFrame执行后再重置状态，因为drawFrame中可能用到该状态
 
         calculateFps();
     }

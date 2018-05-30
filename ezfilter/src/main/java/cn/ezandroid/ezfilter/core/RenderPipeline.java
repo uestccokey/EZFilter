@@ -45,7 +45,7 @@ public class RenderPipeline implements Renderer {
     private int mCurrentRotation;
 
     private FBORender mStartPointRender; // 起点渲染器
-    private final List<FilterRender> mFilterRenders = new ArrayList<>(); // 滤镜列表
+    private final List<FBORender> mFilterRenders = new ArrayList<>(); // 滤镜列表
     private final List<GLRender> mEndPointRenders = new ArrayList<>(); // 终点渲染器列表
 
     private final List<BufferOutput> mOutputs = new ArrayList<>(); // 输出列表
@@ -143,7 +143,7 @@ public class RenderPipeline implements Renderer {
         }
 
         synchronized (mFilterRenders) {
-            for (FilterRender filterRender : mFilterRenders) {
+            for (FBORender filterRender : mFilterRenders) {
                 filterRender.destroy();
             }
         }
@@ -201,7 +201,7 @@ public class RenderPipeline implements Renderer {
         mStartPointRender = null;
 
         synchronized (mFilterRenders) {
-            for (FilterRender filterRender : mFilterRenders) {
+            for (FBORender filterRender : mFilterRenders) {
                 addRenderToDestroy(filterRender);
             }
             mFilterRenders.clear();
@@ -392,7 +392,7 @@ public class RenderPipeline implements Renderer {
      *
      * @return
      */
-    public List<FilterRender> getFilterRenders() {
+    public List<FBORender> getFilterRenders() {
         return mFilterRenders;
     }
 
@@ -453,7 +453,7 @@ public class RenderPipeline implements Renderer {
                 if (mFilterRenders.isEmpty()) {
                     mStartPointRender.addTarget(endPointRender);
                 } else {
-                    FilterRender filterRender = mFilterRenders.get(mFilterRenders.size() - 1);
+                    FBORender filterRender = mFilterRenders.get(mFilterRenders.size() - 1);
                     filterRender.addTarget(endPointRender);
                 }
 
@@ -483,7 +483,7 @@ public class RenderPipeline implements Renderer {
                 if (mFilterRenders.isEmpty()) {
                     mStartPointRender.removeTarget(endPointRender);
                 } else {
-                    FilterRender filterRender = mFilterRenders.get(mFilterRenders.size() - 1);
+                    FBORender filterRender = mFilterRenders.get(mFilterRenders.size() - 1);
                     filterRender.removeTarget(endPointRender);
                 }
                 addRenderToDestroy(endPointRender);
@@ -507,7 +507,7 @@ public class RenderPipeline implements Renderer {
                         mStartPointRender.removeTarget(endPointRender);
                     }
                 } else {
-                    FilterRender filterRender = mFilterRenders.get(mFilterRenders.size() - 1);
+                    FBORender filterRender = mFilterRenders.get(mFilterRenders.size() - 1);
                     for (GLRender endPointRender : mEndPointRenders) {
                         filterRender.removeTarget(endPointRender);
                     }
@@ -564,7 +564,7 @@ public class RenderPipeline implements Renderer {
      * @param index
      * @param filterRender
      */
-    public synchronized void addFilterRender(int index, FilterRender filterRender) {
+    public synchronized void addFilterRender(int index, FBORender filterRender) {
         synchronized (mFilterRenders) {
             if (filterRender != null && !mFilterRenders.contains(filterRender)
                     && mStartPointRender != null) {
@@ -585,13 +585,13 @@ public class RenderPipeline implements Renderer {
                 } else {
                     if (index == 0) {
                         // 添加到滤镜列表开头
-                        FilterRender nextRender = mFilterRenders.get(0);
+                        FBORender nextRender = mFilterRenders.get(0);
                         mStartPointRender.removeTarget(nextRender);
                         filterRender.addTarget(nextRender);
                         mStartPointRender.addTarget(filterRender);
                     } else if (index > mFilterRenders.size() - 1) {
                         // 添加到滤镜列表最后
-                        FilterRender prevRender = mFilterRenders.get(mFilterRenders.size() - 1);
+                        FBORender prevRender = mFilterRenders.get(mFilterRenders.size() - 1);
                         prevRender.addTarget(filterRender);
                         synchronized (mEndPointRenders) {
                             for (GLRender endPointRender : mEndPointRenders) {
@@ -601,8 +601,8 @@ public class RenderPipeline implements Renderer {
                         }
                     } else {
                         // 添加到滤镜列表中间
-                        FilterRender prevRender = mFilterRenders.get(index - 1);
-                        FilterRender nextRender = mFilterRenders.get(index);
+                        FBORender prevRender = mFilterRenders.get(index - 1);
+                        FBORender nextRender = mFilterRenders.get(index);
                         prevRender.removeTarget(nextRender);
                         prevRender.addTarget(filterRender);
                         filterRender.addTarget(nextRender);
@@ -630,7 +630,7 @@ public class RenderPipeline implements Renderer {
      *
      * @param filterRender
      */
-    public synchronized void addFilterRender(FilterRender filterRender) {
+    public synchronized void addFilterRender(FBORender filterRender) {
         addFilterRender(mFilterRenders.size(), filterRender);
     }
 
@@ -639,7 +639,7 @@ public class RenderPipeline implements Renderer {
      *
      * @param filterRender
      */
-    public synchronized void removeFilterRender(FilterRender filterRender) {
+    public synchronized void removeFilterRender(FBORender filterRender) {
         synchronized (mFilterRenders) {
             if (filterRender != null && mFilterRenders.contains(filterRender)
                     && mStartPointRender != null) {
@@ -659,12 +659,12 @@ public class RenderPipeline implements Renderer {
                     }
                 } else {
                     if (index == 0) {
-                        FilterRender nextRender = mFilterRenders.get(0);
+                        FBORender nextRender = mFilterRenders.get(0);
                         mStartPointRender.removeTarget(filterRender);
                         filterRender.removeTarget(nextRender);
                         mStartPointRender.addTarget(nextRender);
                     } else if (index > mFilterRenders.size() - 1) {
-                        FilterRender prevRender = mFilterRenders.get(mFilterRenders.size() - 1);
+                        FBORender prevRender = mFilterRenders.get(mFilterRenders.size() - 1);
                         prevRender.removeTarget(filterRender);
                         synchronized (mEndPointRenders) {
                             for (GLRender endPointRender : mEndPointRenders) {
@@ -673,8 +673,8 @@ public class RenderPipeline implements Renderer {
                             }
                         }
                     } else {
-                        FilterRender prevRender = mFilterRenders.get(index - 1);
-                        FilterRender nextRender = mFilterRenders.get(index);
+                        FBORender prevRender = mFilterRenders.get(index - 1);
+                        FBORender nextRender = mFilterRenders.get(index);
                         prevRender.removeTarget(filterRender);
                         filterRender.removeTarget(nextRender);
                         prevRender.addTarget(nextRender);
@@ -703,7 +703,7 @@ public class RenderPipeline implements Renderer {
 //                setRendering(false); // 暂时停止渲染，构建渲染链完成后再进行渲染
 
                 if (mFilterRenders.size() == 1) {
-                    FilterRender filterRender = mFilterRenders.get(0);
+                    FBORender filterRender = mFilterRenders.get(0);
                     mStartPointRender.removeTarget(filterRender);
                     synchronized (mEndPointRenders) {
                         for (GLRender endPointRender : mEndPointRenders) {
@@ -712,8 +712,8 @@ public class RenderPipeline implements Renderer {
                         }
                     }
                 } else {
-                    FilterRender firstFilterRender = mFilterRenders.get(0);
-                    FilterRender lastFilterRender = mFilterRenders.get(mFilterRenders.size() - 1);
+                    FBORender firstFilterRender = mFilterRenders.get(0);
+                    FBORender lastFilterRender = mFilterRenders.get(mFilterRenders.size() - 1);
                     mStartPointRender.removeTarget(firstFilterRender);
                     synchronized (mEndPointRenders) {
                         for (GLRender endPointRender : mEndPointRenders) {
@@ -722,7 +722,7 @@ public class RenderPipeline implements Renderer {
                         }
                     }
                 }
-                for (FilterRender filterRender : mFilterRenders) {
+                for (FBORender filterRender : mFilterRenders) {
                     addRenderToDestroy(filterRender);
                 }
                 mFilterRenders.clear();

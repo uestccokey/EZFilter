@@ -12,7 +12,7 @@ import android.os.Build;
 import java.io.IOException;
 import java.util.List;
 
-import cn.ezandroid.ezfilter.core.FilterRender;
+import cn.ezandroid.ezfilter.core.FBORender;
 import cn.ezandroid.ezfilter.core.GLRender;
 import cn.ezandroid.ezfilter.core.RenderPipeline;
 import cn.ezandroid.ezfilter.media.transcode.AudioTrackTranscoder;
@@ -114,15 +114,15 @@ public class OffscreenVideo {
         mVideoRenderListener = videoRenderListener;
     }
 
-    public void addFilterRender(FilterRender filterRender) {
+    public void addFilterRender(FBORender filterRender) {
         mPipeline.addFilterRender(filterRender);
     }
 
-    public void removeFilterRender(FilterRender filterRender) {
+    public void removeFilterRender(FBORender filterRender) {
         mPipeline.removeFilterRender(filterRender);
     }
 
-    public List<FilterRender> getFilterRenders() {
+    public List<FBORender> getFilterRenders() {
         return mPipeline.getFilterRenders();
     }
 

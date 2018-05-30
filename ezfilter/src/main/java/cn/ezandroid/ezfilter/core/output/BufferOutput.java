@@ -4,7 +4,7 @@ import android.opengl.GLES20;
 
 import java.nio.Buffer;
 
-import cn.ezandroid.ezfilter.core.FilterRender;
+import cn.ezandroid.ezfilter.core.FBORender;
 
 /**
  * OpenGL像素Buffer输出基类
@@ -12,7 +12,7 @@ import cn.ezandroid.ezfilter.core.FilterRender;
  * @author like
  * @date 2017-09-17
  */
-public abstract class BufferOutput<T extends Buffer> extends FilterRender {
+public abstract class BufferOutput<T extends Buffer> extends FBORender {
 
     protected T mOutputBuffer;
 

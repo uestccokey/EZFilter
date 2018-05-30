@@ -93,8 +93,7 @@ public class VideoInput extends FBORender implements SurfaceTexture.OnFrameAvail
                 + "uniform samplerExternalOES " + UNIFORM_TEXTURE_0 + ";\n"
                 + "varying vec2 " + VARYING_TEXTURE_COORD + ";\n"
                 + "void main() {\n"
-                + "   gl_FragColor = texture2D(" + UNIFORM_TEXTURE_0 + ", " + VARYING_TEXTURE_COORD +
-                ");\n"
+                + "   gl_FragColor = texture2D(" + UNIFORM_TEXTURE_0 + ", " + VARYING_TEXTURE_COORD + ");\n"
                 + "}\n");
     }
 

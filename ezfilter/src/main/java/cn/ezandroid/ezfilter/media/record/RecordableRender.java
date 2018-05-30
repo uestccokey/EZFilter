@@ -6,12 +6,12 @@ import cn.ezandroid.ezfilter.core.FBORender;
 import cn.ezandroid.ezfilter.core.GLRender;
 
 /**
- * 支持视频录制的终点渲染器
+ * 支持视频录制的渲染器
  *
  * @author like
  * @date 2017-10-13
  */
-public class RecordableEndPointRender extends FBORender implements ISupportRecord {
+public class RecordableRender extends FBORender implements ISupportRecord {
 
     private MediaVideoEncoder mVideoEncoder;
     private MediaMuxerWrapper mMuxerWrapper;
@@ -45,7 +45,7 @@ public class RecordableEndPointRender extends FBORender implements ISupportRecor
                 }
             };
 
-    public RecordableEndPointRender(String outputPath, boolean recordVideo, boolean recordAudio) {
+    public RecordableRender(String outputPath, boolean recordVideo, boolean recordAudio) {
         mOutputPath = outputPath;
 
         mRecordVideo = recordVideo;
