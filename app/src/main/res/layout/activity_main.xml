@@ -46,4 +46,10 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="粒子效果" />
+
+    <Button
+        android:id="@+id/sticker_render"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="涂鸦贴纸" />
 </LinearLayout>

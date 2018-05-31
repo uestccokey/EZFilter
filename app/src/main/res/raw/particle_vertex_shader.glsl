@@ -13,8 +13,8 @@ attribute float a_BirthTime;
 attribute float a_Duration;
 attribute float a_FromSize;
 attribute float a_ToSize;
-attribute float a_FromAngle;
-attribute float a_ToAngle;
+attribute float a_FromRotation;
+attribute float a_ToRotation;
 attribute vec3 a_BirthPosition;
 attribute vec3 a_DirectionVector;
 attribute vec4 a_FromColor;
@@ -33,7 +33,7 @@ void main()
     v_Color = a_FromColor + (a_ToColor - a_FromColor) * v_Progress;
     v_Color = clamp(v_Color, vec4(0.0), vec4(1.0));
 
-    float theta = a_FromAngle + (a_ToAngle - a_FromAngle) * v_Progress;
+    float theta = a_FromRotation + (a_ToRotation - a_FromRotation) * v_Progress;
     v_Rotation = mat2(cos(theta), sin(theta), -sin(theta), cos(theta));
 
     vec3 currentPosition = a_BirthPosition + (a_DirectionVector * elapsedTime);

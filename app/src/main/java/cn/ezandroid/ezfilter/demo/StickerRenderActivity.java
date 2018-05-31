@@ -15,18 +15,18 @@ import java.util.TimerTask;
 import cn.ezandroid.ezfilter.EZFilter;
 import cn.ezandroid.ezfilter.core.RenderPipeline;
 import cn.ezandroid.ezfilter.core.environment.TextureFitView;
-import cn.ezandroid.ezfilter.demo.render.particle.ParticleRender;
-import cn.ezandroid.ezfilter.demo.render.particle.util.Geometry;
+import cn.ezandroid.ezfilter.demo.render.BWRender;
+import cn.ezandroid.ezfilter.demo.render.GraffitiStickerRender;
 import cn.ezandroid.ezfilter.video.VideoInput;
 import cn.ezandroid.ezfilter.video.player.IMediaPlayer;
 
 /**
- * ParticleRenderActivity
+ * StickerRenderActivity
  *
  * @author like
- * @date 2018-05-29
+ * @date 2018-05-30
  */
-public class ParticleRenderActivity extends BaseActivity {
+public class StickerRenderActivity extends BaseActivity {
 
     private TextureFitView mRenderView;
     private TextView mPlayButton;
@@ -40,26 +40,18 @@ public class ParticleRenderActivity extends BaseActivity {
     private boolean mTouchingSeekBar;
     private boolean mTouchingTextureView;
 
-    private ParticleRender mParticleRender;
+    private GraffitiStickerRender mStickerRender;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_particle_render);
+        setContentView(R.layout.activity_sticker_render);
 
         initView();
     }
 
     @SuppressLint("ClickableViewAccessibility")
     private void initView() {
-        mParticleRender = new ParticleRender(this, new ParticleRender.IParticleTimeController() {
-
-            @Override
-            public float getCurrentTime() {
-                return mVideoInput.getMediaPlayer().getCurrentPosition() / 1000f;
-            }
-        });
-
         mRenderView = $(R.id.render_view);
         mRenderView.setOnTouchListener(new View.OnTouchListener() {
             @Override
@@ -68,22 +60,26 @@ public class ParticleRenderActivity extends BaseActivity {
                     case MotionEvent.ACTION_DOWN:
                         mTouchingTextureView = true;
                         startVideo();
-                        if (!mRenderPipeline.getFilterRenders().contains(mParticleRender)) {
-                            mRenderPipeline.addFilterRender(mParticleRender);
-                        }
-                        mParticleRender.start();
-                        mParticleRender.setPosition(new Geometry.Point(event.getX() * 2f / mRenderView.getWidth() - 1,
-                                1 - event.getY() * 2f / mRenderView.getHeight(), 0f));
+                        mStickerRender = new GraffitiStickerRender(StickerRenderActivity.this, new GraffitiStickerRender.IStickerTimeController() {
+                            @Override
+                            public float getCurrentTime() {
+                                return mVideoInput.getMediaPlayer().getCurrentPosition() / 1000f;
+                            }
+                        });
+                        mStickerRender.start();
+                        mStickerRender.setPosition(Math.round(event.getX() * mStickerRender.getWidth() * 1f / mRenderView.getWidth()),
+                                Math.round(event.getY() * mStickerRender.getHeight() * 1f / mRenderView.getHeight()));
+                        mRenderPipeline.addFilterRender(mStickerRender);
                         break;
                     case MotionEvent.ACTION_MOVE:
-                        mParticleRender.setPosition(new Geometry.Point(event.getX() * 2f / mRenderView.getWidth() - 1,
-                                1 - event.getY() * 2f / mRenderView.getHeight(), 0f));
+                        mStickerRender.setPosition(Math.round(event.getX() * mStickerRender.getWidth() * 1f / mRenderView.getWidth()),
+                                Math.round(event.getY() * mStickerRender.getHeight() * 1f / mRenderView.getHeight()));
                         break;
                     case MotionEvent.ACTION_UP:
                     case MotionEvent.ACTION_CANCEL:
                         mTouchingTextureView = false;
                         pauseVideo();
-                        mParticleRender.pause();
+                        mStickerRender.pause();
                         break;
                 }
                 return true;
@@ -129,6 +125,7 @@ public class ParticleRenderActivity extends BaseActivity {
             public void run() {
                 mRenderPipeline = EZFilter.input(Uri.parse("android.resource://" + getPackageName() + "/" + R.raw.test3))
                         .setLoop(false)
+                        .addFilter(new BWRender(StickerRenderActivity.this))
                         .setPreparedListener(new IMediaPlayer.OnPreparedListener() {
                             @Override
                             public void onPrepared(IMediaPlayer var1) {

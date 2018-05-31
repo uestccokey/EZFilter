@@ -32,8 +32,8 @@ public class ParticleShaderProgram {
     private static final String A_PARTICLE_DURATION = "a_Duration";
     private static final String A_PARTICLE_FROM_SIZE = "a_FromSize";
     private static final String A_PARTICLE_TO_SIZE = "a_ToSize";
-    private static final String A_PARTICLE_FROM_ANGLE = "a_FromAngle";
-    private static final String A_PARTICLE_TO_ANGLE = "a_ToAngle";
+    private static final String A_PARTICLE_FROM_ANGLE = "a_FromRotation";
+    private static final String A_PARTICLE_TO_ANGLE = "a_ToRotation";
     private static final String A_PARTICLE_POSITION = "a_BirthPosition";
     private static final String A_PARTICLE_DIRECTION_VECTOR = "a_DirectionVector";
     private static final String A_PARTICLE_FROM_COLOR = "a_FromColor";
