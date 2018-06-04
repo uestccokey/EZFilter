@@ -55,13 +55,15 @@ public class RecordableRender extends FBORender implements ISupportRecord {
     @Override
     public void onTextureAcceptable(int texture, GLRender source) {
         super.onTextureAcceptable(texture, source);
-        synchronized (this) {
+        try {
             if (mVideoEncoder != null) {
                 int oldTexture = mVideoEncoder.getInputTextureId();
                 if (texture != oldTexture) {
                     mVideoEncoder.setInputTextureId(texture);
                 }
             }
+        } catch (Exception e) {
+            e.printStackTrace();
         }
     }
 
@@ -89,9 +91,7 @@ public class RecordableRender extends FBORender implements ISupportRecord {
      * @param encoder
      */
     public void setVideoEncoder(final MediaVideoEncoder encoder) {
-        synchronized (this) {
-            mVideoEncoder = encoder;
-        }
+        mVideoEncoder = encoder;
     }
 
     /**
@@ -180,10 +180,12 @@ public class RecordableRender extends FBORender implements ISupportRecord {
     @Override
     protected void drawFrame() {
         super.drawFrame();
-        synchronized (this) {
+        try {
             if (mVideoEncoder != null) {
                 mVideoEncoder.frameAvailableSoon();
             }
+        } catch (Exception e) {
+            e.printStackTrace();
         }
     }
 }
