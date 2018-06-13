@@ -8,9 +8,18 @@ package cn.ezandroid.ezfilter.media.record;
  */
 public interface IRecordListener {
 
+    /**
+     * 调用startRecording后回调
+     */
     void onStart();
 
+    /**
+     * 调用stopRecording后回调
+     */
     void onStop();
 
+    /**
+     * 当视频完全渲染好后回调
+     */
     void onFinish();
 }

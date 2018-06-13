@@ -15,7 +15,6 @@ import java.util.TimerTask;
 import cn.ezandroid.ezfilter.EZFilter;
 import cn.ezandroid.ezfilter.core.RenderPipeline;
 import cn.ezandroid.ezfilter.core.environment.TextureFitView;
-import cn.ezandroid.ezfilter.demo.render.BWRender;
 import cn.ezandroid.ezfilter.demo.render.GraffitiStickerRender;
 import cn.ezandroid.ezfilter.video.VideoInput;
 import cn.ezandroid.ezfilter.video.player.IMediaPlayer;
@@ -125,7 +124,6 @@ public class StickerRenderActivity extends BaseActivity {
             public void run() {
                 mRenderPipeline = EZFilter.input(Uri.parse("android.resource://" + getPackageName() + "/" + R.raw.test3))
                         .setLoop(false)
-                        .addFilter(new BWRender(StickerRenderActivity.this))
                         .setPreparedListener(new IMediaPlayer.OnPreparedListener() {
                             @Override
                             public void onPrepared(IMediaPlayer var1) {
