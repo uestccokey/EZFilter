@@ -91,6 +91,24 @@ public class MediaAudioEncoder extends MediaEncoder {
 
     private class AudioThread extends Thread {
 
+        private AudioRecord mAudioRecord;
+
+        @Override
+        public synchronized void start() {
+            try {
+                mAudioRecord = findAudioRecord();
+                if (mAudioRecord != null) {
+                    // 在AudioThread的创建线程调用startRecording，以便解决Vivo手机上mAudioRecord.startRecording触发录音权限弹框时，没有阻塞住录制线程的问题
+                    mAudioRecord.startRecording();
+                } else {
+                    Log.e(TAG, "failed to initialize AudioRecord");
+                }
+            } catch (final Exception e) {
+                Log.e(TAG, "AudioThread#new", e);
+            }
+            super.start();
+        }
+
         /**
          * 查找可用的音频录制器
          *
@@ -163,52 +181,44 @@ public class MediaAudioEncoder extends MediaEncoder {
         @Override
         public void run() {
             android.os.Process.setThreadPriority(android.os.Process.THREAD_PRIORITY_URGENT_AUDIO);
-            try {
-                AudioRecord audioRecord = findAudioRecord();
-                if (audioRecord != null) {
-                    try {
-                        if (mIsCapturing) {
-                            final ByteBuffer buf = ByteBuffer.allocateDirect(SAMPLES_PER_FRAME);
-                            int readBytes;
-                            audioRecord.startRecording();
-                            try {
-                                if (mAudioExtraEncoder != null) {
-                                    mAudioExtraEncoder.setup(getChannels(audioRecord.getChannelConfiguration()),
-                                            mSamplingRate, getBitsPerSample(audioRecord.getAudioFormat()) / 8);
-                                }
-                                for (; mIsCapturing && !mRequestStop && !mIsEOS; ) {
-                                    // read audio data from internal mic
-                                    buf.clear();
-                                    readBytes = audioRecord.read(buf, SAMPLES_PER_FRAME);
-                                    if (readBytes > 0) {
-                                        // set audio data to encoder
-                                        buf.position(readBytes);
-                                        buf.flip();
-                                        if (mAudioExtraEncoder != null) {
-                                            ByteBuffer buffer = mAudioExtraEncoder.encode(buf);
-                                            encode(buffer, buffer.hasArray() ? buffer.array().length : buffer.remaining(), getPTSUs());
-                                        } else {
-                                            encode(buf, readBytes, getPTSUs());
-                                        }
-                                        frameAvailableSoon();
-                                    }
-                                }
-                                frameAvailableSoon();
-                            } finally {
-                                audioRecord.stop();
+            if (mAudioRecord != null) {
+                try {
+                    if (mIsCapturing) {
+                        final ByteBuffer buf = ByteBuffer.allocateDirect(SAMPLES_PER_FRAME);
+                        int readBytes;
+                        try {
+                            if (mAudioExtraEncoder != null) {
+                                mAudioExtraEncoder.setup(getChannels(mAudioRecord.getChannelConfiguration()),
+                                        mSamplingRate, getBitsPerSample(mAudioRecord.getAudioFormat()) / 8);
                             }
+                            for (; mIsCapturing && !mRequestStop && !mIsEOS; ) {
+                                // read audio data from internal mic
+                                buf.clear();
+                                readBytes = mAudioRecord.read(buf, SAMPLES_PER_FRAME);
+                                if (readBytes > 0) {
+                                    // set audio data to encoder
+                                    buf.position(readBytes);
+                                    buf.flip();
+                                    if (mAudioExtraEncoder != null) {
+                                        ByteBuffer buffer = mAudioExtraEncoder.encode(buf);
+                                        encode(buffer, buffer.hasArray() ? buffer.array().length : buffer.remaining(), getPTSUs());
+                                    } else {
+                                        encode(buf, readBytes, getPTSUs());
+                                    }
+                                    frameAvailableSoon();
+                                }
+                            }
+                            frameAvailableSoon();
+                        } finally {
+                            mAudioRecord.stop();
                         }
-                    } finally {
-                        if (mAudioExtraEncoder != null) {
-                            mAudioExtraEncoder.release();
-                        }
-                        audioRecord.release();
                     }
-                } else {
-                    Log.e(TAG, "failed to initialize AudioRecord");
+                } finally {
+                    if (mAudioExtraEncoder != null) {
+                        mAudioExtraEncoder.release();
+                    }
+                    mAudioRecord.release();
                 }
-            } catch (final Exception e) {
-                Log.e(TAG, "AudioThread#run", e);
             }
         }
     }

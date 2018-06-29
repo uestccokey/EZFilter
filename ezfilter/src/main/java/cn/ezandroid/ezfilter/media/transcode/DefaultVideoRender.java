@@ -38,8 +38,7 @@ class DefaultVideoRender extends GLRender implements IVideoRender {
                 + "uniform samplerExternalOES " + UNIFORM_TEXTURE_0 + ";\n"
                 + "varying vec2 " + VARYING_TEXTURE_COORD + ";\n"
                 + "void main() {\n"
-                + "   gl_FragColor = texture2D(" + UNIFORM_TEXTURE_0 + ", " + VARYING_TEXTURE_COORD +
-                ");\n"
+                + "   gl_FragColor = texture2D(" + UNIFORM_TEXTURE_0 + ", " + VARYING_TEXTURE_COORD + ");\n"
                 + "}\n");
     }
 
@@ -86,14 +85,7 @@ class DefaultVideoRender extends GLRender implements IVideoRender {
 
     @Override
     protected void bindShaderValues() {
-        mRenderVertices.position(0);
-        GLES20.glVertexAttribPointer(mPositionHandle, 2, GLES20.GL_FLOAT, false,
-                8, mRenderVertices);
-        GLES20.glEnableVertexAttribArray(mPositionHandle);
-        mTextureVertices[mCurrentRotation].position(0);
-        GLES20.glVertexAttribPointer(mTextureCoordHandle, 2, GLES20.GL_FLOAT, false,
-                8, mTextureVertices[mCurrentRotation]);
-        GLES20.glEnableVertexAttribArray(mTextureCoordHandle);
+        super.bindShaderVertices();
 
         GLES20.glActiveTexture(GLES20.GL_TEXTURE0);
         GLES20.glBindTexture(GLES11Ext.GL_TEXTURE_EXTERNAL_OES, mTextureIn);

@@ -13,14 +13,14 @@ import cn.ezandroid.ezfilter.extra.sticker.model.Sticker;
 import cn.ezandroid.ezfilter.extra.sticker.model.TextureAnchor;
 
 /**
- * TestStickerRender
+ * SnowStickerRender
  *
  * @author like
  * @date 2018-05-25
  */
-public class TestStickerRender extends StickerRender {
+public class SnowStickerRender extends StickerRender {
 
-    public TestStickerRender(Context context) {
+    public SnowStickerRender(Context context) {
         super(context);
 
         Sticker sticker = new Sticker();

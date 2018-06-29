@@ -39,9 +39,9 @@ android {
 }
 
 dependencies {
-    compile 'cn.ezandroid:EZFilter:2.0.0' // Gradle version < 3.0
+    compile 'cn.ezandroid:EZFilter:2.0.1' // Gradle version < 3.0
     // or
-    implementation 'cn.ezandroid:EZFilter:2.0.0' // Gradle version >= 3.0
+    implementation 'cn.ezandroid:EZFilter:2.0.1' // Gradle version >= 3.0
 }
 ```
 

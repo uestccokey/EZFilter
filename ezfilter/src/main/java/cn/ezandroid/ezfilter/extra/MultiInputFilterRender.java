@@ -5,7 +5,6 @@ import android.opengl.GLES20;
 import java.util.ArrayList;
 import java.util.List;
 
-import cn.ezandroid.ezfilter.core.FBORender;
 import cn.ezandroid.ezfilter.core.FilterRender;
 import cn.ezandroid.ezfilter.core.GLRender;
 
@@ -78,13 +77,13 @@ public class MultiInputFilterRender extends FilterRender {
         mFilterLocations.clear();
     }
 
-    public void registerFilterLocation(FBORender filter) {
+    public void registerFilterLocation(GLRender filter) {
         if (!mFilterLocations.contains(filter)) {
             mFilterLocations.add(filter);
         }
     }
 
-    public void registerFilterLocation(FBORender filter, int location) {
+    public void registerFilterLocation(GLRender filter, int location) {
         if (mFilterLocations.contains(filter)) {
             mFilterLocations.remove(filter);
         }

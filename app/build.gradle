@@ -58,4 +58,5 @@ dependencies {
     releaseImplementation 'com.squareup.leakcanary:leakcanary-android-no-op:1.5.4'
 
     implementation project(':ezfilter')
+    implementation 'org.jetbrains:annotations:15.0'
 }

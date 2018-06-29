@@ -89,8 +89,8 @@ public class BitmapUtil {
             int outWidth = options.outWidth;
             int outHeight = options.outHeight;
             int sampleSize = 1;
-            while (outWidth / sampleSize > width || outHeight / sampleSize > height) {
-                sampleSize++;
+            while (outWidth / (sampleSize * 2) > width || outHeight / (sampleSize * 2) > height) {
+                sampleSize *= 2;
             }
             options.inJustDecodeBounds = false;
             options.inSampleSize = sampleSize;

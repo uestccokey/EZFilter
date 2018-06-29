@@ -6,6 +6,7 @@ import android.graphics.Bitmap;
 import android.hardware.Camera;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
+import android.util.Log;
 import android.view.OrientationEventListener;
 import android.view.View;
 import android.widget.Button;
@@ -29,9 +30,10 @@ import cn.ezandroid.ezfilter.core.environment.GLTextureView;
 import cn.ezandroid.ezfilter.core.environment.TextureFitView;
 import cn.ezandroid.ezfilter.core.output.BitmapOutput;
 import cn.ezandroid.ezfilter.demo.render.BWRender;
-import cn.ezandroid.ezfilter.demo.render.TestStickerRender;
+import cn.ezandroid.ezfilter.demo.render.SnowStickerRender;
 import cn.ezandroid.ezfilter.demo.render.WobbleRender;
-import cn.ezandroid.ezfilter.media.record.ISupportRecord;
+import cn.ezandroid.ezfilter.media.record.IRecordListener;
+import cn.ezandroid.ezfilter.media.record.RecordableRender;
 
 /**
  * CameraFilterActivity
@@ -59,7 +61,7 @@ public class CameraFilterActivity extends BaseActivity {
     private int mOrientation;
 
     private ISupportTakePhoto mSupportTakePhoto;
-    private ISupportRecord mSupportRecord;
+    private RecordableRender mSupportRecord;
 
     private class MyOrientationEventListener extends OrientationEventListener {
 
@@ -231,9 +233,13 @@ public class CameraFilterActivity extends BaseActivity {
                 orientation = cameraInfo.orientation;
             }
             mCamera.setDisplayOrientation(orientation);
+
+            mRenderView.setRotate90Degrees(0);
         } else {
             parameters.set("orientation", "landscape");
             mCamera.setDisplayOrientation(0);
+
+            mRenderView.setRotate90Degrees(1);
         }
 
         // 预览分辨率设置为1280*720
@@ -269,7 +275,7 @@ public class CameraFilterActivity extends BaseActivity {
         setCameraParameters();
 
         mRenderPipeline = EZFilter.input(mCamera, mCamera.getParameters().getPreviewSize())
-                .addFilter(new TestStickerRender(this))
+                .addFilter(new SnowStickerRender(this))
                 .addFilter(new WobbleRender())
                 .enableRecord("/sdcard/recordCamera.mp4", true, true) // 支持录制为视频
                 .into(mRenderView);
@@ -279,10 +285,26 @@ public class CameraFilterActivity extends BaseActivity {
             mSupportTakePhoto = (ISupportTakePhoto) startRender;
         }
         for (GLRender render : mRenderPipeline.getEndPointRenders()) {
-            if (render instanceof ISupportRecord) {
-                mSupportRecord = (ISupportRecord) render;
+            if (render instanceof RecordableRender) {
+                mSupportRecord = (RecordableRender) render;
             }
         }
+        mSupportRecord.setRecordListener(new IRecordListener() {
+            @Override
+            public void onStart() {
+                Log.e("Camera", "onStart");
+            }
+
+            @Override
+            public void onStop() {
+                Log.e("Camera", "onStop");
+            }
+
+            @Override
+            public void onFinish() {
+                Log.e("Camera", "onFinish");
+            }
+        });
     }
 
     private void releaseCamera() {

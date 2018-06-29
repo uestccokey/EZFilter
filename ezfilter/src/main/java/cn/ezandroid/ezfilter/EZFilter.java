@@ -22,7 +22,7 @@ import cn.ezandroid.ezfilter.core.cache.LruBitmapCache;
 import cn.ezandroid.ezfilter.core.environment.IFitView;
 import cn.ezandroid.ezfilter.extra.IAdjustable;
 import cn.ezandroid.ezfilter.image.BitmapBuilder;
-import cn.ezandroid.ezfilter.media.record.RecordableEndPointRender;
+import cn.ezandroid.ezfilter.media.record.RecordableRender;
 import cn.ezandroid.ezfilter.video.VideoBuilder;
 import cn.ezandroid.ezfilter.view.ViewBuilder;
 import cn.ezandroid.ezfilter.view.glview.IGLView;
@@ -223,7 +223,7 @@ public class EZFilter {
 
                 // 要支持录制时，添加用于录制的终点渲染器
                 if (mEnableRecordVideo || mEnableRecordAudio) {
-                    pipeline.addEndPointRender(new RecordableEndPointRender(mOutputPath,
+                    pipeline.addEndPointRender(new RecordableRender(mOutputPath,
                             mEnableRecordVideo, mEnableRecordAudio));
                 }
 

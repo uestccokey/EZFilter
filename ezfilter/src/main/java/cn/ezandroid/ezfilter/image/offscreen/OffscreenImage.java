@@ -9,7 +9,7 @@ import android.os.Build;
 import java.nio.IntBuffer;
 import java.util.List;
 
-import cn.ezandroid.ezfilter.core.FilterRender;
+import cn.ezandroid.ezfilter.core.FBORender;
 import cn.ezandroid.ezfilter.core.GLRender;
 import cn.ezandroid.ezfilter.core.RenderPipeline;
 import cn.ezandroid.ezfilter.core.environment.EGLEnvironment;
@@ -54,16 +54,24 @@ public class OffscreenImage {
         mPipeline.addEndPointRender(new GLRender());
     }
 
-    public void addFilterRender(FilterRender filterRender) {
+    public void addFilterRender(FBORender filterRender) {
         mPipeline.addFilterRender(filterRender);
     }
 
-    public void removeFilterRender(FilterRender filterRender) {
+    public void removeFilterRender(FBORender filterRender) {
         mPipeline.removeFilterRender(filterRender);
     }
 
-    public List<FilterRender> getFilterRenders() {
+    public List<FBORender> getFilterRenders() {
         return mPipeline.getFilterRenders();
+    }
+
+    public int getWidth() {
+        return mWidth;
+    }
+
+    public int getHeight() {
+        return mHeight;
     }
 
     public Bitmap capture(int width, int height) {

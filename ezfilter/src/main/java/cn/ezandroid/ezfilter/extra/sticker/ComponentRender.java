@@ -76,30 +76,25 @@ public class ComponentRender {
      * @param height
      */
     public void updateRenderVertices(int width, int height) {
-        PointF facePoint0 = mScreenAnchor.getLeftAnchorPoint();
-        PointF facePoint1 = mScreenAnchor.getRightAnchorPoint();
-        PointF stickP0 = mComponent.textureAnchor.getLeftAnchorPoint();
-        PointF stickP1 = mComponent.textureAnchor.getRightAnchorPoint();
+        PointF screenLeftPoint = mScreenAnchor.getLeftAnchorPoint();
+        PointF screenRightPoint = mScreenAnchor.getRightAnchorPoint();
+        PointF textureLeftPoint = mComponent.textureAnchor.getLeftAnchorPoint();
+        PointF textureRightPoint = mComponent.textureAnchor.getRightAnchorPoint();
 
         float w = mComponent.width;
         float h = mComponent.height;
 
-        // 默认以faceP0为锚点
-        PointF faceP0, faceP1;
-        faceP0 = new PointF(facePoint0.x, facePoint0.y);
-        faceP1 = new PointF(facePoint1.x, facePoint1.y);
-
-        // 计算人脸两点距离与贴纸对应的两点之间距离的比例，并等比缩放贴纸
-        float rate = distanceOf(faceP0, faceP1) / distanceOf(stickP0, stickP1);
-        stickP0.x = stickP0.x * rate;
-        stickP0.y = stickP0.y * rate;
-        stickP1.x = stickP1.x * rate;
-        stickP1.y = stickP1.y * rate;
+        // 计算屏幕两点距离与贴纸对应的两点之间距离的比例，并等比缩放贴纸
+        float rate = distanceOf(screenLeftPoint, screenRightPoint) / distanceOf(textureLeftPoint, textureRightPoint);
+        textureLeftPoint.x = textureLeftPoint.x * rate;
+        textureLeftPoint.y = textureLeftPoint.y * rate;
+        textureRightPoint.x = textureRightPoint.x * rate;
+        textureRightPoint.y = textureRightPoint.y * rate;
         w = w * rate;
         h = h * rate;
 
-        // 确定贴纸四个顶点坐标【人脸点位坐标系原点为左下，贴纸位置坐标系原点为左上】
-        PointF leftTop = new PointF(faceP0.x - stickP0.x, faceP0.y + stickP0.y);
+        // 确定贴纸四个顶点坐标
+        PointF leftTop = new PointF(screenLeftPoint.x - textureLeftPoint.x, screenLeftPoint.y + textureLeftPoint.y);
         PointF leftBottom = new PointF(leftTop.x, leftTop.y - h);
         PointF rightTop = new PointF(leftTop.x + w, leftTop.y);
         PointF rightBottom = new PointF(rightTop.x, leftBottom.y);
@@ -107,17 +102,17 @@ public class ComponentRender {
         // 计算旋转角
         double angle;
         if (mScreenAnchor.roll == ScreenAnchor.INVALID_VALUE) {
-            // 这个旋转点在旋转角度为0时就是faceP1的坐标
-            PointF beforeRotatePoint = new PointF(leftTop.x + stickP1.x, leftTop.y - stickP1.y);
+            // 这个旋转点在旋转角度为0时就是screenRightPoint的坐标
+            PointF beforeRotatePoint = new PointF(leftTop.x + textureRightPoint.x, leftTop.y - textureRightPoint.y);
             // 根据三点算旋转角度
-            float a = distanceOf(faceP0, beforeRotatePoint);
-            float b = distanceOf(faceP0, faceP1);
-            float c = distanceOf(beforeRotatePoint, faceP1);
+            float a = distanceOf(screenLeftPoint, beforeRotatePoint);
+            float b = distanceOf(screenLeftPoint, screenRightPoint);
+            float c = distanceOf(beforeRotatePoint, screenRightPoint);
             // 余弦定理求出旋转角度
             angle = Math.acos((a * a + b * b - c * c) / (2 * a * b));
 
             // 修正旋转角度；贴纸右边的点关于左边的点的对称点，关于x轴对称
-            if (faceP1.x < beforeRotatePoint.x && faceP1.y < 2 * faceP0.y - beforeRotatePoint.y) {
+            if (screenRightPoint.x < beforeRotatePoint.x && screenRightPoint.y < 2 * screenLeftPoint.y - beforeRotatePoint.y) {
                 angle = -angle;
             }
         } else {
@@ -125,10 +120,10 @@ public class ComponentRender {
         }
 
         // 旋转四个顶点到目标位置
-        leftTop = getRotateVertices(leftTop, faceP0, angle);
-        leftBottom = getRotateVertices(leftBottom, faceP0, angle);
-        rightTop = getRotateVertices(rightTop, faceP0, angle);
-        rightBottom = getRotateVertices(rightBottom, faceP0, angle);
+        leftTop = getRotateVertices(leftTop, screenLeftPoint, angle);
+        leftBottom = getRotateVertices(leftBottom, screenLeftPoint, angle);
+        rightTop = getRotateVertices(rightTop, screenLeftPoint, angle);
+        rightBottom = getRotateVertices(rightBottom, screenLeftPoint, angle);
 
         // 转换为OpenGL坐标系坐标值
         leftTop = transVerticesToOpenGL(leftTop, width, height);
@@ -176,8 +171,16 @@ public class ComponentRender {
         String path = mComponent.resources.get(currentIndex);
         Bitmap bitmap = mBitmapCache.get(path);
         if (bitmap == null || bitmap.isRecycled()) {
-            bitmap = BitmapUtil.loadBitmap(mContext, path);
+            bitmap = BitmapUtil.loadBitmap(mContext, path, mComponent.width, mComponent.height);
             if (bitmap != null && !bitmap.isRecycled()) {
+//                // 按照mComponent.width和mComponent.height尺寸对图片进行缩放
+//                if (bitmap.getWidth() != mComponent.width || bitmap.getHeight() != mComponent.height) {
+//                    Bitmap scaledBitmap = Bitmap.createScaledBitmap(bitmap, mComponent.width, mComponent.height, true);
+//                    if (scaledBitmap != bitmap) {
+//                        bitmap.recycle();
+//                    }
+//                    bitmap = scaledBitmap;
+//                }
                 mBitmapCache.put(path, bitmap);
             } else {
                 return;
@@ -236,7 +239,7 @@ public class ComponentRender {
                 (point.y - height / 2) / (height / 2));
     }
 
-    private float distanceOf(PointF x, PointF y) {
-        return (float) Math.sqrt((x.x - y.x) * (x.x - y.x) + (x.y - y.y) * (x.y - y.y));
+    private float distanceOf(PointF p0, PointF p1) {
+        return (float) Math.sqrt((p0.x - p1.x) * (p0.x - p1.x) + (p0.y - p1.y) * (p0.y - p1.y));
     }
 }
