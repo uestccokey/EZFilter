@@ -66,6 +66,14 @@ public class OffscreenImage {
         return mPipeline.getFilterRenders();
     }
 
+    public int getWidth() {
+        return mWidth;
+    }
+
+    public int getHeight() {
+        return mHeight;
+    }
+
     public Bitmap capture(int width, int height) {
         mPipeline.onSurfaceChanged(null, width, height);
         mPipeline.startRender();

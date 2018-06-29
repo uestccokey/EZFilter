@@ -3,7 +3,10 @@ package cn.ezandroid.ezfilter.media.util;
 import android.media.MediaCodecInfo;
 import android.media.MediaExtractor;
 import android.media.MediaFormat;
+import android.media.MediaMetadataRetriever;
 import android.util.Log;
+
+import cn.ezandroid.ezfilter.core.util.NumberUtil;
 
 /**
  * MediaUtil
@@ -153,6 +156,41 @@ public class MediaUtil {
     }
 
     /**
+     * 解析多媒体文件元数据
+     *
+     * @param input
+     * @return
+     */
+    public static Metadata getMetadata(String input) {
+        MediaMetadataRetriever retriever = new MediaMetadataRetriever();
+        try {
+            retriever.setDataSource(input);
+            String duration = retriever.extractMetadata(MediaMetadataRetriever.METADATA_KEY_DURATION);
+            String width = retriever.extractMetadata(MediaMetadataRetriever.METADATA_KEY_VIDEO_WIDTH);
+            String height = retriever.extractMetadata(MediaMetadataRetriever.METADATA_KEY_VIDEO_HEIGHT);
+            String bitrate = retriever.extractMetadata(MediaMetadataRetriever.METADATA_KEY_BITRATE);
+            String mimeType = retriever.extractMetadata(MediaMetadataRetriever.METADATA_KEY_MIMETYPE);
+            String rotation = retriever.extractMetadata(MediaMetadataRetriever.METADATA_KEY_VIDEO_ROTATION);
+            String tracks = retriever.extractMetadata(MediaMetadataRetriever.METADATA_KEY_NUM_TRACKS);
+
+            Metadata metadata = new Metadata();
+            metadata.duration = NumberUtil.parseLong(duration);
+            metadata.width = NumberUtil.parseInt(width);
+            metadata.height = NumberUtil.parseInt(height);
+            metadata.bitrate = NumberUtil.parseInt(bitrate, 1);
+            metadata.rotation = NumberUtil.parseInt(rotation);
+            metadata.tracks = NumberUtil.parseInt(tracks);
+            metadata.mimeType = mimeType;
+            return metadata;
+        } catch (RuntimeException e) {
+            e.printStackTrace();
+        } finally {
+            retriever.release();
+        }
+        return new Metadata();
+    }
+
+    /**
      * 音轨和视频轨
      */
     public static class Track {
@@ -167,5 +205,33 @@ public class MediaUtil {
         public int audioTrackIndex;
         public String audioTrackMime;
         public MediaFormat audioTrackFormat;
+    }
+
+    /**
+     * 多媒体文件元数据
+     */
+    public static class Metadata {
+
+        public String mimeType;
+        public int width;
+        public int height;
+        /** 时长，单位ms，会有一定的精度损失 */
+        public long duration;
+        public int rotation;
+        public int tracks;
+        public int bitrate;
+
+        @Override
+        public String toString() {
+            return "Metadata{" +
+                    "mimeType='" + mimeType + '\'' +
+                    ", width=" + width +
+                    ", height=" + height +
+                    ", duration=" + duration +
+                    ", rotation=" + rotation +
+                    ", tracks=" + tracks +
+                    ", bitrate=" + bitrate +
+                    '}';
+        }
     }
 }

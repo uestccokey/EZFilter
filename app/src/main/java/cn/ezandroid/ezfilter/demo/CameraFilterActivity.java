@@ -233,9 +233,13 @@ public class CameraFilterActivity extends BaseActivity {
                 orientation = cameraInfo.orientation;
             }
             mCamera.setDisplayOrientation(orientation);
+
+            mRenderView.setRotate90Degrees(0);
         } else {
             parameters.set("orientation", "landscape");
             mCamera.setDisplayOrientation(0);
+
+            mRenderView.setRotate90Degrees(1);
         }
 
         // 预览分辨率设置为1280*720

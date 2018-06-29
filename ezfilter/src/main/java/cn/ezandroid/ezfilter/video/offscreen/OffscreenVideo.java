@@ -3,6 +3,7 @@ package cn.ezandroid.ezfilter.video.offscreen;
 import android.annotation.TargetApi;
 import android.graphics.SurfaceTexture;
 import android.media.AudioFormat;
+import android.media.MediaCodecInfo;
 import android.media.MediaExtractor;
 import android.media.MediaFormat;
 import android.media.MediaMetadataRetriever;
@@ -126,6 +127,14 @@ public class OffscreenVideo {
         return mPipeline.getFilterRenders();
     }
 
+    public int getWidth() {
+        return mWidth;
+    }
+
+    public int getHeight() {
+        return mHeight;
+    }
+
     public void save(String output) throws IOException {
         save(output, mWidth, mHeight);
     }
@@ -145,8 +154,9 @@ public class OffscreenVideo {
         mPipeline.onSurfaceChanged(null, width, height);
         mPipeline.startRender();
 
-        // 视频Format
-        MediaFormat videoFormat = MediaUtil.createVideoFormat(width, height);
+        // 视频Format 保证输入和输出的码率不变，防止视频处理后变模糊
+        MediaFormat videoFormat = MediaUtil.createVideoFormat(width, height,
+                MediaUtil.getMetadata(mVideoPath).bitrate, MediaCodecInfo.CodecCapabilities.COLOR_FormatSurface);
 
         // 初始化转码器
         MediaMuxer muxer = new MediaMuxer(output, MediaMuxer.OutputFormat.MUXER_OUTPUT_MPEG_4);
