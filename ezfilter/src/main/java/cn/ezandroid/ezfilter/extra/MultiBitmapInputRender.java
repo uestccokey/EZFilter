@@ -3,6 +3,7 @@ package cn.ezandroid.ezfilter.extra;
 import android.content.Context;
 import android.graphics.Bitmap;
 import android.opengl.GLES20;
+import android.text.TextUtils;
 
 import cn.ezandroid.ezfilter.core.FilterRender;
 import cn.ezandroid.ezfilter.core.GLRender;
@@ -141,7 +142,9 @@ public class MultiBitmapInputRender extends FilterRender {
                             Bitmap cachedBitmap = mBitmapCache.get(key);
                             if (cachedBitmap == null || cachedBitmap.isRecycled()) {
                                 mBitmaps[i] = BitmapUtil.loadBitmap(mContext, key);
-                                mBitmapCache.put(key, mBitmaps[i]);
+                                if (!TextUtils.isEmpty(key) && mBitmaps[i] != null && !mBitmaps[i].isRecycled()) {
+                                    mBitmapCache.put(key, mBitmaps[i]);
+                                }
                             } else {
                                 mBitmaps[i] = cachedBitmap;
                             }
