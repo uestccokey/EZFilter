@@ -132,8 +132,7 @@ public class MultiBitmapInputRender extends FilterRender {
                         int resource = mResources[i];
                         key = Path.DRAWABLE.wrap("" + resource);
                     } else if (mPaths != null) {
-                        String path = mPaths[i];
-                        key = path;
+                        key = mPaths[i];
                     }
 
                     // 查找图片缓存，绑定纹理
@@ -152,7 +151,9 @@ public class MultiBitmapInputRender extends FilterRender {
                             mBitmaps[i] = BitmapUtil.loadBitmap(mContext, key);
                         }
                     }
-                    mTextures[i] = BitmapUtil.bindBitmap(mBitmaps[i]);
+                    if (mBitmaps[i] != null && !mBitmaps[i].isRecycled()) {
+                        mTextures[i] = BitmapUtil.bindBitmap(mBitmaps[i]);
+                    }
                 }
             }
         }

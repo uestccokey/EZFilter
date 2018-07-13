@@ -67,8 +67,8 @@ public class GLRender implements OnTextureAcceptableListener {
     private boolean mInitialized;
     protected boolean mSizeChanged;
 
-    private final Queue<Runnable> mRunOnDraw;
-    private final Queue<Runnable> mRunOnDrawEnd;
+    protected final Queue<Runnable> mRunOnDraw;
+    protected final Queue<Runnable> mRunOnDrawEnd;
 
     protected int mFps;
     private long mLastTime;
@@ -444,7 +444,7 @@ public class GLRender implements OnTextureAcceptableListener {
         }
     }
 
-    private void runAll(Queue<Runnable> queue) {
+    protected void runAll(Queue<Runnable> queue) {
         synchronized (queue) {
             while (!queue.isEmpty()) {
                 queue.poll().run();
