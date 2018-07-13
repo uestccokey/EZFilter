@@ -100,7 +100,16 @@ public class GLRender implements OnTextureAcceptableListener {
     }
 
     /**
-     * 初始化纹理坐标系顶点
+     * 设置世界坐标系
+     *
+     * @param worldVertices
+     */
+    public void setWorldVertices(FloatBuffer worldVertices) {
+        mWorldVertices = worldVertices;
+    }
+
+    /**
+     * 初始化纹理坐标系顶点，默认为填充模式
      */
     protected void initTextureVertices() {
         mTextureVertices = new FloatBuffer[4];
@@ -139,6 +148,15 @@ public class GLRender implements OnTextureAcceptableListener {
         mTextureVertices[3] = ByteBuffer.allocateDirect(texData3.length * 4)
                 .order(ByteOrder.nativeOrder()).asFloatBuffer();
         mTextureVertices[3].put(texData3).position(0);
+    }
+
+    /**
+     * 设置纹理坐标系
+     *
+     * @param textureVertices
+     */
+    public void setTextureVertices(FloatBuffer[] textureVertices) {
+        mTextureVertices = textureVertices;
     }
 
     /**

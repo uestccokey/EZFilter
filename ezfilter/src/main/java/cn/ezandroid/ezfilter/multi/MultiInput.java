@@ -20,7 +20,7 @@ public class MultiInput extends FilterRender {
     private int mNumOfInputs;
     private int[] mMultiTextureHandle;
     private int[] mMultiTexture;
-    private List<FBORender> mFilterLocations;
+    protected List<FBORender> mFilterLocations;
 
     public MultiInput(int numOfInputs) {
         super();

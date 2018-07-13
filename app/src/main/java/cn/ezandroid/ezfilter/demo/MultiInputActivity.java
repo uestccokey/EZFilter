@@ -93,12 +93,13 @@ public class MultiInputActivity extends BaseActivity {
             }
         });
 
-        mRightBuilder = EZFilter.input(Uri.parse("android.resource://" + getPackageName() + "/" + R.raw.test))
+        mRightBuilder = EZFilter.input(Uri.parse("android.resource://" + getPackageName() + "/" + R.raw.test2))
                 .setLoop(true)
                 .setPreparedListener(new IMediaPlayer.OnPreparedListener() {
                     @Override
                     public void onPrepared(IMediaPlayer var1) {
                         Log.e("MultiInputActivity", "onPrepared");
+                        mTwoInput.updateRightWorldVertices();
                     }
                 })
                 .setCompletionListener(new IMediaPlayer.OnCompletionListener() {
