@@ -84,6 +84,10 @@ public class MultiInput extends FilterRender {
         mFilterLocations.add(location, filter);
     }
 
+    public List<FBORender> getFilterLocations() {
+        return mFilterLocations;
+    }
+
     @Override
     public void onDrawFrame() {
         super.onDrawFrame();

@@ -22,12 +22,12 @@ import cn.ezandroid.ezfilter.media.record.RecordableRender;
 import cn.ezandroid.ezfilter.video.player.IMediaPlayer;
 
 /**
- * MultipleInputActivity
+ * MultiInputActivity
  *
  * @author like
  * @date 2018-07-13
  */
-public class MultipleInputActivity extends BaseActivity {
+public class MultiInputActivity extends BaseActivity {
 
     // Orientation hysteresis amount used in rounding, in degrees
     private static final int ORIENTATION_HYSTERESIS = 5;
@@ -80,7 +80,7 @@ public class MultipleInputActivity extends BaseActivity {
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_multiple_input);
+        setContentView(R.layout.activity_multi_input);
 
         mRenderView = $(R.id.render_view);
 
@@ -93,18 +93,18 @@ public class MultipleInputActivity extends BaseActivity {
             }
         });
 
-        mRightBuilder = EZFilter.input(Uri.parse("android.resource://" + getPackageName() + "/" + R.raw.test2))
+        mRightBuilder = EZFilter.input(Uri.parse("android.resource://" + getPackageName() + "/" + R.raw.test))
                 .setLoop(true)
                 .setPreparedListener(new IMediaPlayer.OnPreparedListener() {
                     @Override
                     public void onPrepared(IMediaPlayer var1) {
-                        Log.e("MultipleInputActivity", "onPrepared");
+                        Log.e("MultiInputActivity", "onPrepared");
                     }
                 })
                 .setCompletionListener(new IMediaPlayer.OnCompletionListener() {
                     @Override
                     public void onCompletion(IMediaPlayer var1) {
-                        Log.e("MultipleInputActivity", "onCompletion");
+                        Log.e("MultiInputActivity", "onCompletion");
                     }
                 });
     }

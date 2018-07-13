@@ -41,7 +41,7 @@
             android:screenOrientation="portrait"
             android:theme="@style/AppTheme.Fullscreen" />
         <activity
-            android:name=".MultipleInputActivity"
+            android:name=".MultiInputActivity"
             android:screenOrientation="portrait"
             android:theme="@style/AppTheme.Fullscreen" />
         <activity
