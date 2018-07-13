@@ -60,6 +60,14 @@ public class MainActivity extends BaseActivity {
             }
         });
 
+        $(R.id.multi_input_filter).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Intent intent = new Intent(MainActivity.this, MultipleInputActivity.class);
+                startActivity(intent);
+            }
+        });
+
         $(R.id.video_offscreen).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {

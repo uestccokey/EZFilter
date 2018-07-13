@@ -23,6 +23,8 @@ import cn.ezandroid.ezfilter.core.environment.IFitView;
 import cn.ezandroid.ezfilter.extra.IAdjustable;
 import cn.ezandroid.ezfilter.image.BitmapBuilder;
 import cn.ezandroid.ezfilter.media.record.RecordableRender;
+import cn.ezandroid.ezfilter.multi.MultiBuilder;
+import cn.ezandroid.ezfilter.multi.MultiInput;
 import cn.ezandroid.ezfilter.video.VideoBuilder;
 import cn.ezandroid.ezfilter.view.ViewBuilder;
 import cn.ezandroid.ezfilter.view.glview.IGLView;
@@ -114,6 +116,17 @@ public class EZFilter {
     }
 
     /**
+     * 设置多输入源
+     *
+     * @param builders   输入源列表
+     * @param multiInput 多输入源渲染器
+     * @return
+     */
+    public static MultiBuilder input(List<Builder> builders, MultiInput multiInput) {
+        return new MultiBuilder(builders, multiInput);
+    }
+
+    /**
      * 构造器基类
      * <p>
      * 支持链式操作
@@ -137,7 +150,7 @@ public class EZFilter {
          *
          * @return 渲染起点
          */
-        protected abstract FBORender getStartPointRender(IFitView view);
+        public abstract FBORender getStartPointRender(IFitView view);
 
         /**
          * 获取渲染视图宽高比

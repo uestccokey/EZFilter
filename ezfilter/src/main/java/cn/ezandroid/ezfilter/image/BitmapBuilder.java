@@ -19,6 +19,8 @@ public class BitmapBuilder extends EZFilter.Builder {
 
     private Bitmap mBitmap;
 
+    private BitmapInput mBitmapInput;
+
     public BitmapBuilder(Bitmap bitmap) {
         mBitmap = bitmap;
     }
@@ -42,8 +44,11 @@ public class BitmapBuilder extends EZFilter.Builder {
     }
 
     @Override
-    protected FBORender getStartPointRender(IFitView view) {
-        return new BitmapInput(mBitmap);
+    public FBORender getStartPointRender(IFitView view) {
+        if (mBitmapInput == null) {
+            mBitmapInput = new BitmapInput(mBitmap);
+        }
+        return mBitmapInput;
     }
 
     @Override

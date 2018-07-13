@@ -411,28 +411,30 @@ public class RenderPipeline implements Renderer {
      * @param startPointRenderer
      */
     public synchronized void setStartPointRender(FBORender startPointRenderer) {
-//        boolean isRenders = isRendering();
-//        setRendering(false); // 暂时停止渲染，构建渲染链完成后再进行渲染
+        if (startPointRenderer != null && mStartPointRender != startPointRenderer) {
+//            boolean isRenders = isRendering();
+//            setRendering(false); // 暂时停止渲染，构建渲染链完成后再进行渲染
 
-        if (mStartPointRender != null) {
-            synchronized (mStartPointRender.getTargets()) {
-                for (OnTextureAcceptableListener render : mStartPointRender.getTargets()) {
-                    startPointRenderer.addTarget(render);
+            if (mStartPointRender != null) {
+                synchronized (mStartPointRender.getTargets()) {
+                    for (OnTextureAcceptableListener render : mStartPointRender.getTargets()) {
+                        startPointRenderer.addTarget(render);
+                    }
+                }
+                mStartPointRender.clearTargets();
+                addRenderToDestroy(mStartPointRender);
+                mStartPointRender = startPointRenderer;
+            } else {
+                mStartPointRender = startPointRenderer;
+                synchronized (mEndPointRenders) {
+                    for (GLRender endPointRender : mEndPointRenders) {
+                        mStartPointRender.addTarget(endPointRender);
+                    }
                 }
             }
-            mStartPointRender.clearTargets();
-            addRenderToDestroy(mStartPointRender);
-            mStartPointRender = startPointRenderer;
-        } else {
-            mStartPointRender = startPointRenderer;
-            synchronized (mEndPointRenders) {
-                for (GLRender endPointRender : mEndPointRenders) {
-                    mStartPointRender.addTarget(endPointRender);
-                }
-            }
+
+//            setRendering(isRenders);
         }
-
-//        setRendering(isRenders);
     }
 
     /**

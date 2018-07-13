@@ -18,13 +18,18 @@ public class ViewBuilder extends EZFilter.Builder {
 
     private IGLView mGLView;
 
+    private ViewInput mViewInput;
+
     public ViewBuilder(IGLView view) {
         mGLView = view;
     }
 
     @Override
-    protected FBORender getStartPointRender(IFitView view) {
-        return new ViewInput(mGLView);
+    public FBORender getStartPointRender(IFitView view) {
+        if (mViewInput == null) {
+            mViewInput = new ViewInput(mGLView);
+        }
+        return mViewInput;
     }
 
     @Override

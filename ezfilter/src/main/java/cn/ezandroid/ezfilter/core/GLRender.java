@@ -300,7 +300,7 @@ public class GLRender implements OnTextureAcceptableListener {
     /**
      * 只应该在RenderPipeline的onDrawFrame中调用
      */
-    protected void onDrawFrame() {
+    public void onDrawFrame() {
         if (L.LOG_RENDER_DRAW) {
             Log.e("GLRender", this + " onDrawFrame:" + mWidth + "x" + mHeight + " " + mCurrentRotation + " Fps:" + mFps);
         }

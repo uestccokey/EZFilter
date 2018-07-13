@@ -31,6 +31,8 @@ public class VideoBuilder extends EZFilter.Builder {
     private IMediaPlayer.OnCompletionListener mCompletionListener;
     private IMediaPlayer mMediaPlayer = new DefaultMediaPlayer();
 
+    private VideoInput mVideoInput;
+
     public VideoBuilder(Uri uri) {
         mVideo = uri;
     }
@@ -106,14 +108,16 @@ public class VideoBuilder extends EZFilter.Builder {
     }
 
     @Override
-    protected FBORender getStartPointRender(IFitView view) {
-        VideoInput videoInput = new VideoInput(view.getContext(), view, mVideo, mMediaPlayer);
-        videoInput.setLoop(mVideoLoop);
-        videoInput.setVolume(mVideoVolume, mVideoVolume);
-        videoInput.setOnPreparedListener(mPreparedListener);
-        videoInput.setOnCompletionListener(mCompletionListener);
-        videoInput.start();
-        return videoInput;
+    public FBORender getStartPointRender(IFitView view) {
+        if (mVideoInput == null) {
+            mVideoInput = new VideoInput(view.getContext(), view, mVideo, mMediaPlayer);
+            mVideoInput.setLoop(mVideoLoop);
+            mVideoInput.setVolume(mVideoVolume, mVideoVolume);
+            mVideoInput.setOnPreparedListener(mPreparedListener);
+            mVideoInput.setOnCompletionListener(mCompletionListener);
+            mVideoInput.start();
+        }
+        return mVideoInput;
     }
 
     @Override
