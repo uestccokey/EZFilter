@@ -22,7 +22,7 @@ public class HorizontalTwoInput extends MultiInput {
 
     // 右侧是视频，保持宽高比并居中显示
     public void updateRightWorldVertices() {
-        FBORender rightRender = mFilterLocations.get(1);
+        FBORender rightRender = mStartPointRenders.get(1);
         int width = rightRender.getWidth();
         int height = rightRender.getHeight();
         if (width != 0 && height != 0) {

@@ -18,6 +18,7 @@ import cn.ezandroid.ezfilter.EZFilter;
 import cn.ezandroid.ezfilter.core.GLRender;
 import cn.ezandroid.ezfilter.core.RenderPipeline;
 import cn.ezandroid.ezfilter.core.environment.SurfaceFitView;
+import cn.ezandroid.ezfilter.demo.render.BWRender;
 import cn.ezandroid.ezfilter.demo.render.HorizontalTwoInput;
 import cn.ezandroid.ezfilter.media.record.RecordableRender;
 import cn.ezandroid.ezfilter.video.player.IMediaPlayer;
@@ -207,6 +208,8 @@ public class MultiInputActivity extends BaseActivity {
         mRenderPipeline = EZFilter.input(builders, mTwoInput)
                 .enableRecord("/sdcard/recordMultiple.mp4", true, false)
                 .into(mRenderView, false);
+
+        mTwoInput.getRenderPipelines().get(0).addFilterRender(new BWRender(this));
 
         for (GLRender render : mRenderPipeline.getEndPointRenders()) {
             if (render instanceof RecordableRender) {

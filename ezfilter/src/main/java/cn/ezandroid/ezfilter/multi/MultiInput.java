@@ -8,6 +8,7 @@ import java.util.List;
 import cn.ezandroid.ezfilter.core.FBORender;
 import cn.ezandroid.ezfilter.core.FilterRender;
 import cn.ezandroid.ezfilter.core.GLRender;
+import cn.ezandroid.ezfilter.core.RenderPipeline;
 
 /**
  * 多输入源渲染器
@@ -20,19 +21,24 @@ public class MultiInput extends FilterRender {
     private int mNumOfInputs;
     private int[] mMultiTextureHandle;
     private int[] mMultiTexture;
-    protected List<FBORender> mFilterLocations;
+    protected List<FBORender> mStartPointRenders;
+    protected List<FBORender> mEndPointRenders;
+
+    protected List<RenderPipeline> mRenderPipelines; // 每个输入源都生成一个渲染管道，便于对输入源各自添加滤镜
 
     public MultiInput(int numOfInputs) {
         super();
         this.mNumOfInputs = numOfInputs;
         mMultiTextureHandle = new int[numOfInputs - 1];
         mMultiTexture = new int[numOfInputs - 1];
-        mFilterLocations = new ArrayList<>(numOfInputs);
+        mStartPointRenders = new ArrayList<>(numOfInputs);
+        mEndPointRenders = new ArrayList<>(numOfInputs);
+        mRenderPipelines = new ArrayList<>(numOfInputs);
     }
 
     @Override
     public synchronized void onTextureAcceptable(int texture, GLRender source) {
-        int pos = mFilterLocations.lastIndexOf(source);
+        int pos = mEndPointRenders.lastIndexOf(source);
         if (pos <= 0) {
             mTextureIn = texture;
         } else {
@@ -62,45 +68,77 @@ public class MultiInput extends FilterRender {
     }
 
     public void clearRegisteredFilterLocations() {
-        for (FBORender render : mFilterLocations) {
+        for (FBORender render : mEndPointRenders) {
             render.removeTarget(this);
         }
-        mFilterLocations.clear();
+        mStartPointRenders.clear();
+        mEndPointRenders.clear();
+        mRenderPipelines.clear();
     }
 
     public void registerFilterLocation(FBORender filter) {
-        if (!mFilterLocations.contains(filter)) {
-            filter.addTarget(this);
-            mFilterLocations.add(filter);
+        if (!mStartPointRenders.contains(filter)) {
+            FilterRender endRender = new FilterRender();
+            endRender.addTarget(this);
+            mStartPointRenders.add(filter);
+            mEndPointRenders.add(endRender);
+            RenderPipeline renderPipeline = new RenderPipeline();
+            renderPipeline.onSurfaceCreated(null, null);
+            renderPipeline.onSurfaceChanged(null, getWidth(), getHeight());
+            renderPipeline.setStartPointRender(filter);
+            renderPipeline.addEndPointRender(endRender);
+            renderPipeline.startRender();
+            mRenderPipelines.add(renderPipeline);
         }
     }
 
     public void registerFilterLocation(FBORender filter, int location) {
-        if (mFilterLocations.contains(filter)) {
-            filter.removeTarget(this);
-            mFilterLocations.remove(filter);
+        int index = mStartPointRenders.indexOf(filter);
+        if (index != -1) {
+            mEndPointRenders.get(index).removeTarget(this);
+
+            mStartPointRenders.remove(index);
+            mEndPointRenders.remove(index);
+            mRenderPipelines.remove(index);
         }
-        filter.addTarget(this);
-        mFilterLocations.add(location, filter);
+        FilterRender endRender = new FilterRender();
+        endRender.addTarget(this);
+        mStartPointRenders.add(location, filter);
+        mEndPointRenders.add(location, endRender);
+        RenderPipeline renderPipeline = new RenderPipeline();
+        renderPipeline.onSurfaceCreated(null, null);
+        renderPipeline.onSurfaceChanged(null, getWidth(), getHeight());
+        renderPipeline.setStartPointRender(filter);
+        renderPipeline.addEndPointRender(endRender);
+        renderPipeline.startRender();
+        mRenderPipelines.add(location, renderPipeline);
     }
 
-    public List<FBORender> getFilterLocations() {
-        return mFilterLocations;
+    public List<FBORender> getStartPointRenders() {
+        return mStartPointRenders;
+    }
+
+    public List<FBORender> getEndPointRenders() {
+        return mEndPointRenders;
+    }
+
+    public List<RenderPipeline> getRenderPipelines() {
+        return mRenderPipelines;
     }
 
     @Override
     public void onDrawFrame() {
         super.onDrawFrame();
-        for (FBORender render : mFilterLocations) {
-            render.onDrawFrame();
+        for (RenderPipeline pipeline : mRenderPipelines) {
+            pipeline.onDrawFrame(null);
         }
     }
 
     @Override
     public void destroy() {
         super.destroy();
-        for (FBORender render : mFilterLocations) {
-            render.destroy();
+        for (RenderPipeline pipeline : mRenderPipelines) {
+            pipeline.onSurfaceDestroyed();
         }
     }
 }

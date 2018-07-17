@@ -89,4 +89,8 @@ public class MultiInputFilterRender extends FilterRender {
         }
         mFilterLocations.add(location, filter);
     }
+
+    public List<GLRender> getFilterLocations() {
+        return mFilterLocations;
+    }
 }
