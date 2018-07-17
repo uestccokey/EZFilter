@@ -9,6 +9,7 @@ import android.support.annotation.Nullable;
 import android.util.Log;
 import android.view.OrientationEventListener;
 import android.view.View;
+import android.widget.Button;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -33,6 +34,7 @@ public class MultiInputActivity extends BaseActivity {
     private static final int ORIENTATION_HYSTERESIS = 5;
 
     private SurfaceFitView mRenderView;
+    private Button mRecordButton;
 
     private RenderPipeline mRenderPipeline;
 
@@ -83,6 +85,7 @@ public class MultiInputActivity extends BaseActivity {
         setContentView(R.layout.activity_multi_input);
 
         mRenderView = $(R.id.render_view);
+        mRecordButton = $(R.id.record);
 
         mOrientationEventListener = new MyOrientationEventListener(this);
 
@@ -108,6 +111,33 @@ public class MultiInputActivity extends BaseActivity {
                         Log.e("MultiInputActivity", "onCompletion");
                     }
                 });
+
+        mRecordButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if (mSupportRecord != null) {
+                    if (mSupportRecord.isRecording()) {
+                        stopRecording();
+                    } else {
+                        startRecording();
+                    }
+                }
+            }
+        });
+    }
+
+    private void startRecording() {
+        mRecordButton.setText("停止");
+        if (mSupportRecord != null) {
+            mSupportRecord.startRecording();
+        }
+    }
+
+    private void stopRecording() {
+        mRecordButton.setText("录制");
+        if (mSupportRecord != null) {
+            mSupportRecord.stopRecording();
+        }
     }
 
     private void setCameraParameters() {

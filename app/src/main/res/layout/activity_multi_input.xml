@@ -14,4 +14,11 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="切换摄像头" />
+
+    <Button
+        android:id="@+id/record"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_toRightOf="@id/switch_camera"
+        android:text="录制" />
 </RelativeLayout>
