@@ -19,9 +19,6 @@ public class CropRender extends FBORender {
 
     private RectF mRegion = new RectF(0, 0, 1, 1);
 
-    public CropRender() {
-    }
-
     /**
      * 设置裁剪区域
      *

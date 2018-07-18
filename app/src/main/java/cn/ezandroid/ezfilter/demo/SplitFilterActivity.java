@@ -13,9 +13,8 @@ import cn.ezandroid.ezfilter.EZFilter;
 import cn.ezandroid.ezfilter.core.GLRender;
 import cn.ezandroid.ezfilter.core.RenderPipeline;
 import cn.ezandroid.ezfilter.core.environment.SurfaceFitView;
-import cn.ezandroid.ezfilter.core.util.L;
+import cn.ezandroid.ezfilter.demo.render.SnowStickerRender;
 import cn.ezandroid.ezfilter.demo.render.TwoSplitInput;
-import cn.ezandroid.ezfilter.demo.render.WobbleRender;
 import cn.ezandroid.ezfilter.extra.CropRender;
 import cn.ezandroid.ezfilter.media.record.ISupportRecord;
 import cn.ezandroid.ezfilter.split.SplitInput;
@@ -86,9 +85,7 @@ public class SplitFilterActivity extends BaseActivity {
         mRenderPipeline = EZFilter.input(videoBuilder, splitInput)
                 .into(mRenderView);
 
-        splitInput.getRenderPipelines().get(0).addFilterRender(new WobbleRender());
-
-        L.LOG_RENDER_DRAW = true;
+        splitInput.getRenderPipelines().get(0).addFilterRender(new SnowStickerRender(this));
 
         for (GLRender render : mRenderPipeline.getEndPointRenders()) {
             if (render instanceof ISupportRecord) {

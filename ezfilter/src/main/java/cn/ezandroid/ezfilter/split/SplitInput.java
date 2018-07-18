@@ -6,7 +6,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 import cn.ezandroid.ezfilter.core.FBORender;
-import cn.ezandroid.ezfilter.core.FilterRender;
 import cn.ezandroid.ezfilter.core.GLRender;
 import cn.ezandroid.ezfilter.core.RenderPipeline;
 import cn.ezandroid.ezfilter.extra.CropRender;
@@ -95,7 +94,7 @@ public class SplitInput extends FBORender {
         if (!mStartPointRenders.contains(filter)) {
             mRootRender.addTarget(filter);
 
-            FilterRender endRender = new FilterRender();
+            FBORender endRender = new FBORender();
             endRender.addTarget(this);
             mStartPointRenders.add(filter);
             mEndPointRenders.add(endRender);

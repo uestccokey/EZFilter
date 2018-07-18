@@ -6,7 +6,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 import cn.ezandroid.ezfilter.core.FBORender;
-import cn.ezandroid.ezfilter.core.FilterRender;
 import cn.ezandroid.ezfilter.core.GLRender;
 import cn.ezandroid.ezfilter.core.RenderPipeline;
 
@@ -78,7 +77,7 @@ public class MultiInput extends FBORender {
 
     public void registerFilterLocation(FBORender filter) {
         if (!mStartPointRenders.contains(filter)) {
-            FilterRender endRender = new FilterRender();
+            FBORender endRender = new FBORender();
             endRender.addTarget(this);
             mStartPointRenders.add(filter);
             mEndPointRenders.add(endRender);
@@ -101,7 +100,7 @@ public class MultiInput extends FBORender {
             mEndPointRenders.remove(index);
             mRenderPipelines.remove(index);
         }
-        FilterRender endRender = new FilterRender();
+        FBORender endRender = new FBORender();
         endRender.addTarget(this);
         mStartPointRenders.add(location, filter);
         mEndPointRenders.add(location, endRender);
