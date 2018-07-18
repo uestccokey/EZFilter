@@ -68,6 +68,14 @@ public class MainActivity extends BaseActivity {
             }
         });
 
+        $(R.id.split_filter).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Intent intent = new Intent(MainActivity.this, SplitFilterActivity.class);
+                startActivity(intent);
+            }
+        });
+
         $(R.id.video_offscreen).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {

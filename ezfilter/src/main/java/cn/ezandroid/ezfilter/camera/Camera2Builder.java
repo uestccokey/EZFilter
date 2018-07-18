@@ -39,7 +39,7 @@ public class Camera2Builder extends EZFilter.Builder {
     }
 
     @Override
-    protected float getAspectRatio(IFitView view) {
+    public float getAspectRatio(IFitView view) {
         return mPreviewSize.getHeight() * 1.0f / mPreviewSize.getWidth();
     }
 

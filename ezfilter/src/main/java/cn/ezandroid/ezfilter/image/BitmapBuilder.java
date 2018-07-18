@@ -52,7 +52,7 @@ public class BitmapBuilder extends EZFilter.Builder {
     }
 
     @Override
-    protected float getAspectRatio(IFitView view) {
+    public float getAspectRatio(IFitView view) {
         return mBitmap.getWidth() * 1.0f / mBitmap.getHeight();
     }
 

@@ -33,7 +33,7 @@ public class ViewBuilder extends EZFilter.Builder {
     }
 
     @Override
-    protected float getAspectRatio(IFitView view) {
+    public float getAspectRatio(IFitView view) {
         if (mGLView.getHeight() != 0) {
             return mGLView.getWidth() * 1.0f / mGLView.getHeight();
         }

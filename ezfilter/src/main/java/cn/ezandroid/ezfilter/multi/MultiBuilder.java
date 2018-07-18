@@ -10,6 +10,8 @@ import cn.ezandroid.ezfilter.extra.IAdjustable;
 
 /**
  * 多输入源构造器
+ * <p>
+ * 支持将多个输入源，比如两个视频、一个视频一个图片等，组合到一个界面中进行显示，支持对各输入源分别添加滤镜
  *
  * @author like
  * @date 2018-07-13
@@ -35,7 +37,7 @@ public class MultiBuilder extends EZFilter.Builder {
     }
 
     @Override
-    protected float getAspectRatio(IFitView view) {
+    public float getAspectRatio(IFitView view) {
         return mMultiInput.getWidth() * 1.0f / mMultiInput.getHeight();
     }
 

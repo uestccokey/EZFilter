@@ -2,7 +2,6 @@ package cn.ezandroid.ezfilter.video;
 
 import android.media.MediaMetadataRetriever;
 import android.net.Uri;
-import android.text.TextUtils;
 
 import java.io.IOException;
 import java.util.HashMap;
@@ -11,6 +10,7 @@ import cn.ezandroid.ezfilter.EZFilter;
 import cn.ezandroid.ezfilter.core.FBORender;
 import cn.ezandroid.ezfilter.core.FilterRender;
 import cn.ezandroid.ezfilter.core.environment.IFitView;
+import cn.ezandroid.ezfilter.core.util.NumberUtil;
 import cn.ezandroid.ezfilter.extra.IAdjustable;
 import cn.ezandroid.ezfilter.video.offscreen.OffscreenVideo;
 import cn.ezandroid.ezfilter.video.player.DefaultMediaPlayer;
@@ -121,7 +121,7 @@ public class VideoBuilder extends EZFilter.Builder {
     }
 
     @Override
-    protected float getAspectRatio(IFitView view) {
+    public float getAspectRatio(IFitView view) {
         MediaMetadataRetriever metadata = new MediaMetadataRetriever();
         try {
             String scheme = mVideo.getScheme();
@@ -135,10 +135,10 @@ public class VideoBuilder extends EZFilter.Builder {
             String width = metadata.extractMetadata(MediaMetadataRetriever.METADATA_KEY_VIDEO_WIDTH);
             String height = metadata.extractMetadata(MediaMetadataRetriever.METADATA_KEY_VIDEO_HEIGHT);
             String rotation = metadata.extractMetadata(MediaMetadataRetriever.METADATA_KEY_VIDEO_ROTATION);
-            if ((parseInt(rotation) / 90) % 2 != 0) {
-                return parseInt(height) * 1.0f / parseInt(width);
+            if ((NumberUtil.parseInt(rotation) / 90) % 2 != 0) {
+                return NumberUtil.parseInt(height) * 1.0f / NumberUtil.parseInt(width);
             } else {
-                return parseInt(width) * 1.0f / parseInt(height);
+                return NumberUtil.parseInt(width) * 1.0f / NumberUtil.parseInt(height);
             }
         } catch (Exception e) {
             e.printStackTrace();
@@ -146,16 +146,6 @@ public class VideoBuilder extends EZFilter.Builder {
         } finally {
             metadata.release();
         }
-    }
-
-    private static int parseInt(String val) {
-        if (TextUtils.isEmpty(val)) return 0;
-        try {
-            return Integer.parseInt(val);
-        } catch (NumberFormatException e) {
-            e.printStackTrace();
-        }
-        return 0;
     }
 
     @Override
