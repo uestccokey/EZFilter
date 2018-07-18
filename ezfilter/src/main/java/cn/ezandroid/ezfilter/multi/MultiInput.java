@@ -16,7 +16,7 @@ import cn.ezandroid.ezfilter.core.RenderPipeline;
  * @author like
  * @date 2018-07-13
  */
-public class MultiInput extends FilterRender {
+public class MultiInput extends FBORender {
 
     private int mNumOfInputs;
     private int[] mMultiTextureHandle;
