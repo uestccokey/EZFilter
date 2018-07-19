@@ -55,6 +55,7 @@ public class GroupFilterRender extends FilterRender {
 
     @Override
     public void onTextureAcceptable(int texture, GLRender source) {
+        runAll(mRunOnDraw);
         if (mTerminalFilters.contains(source)) {
             setWidth(source.getWidth());
             setHeight(source.getHeight());
@@ -70,6 +71,7 @@ public class GroupFilterRender extends FilterRender {
                 }
             }
         }
+        runAll(mRunOnDrawEnd);
     }
 
     public void registerFilter(GLRender filter) {

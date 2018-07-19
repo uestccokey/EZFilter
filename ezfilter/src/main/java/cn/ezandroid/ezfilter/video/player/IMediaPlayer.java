@@ -1,6 +1,7 @@
 package cn.ezandroid.ezfilter.video.player;
 
 import android.content.Context;
+import android.media.MediaPlayer;
 import android.net.Uri;
 import android.view.Surface;
 
@@ -48,6 +49,8 @@ public interface IMediaPlayer {
 
     void setOnCompletionListener(OnCompletionListener var1);
 
+    void setOnErrorListener(OnErrorListener var1);
+
     void setLooping(boolean var1);
 
     boolean isLooping();
@@ -60,5 +63,9 @@ public interface IMediaPlayer {
 
     interface OnPreparedListener {
         void onPrepared(IMediaPlayer var1);
+    }
+
+    interface OnErrorListener {
+        boolean onError(MediaPlayer mp, int what, int extra);
     }
 }

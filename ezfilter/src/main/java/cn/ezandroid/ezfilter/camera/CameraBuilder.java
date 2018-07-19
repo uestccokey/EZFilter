@@ -19,18 +19,23 @@ public class CameraBuilder extends EZFilter.Builder {
     private Camera mCamera;
     private Camera.Size mPreviewSize;
 
+    private CameraInput mCameraInput;
+
     public CameraBuilder(Camera camera, Camera.Size size) {
         mCamera = camera;
         mPreviewSize = size;
     }
 
     @Override
-    protected FBORender getStartPointRender(IFitView view) {
-        return new CameraInput(view, mCamera, mPreviewSize);
+    public FBORender getStartPointRender(IFitView view) {
+        if (mCameraInput == null) {
+            mCameraInput = new CameraInput(view, mCamera, mPreviewSize);
+        }
+        return mCameraInput;
     }
 
     @Override
-    protected float getAspectRatio(IFitView view) {
+    public float getAspectRatio(IFitView view) {
         return mPreviewSize.height * 1.0f / mPreviewSize.width;
     }
 

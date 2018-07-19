@@ -21,4 +21,9 @@ public class DefaultMediaPlayer extends MediaPlayer implements IMediaPlayer {
         setOnCompletionListener((MediaPlayer.OnCompletionListener) mediaPlayer ->
                 var1.onCompletion(DefaultMediaPlayer.this));
     }
+
+    @Override
+    public void setOnErrorListener(IMediaPlayer.OnErrorListener var1) {
+        setOnErrorListener((MediaPlayer.OnErrorListener) var1::onError);
+    }
 }

@@ -114,8 +114,10 @@ public class RenderPipeline implements Renderer {
             Log.e("RenderPipeline", this + " onDrawFrame:" + mWidth + "x" + mHeight + " " + isRendering());
         }
 
-        GLES20.glClearColor(mBackgroundRed, mBackgroundGreen, mBackgroundBlue, mBackgroundAlpha);
-        GLES20.glClear(GLES20.GL_DEPTH_BUFFER_BIT | GLES20.GL_COLOR_BUFFER_BIT);
+        if (gl10 != null) {
+            GLES20.glClearColor(mBackgroundRed, mBackgroundGreen, mBackgroundBlue, mBackgroundAlpha);
+            GLES20.glClear(GLES20.GL_DEPTH_BUFFER_BIT | GLES20.GL_COLOR_BUFFER_BIT);
+        }
 
         if (isRendering()) {
             if (mStartPointRender != null) {
@@ -411,28 +413,30 @@ public class RenderPipeline implements Renderer {
      * @param startPointRenderer
      */
     public synchronized void setStartPointRender(FBORender startPointRenderer) {
-//        boolean isRenders = isRendering();
-//        setRendering(false); // 暂时停止渲染，构建渲染链完成后再进行渲染
+        if (startPointRenderer != null && mStartPointRender != startPointRenderer) {
+//            boolean isRenders = isRendering();
+//            setRendering(false); // 暂时停止渲染，构建渲染链完成后再进行渲染
 
-        if (mStartPointRender != null) {
-            synchronized (mStartPointRender.getTargets()) {
-                for (OnTextureAcceptableListener render : mStartPointRender.getTargets()) {
-                    startPointRenderer.addTarget(render);
+            if (mStartPointRender != null) {
+                synchronized (mStartPointRender.getTargets()) {
+                    for (OnTextureAcceptableListener render : mStartPointRender.getTargets()) {
+                        startPointRenderer.addTarget(render);
+                    }
+                }
+                mStartPointRender.clearTargets();
+                addRenderToDestroy(mStartPointRender);
+                mStartPointRender = startPointRenderer;
+            } else {
+                mStartPointRender = startPointRenderer;
+                synchronized (mEndPointRenders) {
+                    for (GLRender endPointRender : mEndPointRenders) {
+                        mStartPointRender.addTarget(endPointRender);
+                    }
                 }
             }
-            mStartPointRender.clearTargets();
-            addRenderToDestroy(mStartPointRender);
-            mStartPointRender = startPointRenderer;
-        } else {
-            mStartPointRender = startPointRenderer;
-            synchronized (mEndPointRenders) {
-                for (GLRender endPointRender : mEndPointRenders) {
-                    mStartPointRender.addTarget(endPointRender);
-                }
-            }
+
+//            setRendering(isRenders);
         }
-
-//        setRendering(isRenders);
     }
 
     /**

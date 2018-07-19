@@ -3,6 +3,7 @@ package cn.ezandroid.ezfilter.extra;
 import android.content.Context;
 import android.graphics.Bitmap;
 import android.opengl.GLES20;
+import android.text.TextUtils;
 
 import cn.ezandroid.ezfilter.core.FilterRender;
 import cn.ezandroid.ezfilter.core.GLRender;
@@ -131,8 +132,7 @@ public class MultiBitmapInputRender extends FilterRender {
                         int resource = mResources[i];
                         key = Path.DRAWABLE.wrap("" + resource);
                     } else if (mPaths != null) {
-                        String path = mPaths[i];
-                        key = path;
+                        key = mPaths[i];
                     }
 
                     // 查找图片缓存，绑定纹理
@@ -141,7 +141,9 @@ public class MultiBitmapInputRender extends FilterRender {
                             Bitmap cachedBitmap = mBitmapCache.get(key);
                             if (cachedBitmap == null || cachedBitmap.isRecycled()) {
                                 mBitmaps[i] = BitmapUtil.loadBitmap(mContext, key);
-                                mBitmapCache.put(key, mBitmaps[i]);
+                                if (!TextUtils.isEmpty(key) && mBitmaps[i] != null && !mBitmaps[i].isRecycled()) {
+                                    mBitmapCache.put(key, mBitmaps[i]);
+                                }
                             } else {
                                 mBitmaps[i] = cachedBitmap;
                             }
@@ -149,7 +151,9 @@ public class MultiBitmapInputRender extends FilterRender {
                             mBitmaps[i] = BitmapUtil.loadBitmap(mContext, key);
                         }
                     }
-                    mTextures[i] = BitmapUtil.bindBitmap(mBitmaps[i]);
+                    if (mBitmaps[i] != null && !mBitmaps[i].isRecycled()) {
+                        mTextures[i] = BitmapUtil.bindBitmap(mBitmaps[i]);
+                    }
                 }
             }
         }

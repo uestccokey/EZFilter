@@ -36,6 +36,18 @@
         android:text="View加滤镜" />
 
     <Button
+        android:id="@+id/multi_input_filter"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="多输入源加滤镜" />
+
+    <Button
+        android:id="@+id/split_filter"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="分区域加滤镜" />
+
+    <Button
         android:id="@+id/video_offscreen"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"

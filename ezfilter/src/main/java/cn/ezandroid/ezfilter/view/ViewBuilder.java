@@ -18,17 +18,22 @@ public class ViewBuilder extends EZFilter.Builder {
 
     private IGLView mGLView;
 
+    private ViewInput mViewInput;
+
     public ViewBuilder(IGLView view) {
         mGLView = view;
     }
 
     @Override
-    protected FBORender getStartPointRender(IFitView view) {
-        return new ViewInput(mGLView);
+    public FBORender getStartPointRender(IFitView view) {
+        if (mViewInput == null) {
+            mViewInput = new ViewInput(mGLView);
+        }
+        return mViewInput;
     }
 
     @Override
-    protected float getAspectRatio(IFitView view) {
+    public float getAspectRatio(IFitView view) {
         if (mGLView.getHeight() != 0) {
             return mGLView.getWidth() * 1.0f / mGLView.getHeight();
         }
