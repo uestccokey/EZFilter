@@ -24,6 +24,6 @@ public class DefaultMediaPlayer extends MediaPlayer implements IMediaPlayer {
 
     @Override
     public void setOnErrorListener(IMediaPlayer.OnErrorListener var1) {
-        setOnErrorListener((MediaPlayer.OnErrorListener) var1::onError);
+        setOnErrorListener((MediaPlayer.OnErrorListener) (mp, what, extra) -> var1.onError(DefaultMediaPlayer.this, what, extra));
     }
 }

@@ -1,7 +1,6 @@
 package cn.ezandroid.ezfilter.video.player;
 
 import android.content.Context;
-import android.media.MediaPlayer;
 import android.net.Uri;
 import android.view.Surface;
 
@@ -77,6 +76,6 @@ public interface IMediaPlayer {
          * Returning false, or not having an OnErrorListener at all, will
          * cause the OnCompletionListener to be called.
          */
-        boolean onError(MediaPlayer mp, int what, int extra);
+        boolean onError(IMediaPlayer mp, int what, int extra);
     }
 }
