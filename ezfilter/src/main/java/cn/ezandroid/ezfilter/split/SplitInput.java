@@ -98,7 +98,7 @@ public class SplitInput extends FBORender {
         }
     }
 
-    private void clearRegisteredFilters() {
+    public void clearRegisteredFilters() {
         mRootRender.clearTargets();
         for (FBORender render : mEndPointRenders) {
             render.removeTarget(this);
@@ -108,7 +108,7 @@ public class SplitInput extends FBORender {
         mRenderPipelines.clear();
     }
 
-    private void registerFilter(FBORender filter) {
+    public void registerFilter(FBORender filter) {
         if (!mStartPointRenders.contains(filter)) {
             mRootRender.addTarget(filter);
 

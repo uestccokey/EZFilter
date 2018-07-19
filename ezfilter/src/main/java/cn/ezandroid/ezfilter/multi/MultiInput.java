@@ -91,28 +91,6 @@ public class MultiInput extends FBORender {
         }
     }
 
-    public void registerFilter(FBORender filter, int location) {
-        int index = mStartPointRenders.indexOf(filter);
-        if (index != -1) {
-            mEndPointRenders.get(index).removeTarget(this);
-
-            mStartPointRenders.remove(index);
-            mEndPointRenders.remove(index);
-            mRenderPipelines.remove(index);
-        }
-        FBORender endRender = new FBORender();
-        endRender.addTarget(this);
-        mStartPointRenders.add(location, filter);
-        mEndPointRenders.add(location, endRender);
-        RenderPipeline renderPipeline = new RenderPipeline();
-        renderPipeline.onSurfaceCreated(null, null);
-        renderPipeline.onSurfaceChanged(null, getWidth(), getHeight());
-        renderPipeline.setStartPointRender(filter);
-        renderPipeline.addEndPointRender(endRender);
-        renderPipeline.startRender();
-        mRenderPipelines.add(location, renderPipeline);
-    }
-
     public List<FBORender> getStartPointRenders() {
         return mStartPointRenders;
     }
