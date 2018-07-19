@@ -49,6 +49,7 @@ public class VideoInput extends FBORender implements SurfaceTexture.OnFrameAvail
 
     private IMediaPlayer.OnPreparedListener mPreparedListener;
     private IMediaPlayer.OnCompletionListener mCompletionListener;
+    private IMediaPlayer.OnErrorListener mErrorListener;
 
     public VideoInput(IGLEnvironment render) {
         super();
@@ -105,6 +106,10 @@ public class VideoInput extends FBORender implements SurfaceTexture.OnFrameAvail
         mCompletionListener = listener;
     }
 
+    public void setOnErrorListener(IMediaPlayer.OnErrorListener listener) {
+        mErrorListener = listener;
+    }
+
     public void setVideoUri(Context context, Uri uri, IMediaPlayer player) throws IOException {
         if (uri != null) {
             release();
@@ -130,7 +135,11 @@ public class VideoInput extends FBORender implements SurfaceTexture.OnFrameAvail
                     mCompletionListener.onCompletion(var1);
                 }
             });
+            mPlayer.setOnErrorListener((mp, what, extra) ->
+                    mErrorListener == null || mErrorListener.onError(mp, what, extra)
+            );
             reInit();
+            mRender.requestRender();
         }
     }
 

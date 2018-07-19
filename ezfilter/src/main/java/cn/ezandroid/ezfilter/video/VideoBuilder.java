@@ -29,6 +29,7 @@ public class VideoBuilder extends EZFilter.Builder {
     private float mVideoVolume = 1.0f;
     private IMediaPlayer.OnPreparedListener mPreparedListener;
     private IMediaPlayer.OnCompletionListener mCompletionListener;
+    private IMediaPlayer.OnErrorListener mErrorListener;
     private IMediaPlayer mMediaPlayer = new DefaultMediaPlayer();
 
     private VideoInput mVideoInput;
@@ -81,6 +82,11 @@ public class VideoBuilder extends EZFilter.Builder {
         return this;
     }
 
+    public VideoBuilder setErrorListener(IMediaPlayer.OnErrorListener listener) {
+        mErrorListener = listener;
+        return this;
+    }
+
     public void output(String output) {
         // 离屏渲染
         OffscreenVideo offscreenVideo = new OffscreenVideo(mVideo.getPath());
@@ -115,7 +121,7 @@ public class VideoBuilder extends EZFilter.Builder {
             mVideoInput.setVolume(mVideoVolume, mVideoVolume);
             mVideoInput.setOnPreparedListener(mPreparedListener);
             mVideoInput.setOnCompletionListener(mCompletionListener);
-            mVideoInput.start();
+            mVideoInput.setOnErrorListener(mErrorListener);
         }
         return mVideoInput;
     }

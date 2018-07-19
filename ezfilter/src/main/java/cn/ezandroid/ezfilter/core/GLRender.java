@@ -316,7 +316,7 @@ public class GLRender implements OnTextureAcceptableListener {
     }
 
     /**
-     * 只应该在RenderPipeline的onDrawFrame中调用
+     * 必须在GL线程执行
      */
     public void onDrawFrame() {
         if (L.LOG_RENDER_DRAW) {

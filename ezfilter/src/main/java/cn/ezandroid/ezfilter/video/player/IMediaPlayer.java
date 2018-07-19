@@ -66,6 +66,17 @@ public interface IMediaPlayer {
     }
 
     interface OnErrorListener {
+
+        /**
+         * Called to indicate an error.
+         *
+         * @param mp    the MediaPlayer the error pertains to
+         * @param what  the type of error that has occurred:
+         * @param extra an extra code, specific to the error. Typically implementation dependent.
+         * @return True if the method handled the error, false if it didn't.
+         * Returning false, or not having an OnErrorListener at all, will
+         * cause the OnCompletionListener to be called.
+         */
         boolean onError(MediaPlayer mp, int what, int extra);
     }
 }
