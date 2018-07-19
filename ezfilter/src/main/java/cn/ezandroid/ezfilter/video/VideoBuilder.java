@@ -29,7 +29,9 @@ public class VideoBuilder extends EZFilter.Builder {
     private float mVideoVolume = 1.0f;
     private IMediaPlayer.OnPreparedListener mPreparedListener;
     private IMediaPlayer.OnCompletionListener mCompletionListener;
+    private IMediaPlayer.OnErrorListener mErrorListener;
     private IMediaPlayer mMediaPlayer = new DefaultMediaPlayer();
+    private boolean mStartWhenReady = true;
 
     private VideoInput mVideoInput;
 
@@ -71,6 +73,11 @@ public class VideoBuilder extends EZFilter.Builder {
         return this;
     }
 
+    public VideoBuilder setStartWhenReady(boolean start) {
+        mStartWhenReady = start;
+        return this;
+    }
+
     public VideoBuilder setPreparedListener(IMediaPlayer.OnPreparedListener listener) {
         mPreparedListener = listener;
         return this;
@@ -78,6 +85,11 @@ public class VideoBuilder extends EZFilter.Builder {
 
     public VideoBuilder setCompletionListener(IMediaPlayer.OnCompletionListener listener) {
         mCompletionListener = listener;
+        return this;
+    }
+
+    public VideoBuilder setErrorListener(IMediaPlayer.OnErrorListener listener) {
+        mErrorListener = listener;
         return this;
     }
 
@@ -111,11 +123,12 @@ public class VideoBuilder extends EZFilter.Builder {
     public FBORender getStartPointRender(IFitView view) {
         if (mVideoInput == null) {
             mVideoInput = new VideoInput(view.getContext(), view, mVideo, mMediaPlayer);
+            mVideoInput.setStartWhenReady(mStartWhenReady);
             mVideoInput.setLoop(mVideoLoop);
             mVideoInput.setVolume(mVideoVolume, mVideoVolume);
             mVideoInput.setOnPreparedListener(mPreparedListener);
             mVideoInput.setOnCompletionListener(mCompletionListener);
-            mVideoInput.start();
+            mVideoInput.setOnErrorListener(mErrorListener);
         }
         return mVideoInput;
     }
