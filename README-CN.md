@@ -40,9 +40,9 @@ android {
 }
 
 dependencies {
-    compile 'cn.ezandroid:EZFilter:2.0.1' // Gradle 3.0以下
+    compile 'cn.ezandroid:EZFilter:x.x.x' // Gradle 3.0以下
     // 或者
-    implementation 'cn.ezandroid:EZFilter:2.0.1' // Gradle3.0及以上
+    implementation 'cn.ezandroid:EZFilter:x.x.x' // Gradle3.0及以上
 }
 ```
 
