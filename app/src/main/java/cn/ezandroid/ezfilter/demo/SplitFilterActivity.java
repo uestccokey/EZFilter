@@ -5,6 +5,7 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.util.Log;
+import android.view.View;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -32,6 +33,7 @@ public class SplitFilterActivity extends BaseActivity {
 
     private RenderPipeline mRenderPipeline;
 
+    private SplitInput mSplitInput;
     private ISupportRecord mSupportRecord;
 
     @Override
@@ -41,7 +43,17 @@ public class SplitFilterActivity extends BaseActivity {
 
         mRenderView = $(R.id.render_view);
 
-        EZFilter.Builder videoBuilder = EZFilter.input(Uri.parse("android.resource://" + getPackageName() + "/" + R.raw.test4))
+        $(R.id.record).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+            }
+        });
+
+        loadVideo(Uri.parse("android.resource://" + getPackageName() + "/" + R.raw.test4));
+    }
+
+    private void loadVideo(Uri uri) {
+        EZFilter.Builder videoBuilder = EZFilter.input(uri)
                 .setLoop(false)
                 .enableRecord("/sdcard/recordSplit.mp4", true, true)
                 .setPreparedListener(new IMediaPlayer.OnPreparedListener() {
@@ -57,23 +69,28 @@ public class SplitFilterActivity extends BaseActivity {
                     }
                 });
 
-        CropRender leftCropRender = new CropRender();
-        leftCropRender.setCropRegion(new RectF(0, 0, 0.5f, 1));
-        CropRender rightCropRender = new CropRender();
-        rightCropRender.setCropRegion(new RectF(0.5f, 0, 1, 1));
-        List<CropRender> cropRenders = new ArrayList<>();
-        cropRenders.add(leftCropRender);
-        cropRenders.add(rightCropRender);
-        SplitInput splitInput = new TwoSplitInput(cropRenders);
-        mRenderPipeline = EZFilter.input(videoBuilder, splitInput)
-                .into(mRenderView);
+        if (mSplitInput == null) {
+            CropRender leftCropRender = new CropRender();
+            leftCropRender.setCropRegion(new RectF(0, 0, 0.5f, 1));
+            CropRender rightCropRender = new CropRender();
+            rightCropRender.setCropRegion(new RectF(0.5f, 0, 1, 1));
+            List<CropRender> cropRenders = new ArrayList<>();
+            cropRenders.add(leftCropRender);
+            cropRenders.add(rightCropRender);
+            mSplitInput = new TwoSplitInput(cropRenders);
 
-        splitInput.getRenderPipelines().get(0).addFilterRender(new SnowStickerRender(this));
+            mRenderPipeline = EZFilter.input(videoBuilder, mSplitInput)
+                    .into(mRenderView);
 
-        for (GLRender render : mRenderPipeline.getEndPointRenders()) {
-            if (render instanceof ISupportRecord) {
-                mSupportRecord = (ISupportRecord) render;
+            mSplitInput.getRenderPipelines().get(0).addFilterRender(new SnowStickerRender(this));
+
+            for (GLRender render : mRenderPipeline.getEndPointRenders()) {
+                if (render instanceof ISupportRecord) {
+                    mSupportRecord = (ISupportRecord) render;
+                }
             }
+        } else {
+            mSplitInput.setRootRender(videoBuilder.getStartPointRender(mRenderView));
         }
     }
 }

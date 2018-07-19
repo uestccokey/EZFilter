@@ -7,6 +7,7 @@ import java.util.List;
 
 import cn.ezandroid.ezfilter.core.FBORender;
 import cn.ezandroid.ezfilter.core.GLRender;
+import cn.ezandroid.ezfilter.core.OnTextureAcceptableListener;
 import cn.ezandroid.ezfilter.core.RenderPipeline;
 import cn.ezandroid.ezfilter.extra.CropRender;
 
@@ -41,11 +42,28 @@ public class SplitInput extends FBORender {
     }
 
     public void setRootRender(FBORender rootRender) {
-        mRootRender = rootRender;
+        if (rootRender != null && mRootRender != rootRender) {
+            if (mRootRender != null) {
+                synchronized (mRootRender.getTargets()) {
+                    for (OnTextureAcceptableListener render : mRootRender.getTargets()) {
+                        rootRender.addTarget(render);
+                    }
+                }
+                mRootRender.clearTargets();
 
-        clearRegisteredFilterLocations();
-        for (CropRender cropRender : mCropRenders) {
-            registerFilterLocation(cropRender);
+                // 在GL线程销毁之前的根渲染器
+                FBORender fboRender = mRootRender;
+                runOnDraw(fboRender::destroy);
+
+                mRootRender = rootRender;
+            } else {
+                mRootRender = rootRender;
+
+                clearRegisteredFilters();
+                for (CropRender cropRender : mCropRenders) {
+                    registerFilter(cropRender);
+                }
+            }
         }
     }
 
@@ -80,7 +98,7 @@ public class SplitInput extends FBORender {
         }
     }
 
-    private void clearRegisteredFilterLocations() {
+    private void clearRegisteredFilters() {
         mRootRender.clearTargets();
         for (FBORender render : mEndPointRenders) {
             render.removeTarget(this);
@@ -90,7 +108,7 @@ public class SplitInput extends FBORender {
         mRenderPipelines.clear();
     }
 
-    private void registerFilterLocation(FBORender filter) {
+    private void registerFilter(FBORender filter) {
         if (!mStartPointRenders.contains(filter)) {
             mRootRender.addTarget(filter);
 

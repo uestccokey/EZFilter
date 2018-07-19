@@ -66,7 +66,7 @@ public class MultiInput extends FBORender {
         }
     }
 
-    public void clearRegisteredFilterLocations() {
+    public void clearRegisteredFilters() {
         for (FBORender render : mEndPointRenders) {
             render.removeTarget(this);
         }
@@ -75,7 +75,7 @@ public class MultiInput extends FBORender {
         mRenderPipelines.clear();
     }
 
-    public void registerFilterLocation(FBORender filter) {
+    public void registerFilter(FBORender filter) {
         if (!mStartPointRenders.contains(filter)) {
             FBORender endRender = new FBORender();
             endRender.addTarget(this);
@@ -91,7 +91,7 @@ public class MultiInput extends FBORender {
         }
     }
 
-    public void registerFilterLocation(FBORender filter, int location) {
+    public void registerFilter(FBORender filter, int location) {
         int index = mStartPointRenders.indexOf(filter);
         if (index != -1) {
             mEndPointRenders.get(index).removeTarget(this);

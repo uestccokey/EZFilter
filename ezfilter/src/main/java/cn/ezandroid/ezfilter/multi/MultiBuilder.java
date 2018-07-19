@@ -28,10 +28,10 @@ public class MultiBuilder extends EZFilter.Builder {
 
     @Override
     public FBORender getStartPointRender(IFitView view) {
-        mMultiInput.clearRegisteredFilterLocations();
+        mMultiInput.clearRegisteredFilters();
         for (EZFilter.Builder builder : mBuilders) {
             FBORender render = builder.getStartPointRender(view);
-            mMultiInput.registerFilterLocation(render);
+            mMultiInput.registerFilter(render);
         }
         return mMultiInput;
     }
