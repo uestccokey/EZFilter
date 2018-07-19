@@ -41,23 +41,6 @@ public class SplitFilterActivity extends BaseActivity {
 
         mRenderView = $(R.id.render_view);
 
-        mRenderPipeline = EZFilter.input(Uri.parse("android.resource://" + getPackageName() + "/" + R.raw.test4))
-                .setLoop(false)
-                .enableRecord("/sdcard/recordSplit.mp4", true, true)
-                .setPreparedListener(new IMediaPlayer.OnPreparedListener() {
-                    @Override
-                    public void onPrepared(IMediaPlayer var1) {
-                        Log.e("SplitFilterActivity", "onPrepared");
-                    }
-                })
-                .setCompletionListener(new IMediaPlayer.OnCompletionListener() {
-                    @Override
-                    public void onCompletion(IMediaPlayer var1) {
-                        Log.e("SplitFilterActivity", "onCompletion");
-                    }
-                })
-                .into(mRenderView);
-
         EZFilter.Builder videoBuilder = EZFilter.input(Uri.parse("android.resource://" + getPackageName() + "/" + R.raw.test4))
                 .setLoop(false)
                 .enableRecord("/sdcard/recordSplit.mp4", true, true)
