@@ -32,17 +32,17 @@ import cn.ezandroid.ezfilter.media.util.MediaUtil;
 @TargetApi(Build.VERSION_CODES.JELLY_BEAN_MR2)
 public class OffscreenVideo {
 
-    protected RenderPipeline mPipeline;
+    private RenderPipeline mPipeline;
 
-    protected MediaExtractor mExtractor;
-    protected MediaUtil.Track mTrack;
-    protected String mVideoPath;
-    protected VideoFBORender mOffscreenRender;
+    private MediaExtractor mExtractor;
+    private MediaUtil.Track mTrack;
+    private String mVideoPath;
+    private VideoFBORender mOffscreenRender;
 
-    protected IVideoRenderListener mVideoRenderListener;
+    private IVideoRenderListener mVideoRenderListener;
 
-    protected int mWidth;
-    protected int mHeight;
+    private int mWidth;
+    private int mHeight;
 
     public interface IVideoRenderListener {
 

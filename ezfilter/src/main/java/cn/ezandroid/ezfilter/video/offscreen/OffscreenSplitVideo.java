@@ -1,5 +1,6 @@
 package cn.ezandroid.ezfilter.video.offscreen;
 
+import android.annotation.TargetApi;
 import android.graphics.SurfaceTexture;
 import android.media.AudioFormat;
 import android.media.MediaCodecInfo;
@@ -7,6 +8,7 @@ import android.media.MediaExtractor;
 import android.media.MediaFormat;
 import android.media.MediaMetadataRetriever;
 import android.media.MediaMuxer;
+import android.os.Build;
 
 import java.io.IOException;
 import java.util.List;
@@ -28,6 +30,7 @@ import cn.ezandroid.ezfilter.split.SplitInput;
  * @author like
  * @date 2018-07-20
  */
+@TargetApi(Build.VERSION_CODES.JELLY_BEAN_MR2)
 public class OffscreenSplitVideo {
 
     private RenderPipeline mPipeline;
