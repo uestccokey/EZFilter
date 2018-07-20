@@ -178,9 +178,11 @@ public class MultiBitmapInputRender extends FilterRender {
         super.bindShaderTextures();
         for (int i = 0; i < mTextureNum - 1; i++) {
             int tex = GLES20.GL_TEXTURE1 + i;
-            GLES20.glActiveTexture(tex);
-            GLES20.glBindTexture(GLES20.GL_TEXTURE_2D, mTextures[i]);
-            GLES20.glUniform1i(mTextureHandles[i], i + 1);
+            if (mTextures[i] != 0) {
+                GLES20.glActiveTexture(tex);
+                GLES20.glBindTexture(GLES20.GL_TEXTURE_2D, mTextures[i]);
+                GLES20.glUniform1i(mTextureHandles[i], i + 1);
+            }
         }
     }
 }

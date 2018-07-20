@@ -19,9 +19,9 @@ import cn.ezandroid.ezfilter.extra.CropRender;
  */
 public class SplitInput extends FBORender {
 
-    private int mNumOfInputs;
-    private int[] mMultiTextureHandle;
-    private int[] mMultiTexture;
+    protected int mNumOfInputs;
+    protected int[] mMultiTextureHandle;
+    protected int[] mMultiTexture;
     protected List<FBORender> mStartPointRenders;
     protected List<FBORender> mEndPointRenders;
 
@@ -92,9 +92,11 @@ public class SplitInput extends FBORender {
         super.bindShaderValues();
         for (int i = 0; i < mNumOfInputs - 1; i++) {
             int tex = GLES20.GL_TEXTURE1 + i;
-            GLES20.glActiveTexture(tex);
-            GLES20.glBindTexture(GLES20.GL_TEXTURE_2D, mMultiTexture[i]);
-            GLES20.glUniform1i(mMultiTextureHandle[i], i + 1);
+            if (mMultiTexture[i] != 0) {
+                GLES20.glActiveTexture(tex);
+                GLES20.glBindTexture(GLES20.GL_TEXTURE_2D, mMultiTexture[i]);
+                GLES20.glUniform1i(mMultiTextureHandle[i], i + 1);
+            }
         }
     }
 
