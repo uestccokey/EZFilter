@@ -1,6 +1,5 @@
 package cn.ezandroid.ezfilter.video.offscreen;
 
-import android.annotation.TargetApi;
 import android.graphics.SurfaceTexture;
 import android.media.AudioFormat;
 import android.media.MediaCodecInfo;
@@ -8,7 +7,6 @@ import android.media.MediaExtractor;
 import android.media.MediaFormat;
 import android.media.MediaMetadataRetriever;
 import android.media.MediaMuxer;
-import android.os.Build;
 
 import java.io.IOException;
 import java.util.List;
@@ -22,27 +20,27 @@ import cn.ezandroid.ezfilter.media.transcode.QueuedMuxer;
 import cn.ezandroid.ezfilter.media.transcode.VideoFBORender;
 import cn.ezandroid.ezfilter.media.transcode.VideoTrackTranscoder;
 import cn.ezandroid.ezfilter.media.util.MediaUtil;
+import cn.ezandroid.ezfilter.split.SplitInput;
 
 /**
- * 离屏渲染视频
+ * 离屏渲染拆分视频
  *
  * @author like
- * @date 2017-09-24
+ * @date 2018-07-20
  */
-@TargetApi(Build.VERSION_CODES.JELLY_BEAN_MR2)
-public class OffscreenVideo {
+public class OffscreenSplitVideo {
 
-    protected RenderPipeline mPipeline;
+    private RenderPipeline mPipeline;
 
-    protected MediaExtractor mExtractor;
-    protected MediaUtil.Track mTrack;
-    protected String mVideoPath;
-    protected VideoFBORender mOffscreenRender;
+    private MediaExtractor mExtractor;
+    private MediaUtil.Track mTrack;
+    private String mVideoPath;
+    private VideoFBORender mOffscreenRender;
 
-    protected IVideoRenderListener mVideoRenderListener;
+    private IVideoRenderListener mVideoRenderListener;
 
-    protected int mWidth;
-    protected int mHeight;
+    private int mWidth;
+    private int mHeight;
 
     public interface IVideoRenderListener {
 
@@ -54,10 +52,24 @@ public class OffscreenVideo {
         void onFrameDraw(long time);
     }
 
-    public OffscreenVideo(String videoPath) {
+    private SplitInput mSplitInput;
+
+    public OffscreenSplitVideo(String videoPath, SplitInput splitInput) {
         mVideoPath = videoPath;
+        mSplitInput = splitInput;
 
         initRenderSize();
+        initPipeline();
+    }
+
+    private void initPipeline() {
+        mOffscreenRender = new VideoFBORender();
+        mOffscreenRender.setRenderSize(mWidth, mHeight);
+        mSplitInput.setRootRender(mOffscreenRender);
+        mPipeline = new RenderPipeline();
+        mPipeline.onSurfaceCreated(null, null);
+        mPipeline.setStartPointRender(mSplitInput);
+        mPipeline.addEndPointRender(new GLRender());
     }
 
     private void initRenderSize() {
@@ -104,34 +116,19 @@ public class OffscreenVideo {
         }
     }
 
-    protected void initPipeline() {
-        if (mPipeline != null) {
-            return;
-        }
-        mOffscreenRender = new VideoFBORender();
-        mOffscreenRender.setRenderSize(mWidth, mHeight);
-        mPipeline = new RenderPipeline();
-        mPipeline.onSurfaceCreated(null, null);
-        mPipeline.setStartPointRender(mOffscreenRender);
-        mPipeline.addEndPointRender(new GLRender());
-    }
-
     public void setVideoRenderListener(IVideoRenderListener videoRenderListener) {
         mVideoRenderListener = videoRenderListener;
     }
 
     public void addFilterRender(FBORender filterRender) {
-        initPipeline();
         mPipeline.addFilterRender(filterRender);
     }
 
     public void removeFilterRender(FBORender filterRender) {
-        initPipeline();
         mPipeline.removeFilterRender(filterRender);
     }
 
     public List<FBORender> getFilterRenders() {
-        initPipeline();
         return mPipeline.getFilterRenders();
     }
 
@@ -159,7 +156,8 @@ public class OffscreenVideo {
                 if (mVideoRenderListener != null) {
                     mVideoRenderListener.onFrameDraw(time);
                 }
-                mOffscreenRender.drawFrame(time);
+                mSplitInput.onDrawFrame();
+//                mOffscreenRender.drawFrame(time);
             }
 
             @Override
@@ -182,7 +180,6 @@ public class OffscreenVideo {
         if (null == mTrack || null == mTrack.videoTrackFormat) {
             return;
         }
-        initPipeline();
         mPipeline.onSurfaceChanged(null, width, height);
         mPipeline.startRender();
 
