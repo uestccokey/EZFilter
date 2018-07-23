@@ -1,6 +1,7 @@
 package cn.ezandroid.ezfilter.core;
 
 import android.opengl.GLES20;
+import android.text.TextUtils;
 import android.util.Log;
 
 import java.nio.ByteBuffer;
@@ -397,13 +398,15 @@ public class GLRender implements OnTextureAcceptableListener {
         final String vertexShader = getVertexShader();
         final String fragmentShader = getFragmentShader();
 
-        // 初始化顶点着色器
-        mVertexShaderHandle = ShaderHelper.compileShader(vertexShader, GLES20.GL_VERTEX_SHADER);
-        // 初始化片元着色器
-        mFragmentShaderHandle = ShaderHelper.compileShader(fragmentShader, GLES20.GL_FRAGMENT_SHADER);
+        if (!TextUtils.isEmpty(vertexShader) && !TextUtils.isEmpty(fragmentShader)) {
+            // 初始化顶点着色器
+            mVertexShaderHandle = ShaderHelper.compileShader(vertexShader, GLES20.GL_VERTEX_SHADER);
+            // 初始化片元着色器
+            mFragmentShaderHandle = ShaderHelper.compileShader(fragmentShader, GLES20.GL_FRAGMENT_SHADER);
 
-        // 将顶点着色器和片元着色器链接到OpenGL渲染程序
-        mProgramHandle = ShaderHelper.linkProgram(mVertexShaderHandle, mFragmentShaderHandle, getShaderAttributes());
+            // 将顶点着色器和片元着色器链接到OpenGL渲染程序
+            mProgramHandle = ShaderHelper.linkProgram(mVertexShaderHandle, mFragmentShaderHandle, getShaderAttributes());
+        }
 
         initShaderHandles();
     }

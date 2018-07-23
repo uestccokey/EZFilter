@@ -14,6 +14,7 @@ import cn.ezandroid.ezfilter.EZFilter;
 import cn.ezandroid.ezfilter.core.GLRender;
 import cn.ezandroid.ezfilter.core.RenderPipeline;
 import cn.ezandroid.ezfilter.core.environment.SurfaceFitView;
+import cn.ezandroid.ezfilter.core.util.L;
 import cn.ezandroid.ezfilter.demo.render.HorizontalSplitInput;
 import cn.ezandroid.ezfilter.demo.render.SnowStickerRender;
 import cn.ezandroid.ezfilter.extra.CropRender;
@@ -53,6 +54,8 @@ public class SplitInputActivity extends BaseActivity {
     }
 
     private void loadVideo(Uri uri) {
+        L.LOG_RENDER_DRAW = true;
+        L.LOG_RENDER_DESTROY = true;
         EZFilter.Builder videoBuilder = EZFilter.input(uri)
                 .setLoop(false)
                 .enableRecord("/sdcard/recordSplit.mp4", true, true)
@@ -72,14 +75,17 @@ public class SplitInputActivity extends BaseActivity {
         if (mSplitInput == null) {
             CropRender leftCropRender = new CropRender();
             leftCropRender.setCropRegion(new RectF(0, 0, 0.5f, 1));
+            leftCropRender.setRenderSize(360, 640);
             CropRender rightCropRender = new CropRender();
             rightCropRender.setCropRegion(new RectF(0.5f, 0, 1, 1));
+            rightCropRender.setRenderSize(360, 640);
             List<CropRender> cropRenders = new ArrayList<>();
             cropRenders.add(leftCropRender);
             cropRenders.add(rightCropRender);
             mSplitInput = new HorizontalSplitInput(cropRenders);
 
             mRenderPipeline = EZFilter.input(videoBuilder, mSplitInput)
+                    .enableRecord("/sdcard/recordSplit.mp4", true, true)
                     .into(mRenderView);
 
             mSplitInput.getRenderPipelines().get(0).addFilterRender(new SnowStickerRender(this));

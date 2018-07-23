@@ -59,6 +59,12 @@ public class HorizontalMultiInput extends MultiInput {
     }
 
     @Override
+    public void registerFilter(FBORender filter) {
+        filter.setRenderSize(getWidth() / 2, getHeight());
+        super.registerFilter(filter);
+    }
+
+    @Override
     protected String getFragmentShader() {
         return "precision highp float;\n" +
                 "varying highp vec2 textureCoordinate;\n" +

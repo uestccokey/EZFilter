@@ -167,9 +167,8 @@ public class MultiBitmapInputRender extends FilterRender {
     protected void initShaderHandles() {
         super.initShaderHandles();
         for (int i = 0; i < mTextureNum - 1; i++) {
-            mTextureHandles[i] = GLES20.glGetUniformLocation(mProgramHandle,
-                    UNIFORM_TEXTURE + (i + 2));
             // 从2开始：如inputImageTexture2，inputImageTexture3...
+            mTextureHandles[i] = GLES20.glGetUniformLocation(mProgramHandle, UNIFORM_TEXTURE + (i + 2));
         }
     }
 
@@ -177,8 +176,8 @@ public class MultiBitmapInputRender extends FilterRender {
     protected void bindShaderTextures() {
         super.bindShaderTextures();
         for (int i = 0; i < mTextureNum - 1; i++) {
-            int tex = GLES20.GL_TEXTURE1 + i;
             if (mTextures[i] != 0) {
+                int tex = GLES20.GL_TEXTURE1 + i;
                 GLES20.glActiveTexture(tex);
                 GLES20.glBindTexture(GLES20.GL_TEXTURE_2D, mTextures[i]);
                 GLES20.glUniform1i(mTextureHandles[i], i + 1);
