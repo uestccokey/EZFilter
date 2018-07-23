@@ -71,7 +71,7 @@ public class MainActivity extends BaseActivity {
         $(R.id.split_filter).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Intent intent = new Intent(MainActivity.this, SplitFilterActivity.class);
+                Intent intent = new Intent(MainActivity.this, SplitInputActivity.class);
                 startActivity(intent);
             }
         });

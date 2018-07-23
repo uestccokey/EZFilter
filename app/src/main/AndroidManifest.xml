@@ -41,7 +41,7 @@
             android:screenOrientation="portrait"
             android:theme="@style/AppTheme.Fullscreen" />
         <activity
-            android:name=".SplitFilterActivity"
+            android:name=".SplitInputActivity"
             android:screenOrientation="portrait"
             android:theme="@style/AppTheme.Fullscreen" />
         <activity

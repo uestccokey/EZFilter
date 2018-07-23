@@ -8,14 +8,14 @@ import cn.ezandroid.ezfilter.core.FBORender;
 import cn.ezandroid.ezfilter.multi.MultiInput;
 
 /**
- * HorizontalTwoInput
+ * HorizontalMultiInput
  *
  * @author like
  * @date 2018-07-13
  */
-public class HorizontalTwoInput extends MultiInput {
+public class HorizontalMultiInput extends MultiInput {
 
-    public HorizontalTwoInput() {
+    public HorizontalMultiInput() {
         super(2);
         setRenderSize(720, 640); // 固定为渲染尺寸为720x640
     }

@@ -65,16 +65,6 @@ public class OffscreenSplitVideo {
         initPipeline();
     }
 
-    private void initPipeline() {
-        mOffscreenRender = new VideoFBORender();
-        mOffscreenRender.setRenderSize(mWidth, mHeight);
-        mSplitInput.setRootRender(mOffscreenRender);
-        mPipeline = new RenderPipeline();
-        mPipeline.onSurfaceCreated(null, null);
-        mPipeline.setStartPointRender(mSplitInput);
-        mPipeline.addEndPointRender(new GLRender());
-    }
-
     private void initRenderSize() {
         mExtractor = new MediaExtractor();
         try {
@@ -117,6 +107,16 @@ public class OffscreenSplitVideo {
         } catch (Exception e) {
             e.printStackTrace();
         }
+    }
+
+    private void initPipeline() {
+        mOffscreenRender = new VideoFBORender();
+        mOffscreenRender.setRenderSize(mWidth, mHeight);
+        mSplitInput.setRootRender(mOffscreenRender);
+        mPipeline = new RenderPipeline();
+        mPipeline.onSurfaceCreated(null, null);
+        mPipeline.setStartPointRender(mSplitInput);
+        mPipeline.addEndPointRender(new GLRender());
     }
 
     public void setVideoRenderListener(IVideoRenderListener videoRenderListener) {

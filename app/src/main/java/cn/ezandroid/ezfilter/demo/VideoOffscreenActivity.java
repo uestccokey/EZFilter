@@ -78,7 +78,7 @@ public class VideoOffscreenActivity extends BaseActivity {
 //                        List<CropRender> cropRenders = new ArrayList<>();
 //                        cropRenders.add(leftCropRender);
 //                        cropRenders.add(rightCropRender);
-//                        SplitInput splitInput = new TwoSplitInput(cropRenders);
+//                        SplitInput splitInput = new HorizontalSplitInput(cropRenders);
 //                        OffscreenSplitVideo splitVideo = new OffscreenSplitVideo(paths.get(0), splitInput);
 //                        splitInput.getRenderPipelines().get(0).addFilterRender(new BWRender(VideoOffscreenActivity.this));
 //                        try {

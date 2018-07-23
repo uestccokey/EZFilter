@@ -104,7 +104,7 @@ public class OffscreenVideo {
         }
     }
 
-    protected void initPipeline() {
+    private void initPipeline() {
         if (mPipeline != null) {
             return;
         }

@@ -14,20 +14,20 @@ import cn.ezandroid.ezfilter.EZFilter;
 import cn.ezandroid.ezfilter.core.GLRender;
 import cn.ezandroid.ezfilter.core.RenderPipeline;
 import cn.ezandroid.ezfilter.core.environment.SurfaceFitView;
+import cn.ezandroid.ezfilter.demo.render.HorizontalSplitInput;
 import cn.ezandroid.ezfilter.demo.render.SnowStickerRender;
-import cn.ezandroid.ezfilter.demo.render.TwoSplitInput;
 import cn.ezandroid.ezfilter.extra.CropRender;
 import cn.ezandroid.ezfilter.media.record.ISupportRecord;
 import cn.ezandroid.ezfilter.split.SplitInput;
 import cn.ezandroid.ezfilter.video.player.IMediaPlayer;
 
 /**
- * SplitFilterActivity
+ * SplitInputActivity
  *
  * @author like
  * @date 2018-07-18
  */
-public class SplitFilterActivity extends BaseActivity {
+public class SplitInputActivity extends BaseActivity {
 
     private SurfaceFitView mRenderView;
 
@@ -39,7 +39,7 @@ public class SplitFilterActivity extends BaseActivity {
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_split_filter);
+        setContentView(R.layout.activity_split_input);
 
         mRenderView = $(R.id.render_view);
 
@@ -59,13 +59,13 @@ public class SplitFilterActivity extends BaseActivity {
                 .setPreparedListener(new IMediaPlayer.OnPreparedListener() {
                     @Override
                     public void onPrepared(IMediaPlayer var1) {
-                        Log.e("SplitFilterActivity", "onPrepared");
+                        Log.e("SplitInputActivity", "onPrepared");
                     }
                 })
                 .setCompletionListener(new IMediaPlayer.OnCompletionListener() {
                     @Override
                     public void onCompletion(IMediaPlayer var1) {
-                        Log.e("SplitFilterActivity", "onCompletion");
+                        Log.e("SplitInputActivity", "onCompletion");
                     }
                 });
 
@@ -77,7 +77,7 @@ public class SplitFilterActivity extends BaseActivity {
             List<CropRender> cropRenders = new ArrayList<>();
             cropRenders.add(leftCropRender);
             cropRenders.add(rightCropRender);
-            mSplitInput = new TwoSplitInput(cropRenders);
+            mSplitInput = new HorizontalSplitInput(cropRenders);
 
             mRenderPipeline = EZFilter.input(videoBuilder, mSplitInput)
                     .into(mRenderView);

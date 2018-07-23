@@ -6,14 +6,14 @@ import cn.ezandroid.ezfilter.extra.CropRender;
 import cn.ezandroid.ezfilter.split.SplitInput;
 
 /**
- * TwoSplitInput
+ * HorizontalSplitInput
  *
  * @author like
  * @date 2018-07-18
  */
-public class TwoSplitInput extends SplitInput {
+public class HorizontalSplitInput extends SplitInput {
 
-    public TwoSplitInput(List<CropRender> cropRenders) {
+    public HorizontalSplitInput(List<CropRender> cropRenders) {
         super(cropRenders);
         setRenderSize(720, 640); // 固定为渲染尺寸为720x640
     }
