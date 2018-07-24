@@ -145,13 +145,10 @@ public class SplitInput extends FBORender {
 
     @Override
     public void onDrawFrame() {
-        super.onDrawFrame();
         if (mRootRender != null) {
             mRootRender.onDrawFrame();
         }
-//        for (RenderPipeline pipeline : mRenderPipelines) {
-//            pipeline.onDrawFrame(null);
-//        }
+        super.onDrawFrame();
     }
 
     @Override

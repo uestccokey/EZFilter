@@ -106,10 +106,10 @@ public class MultiInput extends FBORender {
 
     @Override
     public void onDrawFrame() {
-        super.onDrawFrame();
         for (RenderPipeline pipeline : mRenderPipelines) {
             pipeline.onDrawFrame(null);
         }
+        super.onDrawFrame();
     }
 
     @Override
