@@ -29,6 +29,7 @@ public class FBORender extends GLRender {
     @Override
     public void destroy() {
         super.destroy();
+        clearTargets();
         if (mFrameBuffer != null) {
             GLES20.glDeleteFramebuffers(1, mFrameBuffer, 0);
             mFrameBuffer = null;
@@ -41,6 +42,11 @@ public class FBORender extends GLRender {
             GLES20.glDeleteTextures(1, mTextureOut, 0);
             mTextureOut = null;
         }
+    }
+
+    @Override
+    public String toString() {
+        return super.toString() + " Targets:" + mTargets.size();
     }
 
     @Override

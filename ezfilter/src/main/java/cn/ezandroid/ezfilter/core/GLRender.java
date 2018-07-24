@@ -316,13 +316,19 @@ public class GLRender implements OnTextureAcceptableListener {
         mInitialized = false;
     }
 
+    protected void logDraw() {
+        Log.e("RenderDraw", toString() + " Fps:" + mFps);
+    }
+
+    @Override
+    public String toString() {
+        return super.toString() + "[" + mWidth + "x" + mHeight + "] " + mInitialized;
+    }
+
     /**
      * 必须在GL线程执行
      */
     public void onDrawFrame() {
-        if (L.LOG_RENDER_DRAW) {
-            Log.e("GLRender", this + " onDrawFrame:" + mWidth + "x" + mHeight + " " + mCurrentRotation + " Fps:" + mFps);
-        }
         if (!mInitialized) {
             initGLContext();
             mInitialized = true;
@@ -335,6 +341,10 @@ public class GLRender implements OnTextureAcceptableListener {
         runAll(mRunOnDrawEnd);
 
         mSizeChanged = false; // 在drawFrame执行后再重置状态，因为drawFrame中可能用到该状态
+
+        if (L.LOG_RENDER_DRAW) {
+            logDraw();
+        }
 
         calculateFps();
     }
@@ -443,13 +453,14 @@ public class GLRender implements OnTextureAcceptableListener {
         mFragmentShader = fragmentShader;
     }
 
+    protected void logDestroy() {
+        Log.e("RenderDestroy", toString() + " Thread:" + Thread.currentThread().getName());
+    }
+
     /**
      * 必须在GL线程执行，释放纹理等OpenGL资源
      */
     public void destroy() {
-        if (L.LOG_RENDER_DESTROY) {
-            Log.e("GLRender", this + " destroy " + Thread.currentThread().getName());
-        }
         mInitialized = false;
         if (mProgramHandle != 0) {
             GLES20.glDeleteProgram(mProgramHandle);
@@ -462,6 +473,10 @@ public class GLRender implements OnTextureAcceptableListener {
         if (mFragmentShaderHandle != 0) {
             GLES20.glDeleteShader(mFragmentShaderHandle);
             mFragmentShaderHandle = 0;
+        }
+
+        if (L.LOG_RENDER_DESTROY) {
+            logDestroy();
         }
     }
 
