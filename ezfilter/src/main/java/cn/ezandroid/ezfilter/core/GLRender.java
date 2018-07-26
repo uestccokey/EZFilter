@@ -322,7 +322,7 @@ public class GLRender implements OnTextureAcceptableListener {
 
     @Override
     public String toString() {
-        return super.toString() + "[" + mWidth + "x" + mHeight + "] " + mInitialized;
+        return super.toString() + "[" + mWidth + "x" + mHeight + "]";
     }
 
     /**

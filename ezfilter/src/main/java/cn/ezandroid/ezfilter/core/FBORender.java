@@ -29,7 +29,6 @@ public class FBORender extends GLRender {
     @Override
     public void destroy() {
         super.destroy();
-        clearTargets();
         if (mFrameBuffer != null) {
             GLES20.glDeleteFramebuffers(1, mFrameBuffer, 0);
             mFrameBuffer = null;

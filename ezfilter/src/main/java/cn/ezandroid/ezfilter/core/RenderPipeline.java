@@ -141,6 +141,7 @@ public class RenderPipeline implements Renderer {
         }
 
         if (mStartPointRender != null) {
+            mStartPointRender.clearTargets();
             mStartPointRender.destroy();
         }
         mStartPointRender = null;
@@ -201,6 +202,7 @@ public class RenderPipeline implements Renderer {
         mCurrentRotation = 0;
 
         if (mStartPointRender != null) {
+            mStartPointRender.clearTargets();
             addRenderToDestroy(mStartPointRender);
         }
         mStartPointRender = null;
