@@ -1,6 +1,7 @@
 package cn.ezandroid.ezfilter.core;
 
 import android.opengl.GLES20;
+import android.text.TextUtils;
 import android.util.Log;
 
 import java.nio.ByteBuffer;
@@ -315,13 +316,19 @@ public class GLRender implements OnTextureAcceptableListener {
         mInitialized = false;
     }
 
+    protected void logDraw() {
+        Log.e("RenderDraw", toString() + " Fps:" + mFps);
+    }
+
+    @Override
+    public String toString() {
+        return super.toString() + "[" + mWidth + "x" + mHeight + "]";
+    }
+
     /**
      * 必须在GL线程执行
      */
     public void onDrawFrame() {
-        if (L.LOG_RENDER_DRAW) {
-            Log.e("GLRender", this + " onDrawFrame:" + mWidth + "x" + mHeight + " " + mCurrentRotation + " Fps:" + mFps);
-        }
         if (!mInitialized) {
             initGLContext();
             mInitialized = true;
@@ -334,6 +341,10 @@ public class GLRender implements OnTextureAcceptableListener {
         runAll(mRunOnDrawEnd);
 
         mSizeChanged = false; // 在drawFrame执行后再重置状态，因为drawFrame中可能用到该状态
+
+        if (L.LOG_RENDER_DRAW) {
+            logDraw();
+        }
 
         calculateFps();
     }
@@ -397,13 +408,15 @@ public class GLRender implements OnTextureAcceptableListener {
         final String vertexShader = getVertexShader();
         final String fragmentShader = getFragmentShader();
 
-        // 初始化顶点着色器
-        mVertexShaderHandle = ShaderHelper.compileShader(vertexShader, GLES20.GL_VERTEX_SHADER);
-        // 初始化片元着色器
-        mFragmentShaderHandle = ShaderHelper.compileShader(fragmentShader, GLES20.GL_FRAGMENT_SHADER);
+        if (!TextUtils.isEmpty(vertexShader) && !TextUtils.isEmpty(fragmentShader)) {
+            // 初始化顶点着色器
+            mVertexShaderHandle = ShaderHelper.compileShader(vertexShader, GLES20.GL_VERTEX_SHADER);
+            // 初始化片元着色器
+            mFragmentShaderHandle = ShaderHelper.compileShader(fragmentShader, GLES20.GL_FRAGMENT_SHADER);
 
-        // 将顶点着色器和片元着色器链接到OpenGL渲染程序
-        mProgramHandle = ShaderHelper.linkProgram(mVertexShaderHandle, mFragmentShaderHandle, getShaderAttributes());
+            // 将顶点着色器和片元着色器链接到OpenGL渲染程序
+            mProgramHandle = ShaderHelper.linkProgram(mVertexShaderHandle, mFragmentShaderHandle, getShaderAttributes());
+        }
 
         initShaderHandles();
     }
@@ -440,13 +453,14 @@ public class GLRender implements OnTextureAcceptableListener {
         mFragmentShader = fragmentShader;
     }
 
+    protected void logDestroy() {
+        Log.e("RenderDestroy", toString() + " Thread:" + Thread.currentThread().getName());
+    }
+
     /**
      * 必须在GL线程执行，释放纹理等OpenGL资源
      */
     public void destroy() {
-        if (L.LOG_RENDER_DESTROY) {
-            Log.e("GLRender", this + " destroy " + Thread.currentThread().getName());
-        }
         mInitialized = false;
         if (mProgramHandle != 0) {
             GLES20.glDeleteProgram(mProgramHandle);
@@ -459,6 +473,10 @@ public class GLRender implements OnTextureAcceptableListener {
         if (mFragmentShaderHandle != 0) {
             GLES20.glDeleteShader(mFragmentShaderHandle);
             mFragmentShaderHandle = 0;
+        }
+
+        if (L.LOG_RENDER_DESTROY) {
+            logDestroy();
         }
     }
 

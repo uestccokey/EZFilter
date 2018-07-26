@@ -70,6 +70,23 @@ public class VideoOffscreenActivity extends BaseActivity {
                 new Thread() {
                     public void run() {
                         final String output = "/sdcard/render.mp4";
+
+//                        CropRender leftCropRender = new CropRender();
+//                        leftCropRender.setCropRegion(new RectF(0, 0, 0.5f, 1));
+//                        CropRender rightCropRender = new CropRender();
+//                        rightCropRender.setCropRegion(new RectF(0.5f, 0, 1, 1));
+//                        List<CropRender> cropRenders = new ArrayList<>();
+//                        cropRenders.add(leftCropRender);
+//                        cropRenders.add(rightCropRender);
+//                        SplitInput splitInput = new HorizontalSplitInput(cropRenders);
+//                        OffscreenSplitVideo splitVideo = new OffscreenSplitVideo(paths.get(0), splitInput);
+//                        splitInput.getRenderPipelines().get(0).addFilterRender(new BWRender(VideoOffscreenActivity.this));
+//                        try {
+//                            splitVideo.save(output);
+//                        } catch (IOException e) {
+//                            e.printStackTrace();
+//                        }
+//
                         // output是耗时操作，需要在异步线程调用
                         EZFilter.input(Uri.parse(paths.get(0)))
                                 .addFilter(new BWRender(VideoOffscreenActivity.this))

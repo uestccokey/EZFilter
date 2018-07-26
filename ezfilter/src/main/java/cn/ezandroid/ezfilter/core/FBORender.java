@@ -44,6 +44,11 @@ public class FBORender extends GLRender {
     }
 
     @Override
+    public String toString() {
+        return super.toString() + " Targets:" + mTargets.size();
+    }
+
+    @Override
     protected void drawFrame() {
         if (mTextureOut == null) {
             if (mWidth != 0 && mHeight != 0) {

@@ -26,7 +26,6 @@ import cn.ezandroid.ezfilter.core.FBORender;
 import cn.ezandroid.ezfilter.core.GLRender;
 import cn.ezandroid.ezfilter.core.RenderPipeline;
 import cn.ezandroid.ezfilter.core.environment.FitViewHelper;
-import cn.ezandroid.ezfilter.core.environment.GLTextureView;
 import cn.ezandroid.ezfilter.core.environment.TextureFitView;
 import cn.ezandroid.ezfilter.core.output.BitmapOutput;
 import cn.ezandroid.ezfilter.demo.render.BWRender;
@@ -100,7 +99,7 @@ public class CameraFilterActivity extends BaseActivity {
         mRecordButton = $(R.id.record);
 
         mRenderView.setScaleType(FitViewHelper.ScaleType.CENTER_CROP);
-        mRenderView.setRenderMode(GLTextureView.RENDERMODE_CONTINUOUSLY);
+//        mRenderView.setRenderMode(GLTextureView.RENDERMODE_CONTINUOUSLY);
 
         mOrientationEventListener = new MyOrientationEventListener(this);
 

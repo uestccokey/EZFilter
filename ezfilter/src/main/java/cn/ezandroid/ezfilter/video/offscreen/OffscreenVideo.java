@@ -57,10 +57,10 @@ public class OffscreenVideo {
     public OffscreenVideo(String videoPath) {
         mVideoPath = videoPath;
 
-        init();
+        initRenderSize();
     }
 
-    private void init() {
+    private void initRenderSize() {
         mExtractor = new MediaExtractor();
         try {
             mExtractor.setDataSource(mVideoPath);
@@ -99,16 +99,21 @@ public class OffscreenVideo {
 
             mWidth = w;
             mHeight = h;
-
-            mOffscreenRender = new VideoFBORender();
-            mOffscreenRender.setRenderSize(mWidth, mHeight);
-            mPipeline = new RenderPipeline();
-            mPipeline.onSurfaceCreated(null, null);
-            mPipeline.setStartPointRender(mOffscreenRender);
-            mPipeline.addEndPointRender(new GLRender());
         } catch (Exception e) {
             e.printStackTrace();
         }
+    }
+
+    private void initPipeline() {
+        if (mPipeline != null) {
+            return;
+        }
+        mOffscreenRender = new VideoFBORender();
+        mOffscreenRender.setRenderSize(mWidth, mHeight);
+        mPipeline = new RenderPipeline();
+        mPipeline.onSurfaceCreated(null, null);
+        mPipeline.setStartPointRender(mOffscreenRender);
+        mPipeline.addEndPointRender(new GLRender());
     }
 
     public void setVideoRenderListener(IVideoRenderListener videoRenderListener) {
@@ -116,14 +121,17 @@ public class OffscreenVideo {
     }
 
     public void addFilterRender(FBORender filterRender) {
+        initPipeline();
         mPipeline.addFilterRender(filterRender);
     }
 
     public void removeFilterRender(FBORender filterRender) {
+        initPipeline();
         mPipeline.removeFilterRender(filterRender);
     }
 
     public List<FBORender> getFilterRenders() {
+        initPipeline();
         return mPipeline.getFilterRenders();
     }
 
@@ -135,10 +143,6 @@ public class OffscreenVideo {
         return mHeight;
     }
 
-    public void save(String output) throws IOException {
-        save(output, mWidth, mHeight);
-    }
-
     private int getInteger(String name, int defaultValue) {
         try {
             return mTrack.audioTrackFormat.getInteger(name);
@@ -147,10 +151,38 @@ public class OffscreenVideo {
         }
     }
 
+    private VideoTrackTranscoder initVideoTrack(MediaFormat videoFormat, QueuedMuxer queuedMuxer) {
+        return new VideoTrackTranscoder(mExtractor, mTrack.videoTrackIndex,
+                videoFormat, queuedMuxer, new IVideoRender() {
+            @Override
+            public void drawFrame(long time) {
+                if (mVideoRenderListener != null) {
+                    mVideoRenderListener.onFrameDraw(time);
+                }
+                mOffscreenRender.drawFrame(time);
+            }
+
+            @Override
+            public SurfaceTexture getSurfaceTexture() {
+                return mOffscreenRender.getSurfaceTexture();
+            }
+        });
+    }
+
+    private AudioTrackTranscoder initAudioTrack(MediaFormat audioFormat, QueuedMuxer queuedMuxer) {
+        return new AudioTrackTranscoder(mExtractor, mTrack.audioTrackIndex,
+                audioFormat, queuedMuxer);
+    }
+
+    public void save(String output) throws IOException {
+        save(output, mWidth, mHeight);
+    }
+
     public void save(String output, int width, int height) throws IOException {
         if (null == mTrack || null == mTrack.videoTrackFormat) {
             return;
         }
+        initPipeline();
         mPipeline.onSurfaceChanged(null, width, height);
         mPipeline.startRender();
 
@@ -172,23 +204,8 @@ public class OffscreenVideo {
 
             // 音视频轨道都需要
             queuedMuxer.setTrackCount(QueuedMuxer.TRACK_VIDEO & QueuedMuxer.TRACK_AUDIO);
-            VideoTrackTranscoder videoTrack = new VideoTrackTranscoder(mExtractor, mTrack.videoTrackIndex,
-                    videoFormat, queuedMuxer, new IVideoRender() {
-                @Override
-                public void drawFrame(long time) {
-                    if (mVideoRenderListener != null) {
-                        mVideoRenderListener.onFrameDraw(time);
-                    }
-                    mOffscreenRender.drawFrame(time);
-                }
-
-                @Override
-                public SurfaceTexture getSurfaceTexture() {
-                    return mOffscreenRender.getSurfaceTexture();
-                }
-            });
-            AudioTrackTranscoder audioTrack = new AudioTrackTranscoder(mExtractor, mTrack.audioTrackIndex,
-                    audioFormat, queuedMuxer);
+            VideoTrackTranscoder videoTrack = initVideoTrack(videoFormat, queuedMuxer);
+            AudioTrackTranscoder audioTrack = initAudioTrack(audioFormat, queuedMuxer);
 
             videoTrack.setup();
             audioTrack.setup();
@@ -210,21 +227,7 @@ public class OffscreenVideo {
         } else {
             // 只需视频轨
             queuedMuxer.setTrackCount(QueuedMuxer.TRACK_VIDEO);
-            VideoTrackTranscoder videoTrack = new VideoTrackTranscoder(mExtractor, mTrack.videoTrackIndex,
-                    videoFormat, queuedMuxer, new IVideoRender() {
-                @Override
-                public void drawFrame(long time) {
-                    if (mVideoRenderListener != null) {
-                        mVideoRenderListener.onFrameDraw(time);
-                    }
-                    mOffscreenRender.drawFrame(time);
-                }
-
-                @Override
-                public SurfaceTexture getSurfaceTexture() {
-                    return mOffscreenRender.getSurfaceTexture();
-                }
-            });
+            VideoTrackTranscoder videoTrack = initVideoTrack(videoFormat, queuedMuxer);
 
             videoTrack.setup();
 

@@ -18,7 +18,7 @@ import cn.ezandroid.ezfilter.EZFilter;
 import cn.ezandroid.ezfilter.core.GLRender;
 import cn.ezandroid.ezfilter.core.RenderPipeline;
 import cn.ezandroid.ezfilter.core.environment.SurfaceFitView;
-import cn.ezandroid.ezfilter.demo.render.HorizontalTwoInput;
+import cn.ezandroid.ezfilter.demo.render.HorizontalMultiInput;
 import cn.ezandroid.ezfilter.media.record.RecordableRender;
 import cn.ezandroid.ezfilter.video.player.IMediaPlayer;
 
@@ -48,7 +48,7 @@ public class MultiInputActivity extends BaseActivity {
 
     private int mOrientation;
 
-    private HorizontalTwoInput mTwoInput;
+    private HorizontalMultiInput mTwoInput;
     private EZFilter.Builder mRightBuilder;
 
     private class MyOrientationEventListener extends OrientationEventListener {
@@ -203,7 +203,7 @@ public class MultiInputActivity extends BaseActivity {
             builders.add(leftBuilder);
             builders.add(mRightBuilder);
 
-            mTwoInput = new HorizontalTwoInput();
+            mTwoInput = new HorizontalMultiInput();
             mRenderPipeline = EZFilter.input(builders, mTwoInput)
                     .enableRecord("/sdcard/recordMultiple.mp4", true, false)
                     .into(mRenderView, false);

@@ -72,6 +72,7 @@ public class GroupFilterRender extends FilterRender {
             }
         }
         runAll(mRunOnDrawEnd);
+        logDraw();
     }
 
     public void registerFilter(GLRender filter) {

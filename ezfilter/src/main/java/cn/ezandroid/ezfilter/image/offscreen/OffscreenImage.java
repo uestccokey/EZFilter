@@ -35,10 +35,16 @@ public class OffscreenImage {
     private int mWidth;
     private int mHeight;
 
-    public OffscreenImage(Bitmap bitmap) {
-        mWidth = bitmap.getWidth();
-        mHeight = bitmap.getHeight();
+    private Bitmap mBitmap;
 
+    public OffscreenImage(Bitmap bitmap) {
+        mBitmap = bitmap;
+
+        initRenderSize();
+        initPipeline();
+    }
+
+    private void initRenderSize() {
         // 初始化EGL环境
         mEgl = new EGLEnvironment(EGL14.eglGetCurrentContext(), false);
         // 创建离屏缓冲
@@ -46,8 +52,12 @@ public class OffscreenImage {
         // 设置渲染环境可用
         mInputSurface.makeCurrent();
 
-        BitmapInput bitmapInput = new BitmapInput(bitmap);
+        mWidth = mBitmap.getWidth();
+        mHeight = mBitmap.getHeight();
+    }
 
+    private void initPipeline() {
+        BitmapInput bitmapInput = new BitmapInput(mBitmap);
         mPipeline = new RenderPipeline();
         mPipeline.onSurfaceCreated(null, null);
         mPipeline.setStartPointRender(bitmapInput);

@@ -141,25 +141,30 @@ public class RenderPipeline implements Renderer {
         }
 
         if (mStartPointRender != null) {
+            mStartPointRender.clearTargets();
             mStartPointRender.destroy();
         }
+        mStartPointRender = null;
 
         synchronized (mFilterRenders) {
             for (FBORender filterRender : mFilterRenders) {
                 filterRender.destroy();
             }
-        }
-
-        synchronized (mEndPointRenders) {
-            for (GLRender endPointRender : mEndPointRenders) {
-                endPointRender.destroy();
-            }
+            mFilterRenders.clear();
         }
 
         synchronized (mOutputs) {
             for (BufferOutput bufferOutput : mOutputs) {
                 bufferOutput.destroy();
             }
+            mOutputs.clear();
+        }
+
+        synchronized (mEndPointRenders) {
+            for (GLRender endPointRender : mEndPointRenders) {
+                endPointRender.destroy();
+            }
+            mEndPointRenders.clear();
         }
 
         synchronized (mOnSurfaceListeners) {
@@ -198,8 +203,8 @@ public class RenderPipeline implements Renderer {
 
         if (mStartPointRender != null) {
             mStartPointRender.clearTargets();
+            addRenderToDestroy(mStartPointRender);
         }
-        addRenderToDestroy(mStartPointRender);
         mStartPointRender = null;
 
         synchronized (mFilterRenders) {

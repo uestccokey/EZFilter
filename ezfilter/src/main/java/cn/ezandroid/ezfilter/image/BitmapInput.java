@@ -98,6 +98,7 @@ public class BitmapInput extends FBORender {
             int[] tex = new int[1];
             tex[0] = mTextureIn;
             GLES20.glDeleteTextures(1, tex, 0);
+            mTextureIn = 0;
         }
         mTextureIn = BitmapUtil.bindBitmap(mBitmap);
     }
@@ -109,6 +110,7 @@ public class BitmapInput extends FBORender {
             int[] tex = new int[1];
             tex[0] = mTextureIn;
             GLES20.glDeleteTextures(1, tex, 0);
+            mTextureIn = 0;
         }
         mIsNewBitmap = true;
     }
