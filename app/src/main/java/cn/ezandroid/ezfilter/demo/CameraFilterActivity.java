@@ -203,14 +203,14 @@ public class CameraFilterActivity extends BaseActivity {
     }
 
     private void startRecording() {
-        mRecordButton.setText("停止");
+//        mRecordButton.setText("停止");
         if (mSupportRecord != null) {
             mSupportRecord.startRecording();
         }
     }
 
     private void stopRecording() {
-        mRecordButton.setText("录制");
+//        mRecordButton.setText("录制");
         if (mSupportRecord != null) {
             mSupportRecord.stopRecording();
         }
@@ -291,6 +291,12 @@ public class CameraFilterActivity extends BaseActivity {
         mSupportRecord.setRecordListener(new IRecordListener() {
             @Override
             public void onStart() {
+                runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        mRecordButton.setText("停止");
+                    }
+                });
                 Log.e("Camera", "onStart");
             }
 
@@ -301,6 +307,12 @@ public class CameraFilterActivity extends BaseActivity {
 
             @Override
             public void onFinish() {
+                runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        mRecordButton.setText("录制");
+                    }
+                });
                 Log.e("Camera", "onFinish");
             }
         });

@@ -43,6 +43,11 @@ public class RecordableRender extends FBORender implements ISupportRecord {
                         setVideoEncoder(null);
                     }
                 }
+
+                @Override
+                public void onInterrupted(MediaEncoder encoder) {
+                    stopRecording();
+                }
             };
 
     public RecordableRender(String outputPath, boolean recordVideo, boolean recordAudio) {
@@ -148,7 +153,7 @@ public class RecordableRender extends FBORender implements ISupportRecord {
     /**
      * 开始录制
      */
-    public void startRecording() {
+    public boolean startRecording() {
         try {
             mMuxerWrapper = new MediaMuxerWrapper(mOutputPath);
             if (mRecordVideo) {
@@ -161,11 +166,13 @@ public class RecordableRender extends FBORender implements ISupportRecord {
             }
             mMuxerWrapper.setRecordListener(mRecordListener);
             mMuxerWrapper.prepare();
-            mMuxerWrapper.startRecording();
+            return mMuxerWrapper.startRecording();
         } catch (final IOException e) {
             e.printStackTrace();
         }
+        return false;
     }
+
 
     /**
      * 停止录制

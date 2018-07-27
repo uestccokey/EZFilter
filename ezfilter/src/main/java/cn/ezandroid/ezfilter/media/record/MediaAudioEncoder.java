@@ -66,13 +66,14 @@ public class MediaAudioEncoder extends MediaEncoder {
     }
 
     @Override
-    protected void startRecording() {
+    protected boolean startRecording() {
         super.startRecording();
         // create and execute audio capturing thread using internal mic
         if (mAudioThread == null) {
             mAudioThread = new AudioThread();
             mAudioThread.start();
         }
+        return mAudioThread.isAlive();
     }
 
     @Override
@@ -98,15 +99,24 @@ public class MediaAudioEncoder extends MediaEncoder {
             try {
                 mAudioRecord = findAudioRecord();
                 if (mAudioRecord != null) {
+                    long time = System.currentTimeMillis();
                     // 在AudioThread的创建线程调用startRecording，以便解决Vivo手机上mAudioRecord.startRecording触发录音权限弹框时，没有阻塞住录制线程的问题
                     mAudioRecord.startRecording();
+                    // 通过startRecording阻塞的时间来判断是否VIVO手机弹出了权限申请框，未弹出权限申请框时，执行时间一般都小于10ms
+                    if (System.currentTimeMillis() - time > 100) {
+                        // 无论选择什么，当前都停止录制，回调onError
+                        if (mListener != null) {
+                            mListener.onInterrupted(MediaAudioEncoder.this);
+                        }
+                    } else {
+                        super.start();
+                    }
                 } else {
                     Log.e(TAG, "failed to initialize AudioRecord");
                 }
             } catch (final Exception e) {
                 Log.e(TAG, "AudioThread#new", e);
             }
-            super.start();
         }
 
         /**

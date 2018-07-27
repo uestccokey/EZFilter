@@ -51,7 +51,7 @@ public interface ISupportRecord {
     /**
      * 开始录制
      */
-    void startRecording();
+    boolean startRecording();
 
     /**
      * 结束录制

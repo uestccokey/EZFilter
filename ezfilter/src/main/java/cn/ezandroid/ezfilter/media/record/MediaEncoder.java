@@ -25,6 +25,8 @@ public abstract class MediaEncoder implements Runnable {
         void onPrepared(MediaEncoder encoder);
 
         void onStopped(MediaEncoder encoder);
+
+        void onInterrupted(MediaEncoder encoder);
     }
 
     protected final Object mSync = new Object();
@@ -123,12 +125,13 @@ public abstract class MediaEncoder implements Runnable {
 
     abstract void prepare() throws IOException;
 
-    void startRecording() {
+    boolean startRecording() {
         synchronized (mSync) {
             mIsCapturing = true;
             mRequestStop = false;
             mSync.notifyAll();
         }
+        return true;
     }
 
     void stopRecording() {
