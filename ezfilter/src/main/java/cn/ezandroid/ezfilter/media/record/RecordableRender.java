@@ -1,7 +1,5 @@
 package cn.ezandroid.ezfilter.media.record;
 
-import java.io.IOException;
-
 import cn.ezandroid.ezfilter.core.FBORender;
 import cn.ezandroid.ezfilter.core.GLRender;
 
@@ -167,12 +165,11 @@ public class RecordableRender extends FBORender implements ISupportRecord {
             mMuxerWrapper.setRecordListener(mRecordListener);
             mMuxerWrapper.prepare();
             return mMuxerWrapper.startRecording();
-        } catch (final IOException e) {
+        } catch (final Exception e) {
             e.printStackTrace();
         }
         return false;
     }
-
 
     /**
      * 停止录制

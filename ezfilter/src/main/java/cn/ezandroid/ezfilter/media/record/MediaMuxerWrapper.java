@@ -46,7 +46,7 @@ public class MediaMuxerWrapper {
         return mOutputPath;
     }
 
-    public void prepare() throws IOException {
+    public void prepare() throws IOException, IllegalStateException {
         if (mVideoEncoder != null) {
             mVideoEncoder.prepare();
         }

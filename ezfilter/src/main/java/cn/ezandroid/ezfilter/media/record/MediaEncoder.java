@@ -123,7 +123,7 @@ public abstract class MediaEncoder implements Runnable {
         }
     }
 
-    abstract void prepare() throws IOException;
+    abstract void prepare() throws IOException, IllegalStateException;
 
     boolean startRecording() {
         synchronized (mSync) {

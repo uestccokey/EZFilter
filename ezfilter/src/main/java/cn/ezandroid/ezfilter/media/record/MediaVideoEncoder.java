@@ -43,7 +43,7 @@ public class MediaVideoEncoder extends MediaEncoder {
     }
 
     @Override
-    protected void prepare() throws IOException {
+    protected void prepare() throws IOException, IllegalStateException {
         mTrackIndex = -1;
         mMuxerStarted = mIsEOS = false;
 
