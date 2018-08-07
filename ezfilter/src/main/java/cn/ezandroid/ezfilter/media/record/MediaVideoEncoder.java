@@ -163,7 +163,11 @@ public class MediaVideoEncoder extends MediaEncoder {
 
     @Override
     protected void signalEndOfInputStream() {
-        mMediaCodec.signalEndOfInputStream();
+        try {
+            mMediaCodec.signalEndOfInputStream();
+        } catch (final Exception e) {
+            e.printStackTrace();
+        }
         mIsEOS = true;
     }
 }
