@@ -22,8 +22,10 @@ public class MediaAudioEncoder extends MediaEncoder {
     private static final String TAG = "MediaAudioEncoder";
 
     private static final String MIME_TYPE = "audio/mp4a-latm";
-    private static final int SAMPLE_RATE = 44100;    // 44.1[KHz] is only setting guaranteed to be available on all devices.
-    private static final int SAMPLES_PER_FRAME = 1024;    // AAC, bytes/frame/channel
+    private static final int SAMPLE_RATE = 44100; // 44.1[KHz] is only setting guaranteed to be available on all devices.
+    private static final int SAMPLES_PER_FRAME = 1024;
+
+    private final Object mAudioThreadLock = new Object();
 
     private AudioThread mAudioThread;
 
@@ -68,17 +70,22 @@ public class MediaAudioEncoder extends MediaEncoder {
     @Override
     protected boolean startRecording() {
         super.startRecording();
-        // create and execute audio capturing thread using internal mic
-        if (mAudioThread == null) {
-            mAudioThread = new AudioThread();
-            mAudioThread.start();
+        // 使用锁是为了防止刚刚创建出AudioThread后，在调用isAlive之前，release函数被另外的线程调用，导致mAudioThread为null引起的空指针异常
+        synchronized (mAudioThreadLock) {
+            // create and execute audio capturing thread using internal mic
+            if (mAudioThread == null) {
+                mAudioThread = new AudioThread();
+                mAudioThread.start();
+            }
+            return mAudioThread.isAlive();
         }
-        return mAudioThread.isAlive();
     }
 
     @Override
     protected void release() {
-        mAudioThread = null;
+        synchronized (mAudioThreadLock) {
+            mAudioThread = null;
+        }
         super.release();
     }
 
