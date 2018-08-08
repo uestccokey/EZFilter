@@ -22,8 +22,10 @@ public class MediaAudioEncoder extends MediaEncoder {
     private static final String TAG = "MediaAudioEncoder";
 
     private static final String MIME_TYPE = "audio/mp4a-latm";
-    private static final int SAMPLE_RATE = 44100;    // 44.1[KHz] is only setting guaranteed to be available on all devices.
-    private static final int SAMPLES_PER_FRAME = 1024;    // AAC, bytes/frame/channel
+    private static final int SAMPLE_RATE = 44100; // 44.1[KHz] is only setting guaranteed to be available on all devices.
+    private static final int SAMPLES_PER_FRAME = 1024;
+
+    private final Object mAudioThreadLock = new Object();
 
     private AudioThread mAudioThread;
 
@@ -40,7 +42,7 @@ public class MediaAudioEncoder extends MediaEncoder {
     }
 
     @Override
-    protected void prepare() throws IOException {
+    protected void prepare() throws IOException, IllegalStateException {
         mTrackIndex = -1;
         mMuxerStarted = mIsEOS = false;
 
@@ -66,18 +68,24 @@ public class MediaAudioEncoder extends MediaEncoder {
     }
 
     @Override
-    protected void startRecording() {
+    protected boolean startRecording() {
         super.startRecording();
-        // create and execute audio capturing thread using internal mic
-        if (mAudioThread == null) {
-            mAudioThread = new AudioThread();
-            mAudioThread.start();
+        // 使用锁是为了防止刚刚创建出AudioThread后，在调用isAlive之前，release函数被另外的线程调用，导致mAudioThread为null引起的空指针异常
+        synchronized (mAudioThreadLock) {
+            // create and execute audio capturing thread using internal mic
+            if (mAudioThread == null) {
+                mAudioThread = new AudioThread();
+                mAudioThread.start();
+            }
+            return mAudioThread.isAlive();
         }
     }
 
     @Override
     protected void release() {
-        mAudioThread = null;
+        synchronized (mAudioThreadLock) {
+            mAudioThread = null;
+        }
         super.release();
     }
 
@@ -98,15 +106,24 @@ public class MediaAudioEncoder extends MediaEncoder {
             try {
                 mAudioRecord = findAudioRecord();
                 if (mAudioRecord != null) {
+                    long time = System.currentTimeMillis();
                     // 在AudioThread的创建线程调用startRecording，以便解决Vivo手机上mAudioRecord.startRecording触发录音权限弹框时，没有阻塞住录制线程的问题
                     mAudioRecord.startRecording();
+                    // 通过startRecording阻塞的时间来判断是否VIVO手机弹出了权限申请框，未弹出权限申请框时，执行时间一般都小于10ms
+                    if (System.currentTimeMillis() - time > 100) {
+                        // 无论选择什么，当前都停止录制，回调onError
+                        if (mListener != null) {
+                            mListener.onInterrupted(MediaAudioEncoder.this);
+                        }
+                    } else {
+                        super.start();
+                    }
                 } else {
                     Log.e(TAG, "failed to initialize AudioRecord");
                 }
             } catch (final Exception e) {
                 Log.e(TAG, "AudioThread#new", e);
             }
-            super.start();
         }
 
         /**

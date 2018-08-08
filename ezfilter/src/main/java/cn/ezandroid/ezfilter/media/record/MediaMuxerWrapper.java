@@ -46,7 +46,7 @@ public class MediaMuxerWrapper {
         return mOutputPath;
     }
 
-    public void prepare() throws IOException {
+    public void prepare() throws IOException, IllegalStateException {
         if (mVideoEncoder != null) {
             mVideoEncoder.prepare();
         }
@@ -55,16 +55,18 @@ public class MediaMuxerWrapper {
         }
     }
 
-    public void startRecording() {
+    public boolean startRecording() {
+        boolean success = false;
         if (mVideoEncoder != null) {
-            mVideoEncoder.startRecording();
+            success = mVideoEncoder.startRecording();
         }
         if (mAudioEncoder != null) {
-            mAudioEncoder.startRecording();
+            success = success && mAudioEncoder.startRecording();
         }
-        if (mRecordListener != null) {
+        if (mRecordListener != null && success) {
             mRecordListener.onStart();
         }
+        return success;
     }
 
     public void stopRecording() {
