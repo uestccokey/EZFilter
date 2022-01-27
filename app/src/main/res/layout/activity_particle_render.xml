@@ -3,7 +3,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent">
 
-    <cn.ezandroid.ezfilter.core.environment.TextureFitView
+    <cn.ezandroid.lib.ezfilter.core.environment.TextureFitView
         android:id="@+id/render_view"
         android:layout_width="match_parent"
         android:layout_height="match_parent"

@@ -3,7 +3,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent">
 
-    <cn.ezandroid.ezfilter.core.environment.SurfaceFitView
+    <cn.ezandroid.lib.ezfilter.core.environment.SurfaceFitView
         android:id="@+id/render_view"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
@@ -13,6 +13,5 @@
         android:id="@+id/record"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_toRightOf="@id/switch_camera"
         android:text="录制" />
 </RelativeLayout>
