@@ -25,24 +25,6 @@ A lightweight (<180KB), easy-to-extend Android filter and dynamic sticker framew
 
 5.Support offscreen rendering
 
-### Usage
-
-#### Gradle
-``` gradle
-android {
-    compileOptions {
-        sourceCompatibility JavaVersion.VERSION_1_8
-        targetCompatibility JavaVersion.VERSION_1_8
-    }
-}
-
-dependencies {
-    compile 'cn.ezandroid:EZFilter:x.x.x' // Gradle version < 3.0
-    // or
-    implementation 'cn.ezandroid:EZFilter:x.x.x' // Gradle version >= 3.0
-}
-```
-
 #### Sample
 
 you can use ` EZFilter.input(xxx).addFilter(filter).into(view)` to add filter and display.

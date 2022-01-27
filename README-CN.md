@@ -25,25 +25,6 @@
 
 5.支持离屏渲染
 
-### 使用
-
-#### Gradle
-
-``` gradle
-android {
-    compileOptions {
-        sourceCompatibility JavaVersion.VERSION_1_8
-        targetCompatibility JavaVersion.VERSION_1_8
-    }
-}
-
-dependencies {
-    compile 'cn.ezandroid:EZFilter:x.x.x' // Gradle 3.0以下
-    // 或者
-    implementation 'cn.ezandroid:EZFilter:x.x.x' // Gradle3.0及以上
-}
-```
-
 #### 示例
 
 使用 ` EZFilter.input(xxx).addFilter(filter).into(view)` 添加滤镜并显示
