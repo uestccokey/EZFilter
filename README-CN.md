@@ -1,4 +1,4 @@
-# ![Logo](https://raw.githubusercontent.com/uestccokey/EZFilter/develop/logo.png)
+# ![Logo](https://raw.githubusercontent.com/uestccokey/EZFilter/master/logo.png)
 # EZFilter
 
 一个轻量级（<180KB）、易扩展的Android滤镜和动态贴纸框架，支持摄像头、视频、图片和视图添加滤镜和贴纸。
@@ -7,11 +7,11 @@
 
 ### Demo
 
-[下载地址](https://raw.githubusercontent.com/uestccokey/EZFilter/develop/demo.apk)
+[下载地址](https://raw.githubusercontent.com/uestccokey/EZFilter/master/demo.apk)
 
 ### 截图
 
-![View加滤镜](https://raw.githubusercontent.com/uestccokey/EZFilter/develop/view-filter.gif)
+![View加滤镜](https://raw.githubusercontent.com/uestccokey/EZFilter/master/view-filter.gif)
 
 ### 功能
 

@@ -1,4 +1,4 @@
-# ![Logo](https://raw.githubusercontent.com/uestccokey/EZFilter/develop/logo.png)
+# ![Logo](https://raw.githubusercontent.com/uestccokey/EZFilter/master/logo.png)
 # EZFilter
 
 A lightweight (<180KB), easy-to-extend Android filter and dynamic sticker framework for adding filters and stickers for camera, video, bitmap and view.
@@ -7,11 +7,11 @@ A lightweight (<180KB), easy-to-extend Android filter and dynamic sticker framew
 
 ### Demo
 
-[Download](https://raw.githubusercontent.com/uestccokey/EZFilter/develop/demo.apk)
+[Download](https://raw.githubusercontent.com/uestccokey/EZFilter/master/demo.apk)
 
 ### Screenshot
 
-![View加滤镜](https://raw.githubusercontent.com/uestccokey/EZFilter/develop/view-filter.gif)
+![View加滤镜](https://raw.githubusercontent.com/uestccokey/EZFilter/master/view-filter.gif)
 
 ### Features
 
