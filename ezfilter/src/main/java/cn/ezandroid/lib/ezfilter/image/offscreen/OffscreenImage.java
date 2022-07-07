@@ -45,15 +45,15 @@ public class OffscreenImage {
     }
 
     private void initRenderSize() {
+        mWidth = mBitmap.getWidth();
+        mHeight = mBitmap.getHeight();
+
         // 初始化EGL环境
         mEgl = new EGLEnvironment(EGL14.eglGetCurrentContext(), false);
         // 创建离屏缓冲
         mInputSurface = mEgl.createOffscreen(mWidth, mHeight);
         // 设置渲染环境可用
         mInputSurface.makeCurrent();
-
-        mWidth = mBitmap.getWidth();
-        mHeight = mBitmap.getHeight();
     }
 
     private void initPipeline() {
